@@ -1,6 +1,42 @@
 # Mint
 
-Mint est un projet étudiant à porté entrepreunariale réalisé dans le but de valider notre diplome de Mastère 2.
+> [!NOTE]
+> Mint est un projet étudiant à portée entrepreneuriale, réalisé dans le but de valider notre diplôme de Mastère 2.  
+>  
+> Nous serions très motivés à l'idée de pouvoir réellement lui donner vie. Si vous souhaitez nous aider ou si vous connaissez quelqu'un qui pourrait le faire, n'hésitez pas à nous envoyer un message à contact.mint.running@gmail.com.
+
+## Présentation de la plateforme Mint et de sa philosophie
+
+Mint est une plateforme de suivi en direct des athlètes pendant une course d'endurance, destinée à tous les niveaux, du débutant au professionnel.
+
+À travers cette plateforme, nous poursuivons plusieurs objectifs, parmi lesquels :
+
+### `Motiver le monde à courir`
+
+Je courais déjà depuis quelque temps, mais je ne me suis inscrit à des courses/marathons/trails que depuis quelques mois. Je dois dire que je regrette de ne pas l'avoir fait plus tôt. J'ai pu rencontrer et encourager des personnes de toutes origines et de tous profils. Le seul point commun qui reliait toutes ces personnes était le sourire et la bonne humeur qu'elles affichaient, que l'on les connaisse ou non.
+
+La raison pour laquelle on court un marathon n’est pas tant une question de classement à l’arrivée que de fierté de l’avoir accompli. Le seul adversaire contre qui je cours, c’est mon meilleur temps personnel.
+
+Je suis convaincu que beaucoup ne soupçonnent pas combien la course à pied pourrait leur apporter, aussi bien sur le plan physique que mental. Cet objectif est le premier et le plus important que nous devons garder en tête durant ce projet et son évolution.
+
+### `La mise en avant de courses moins connues`
+
+Pour atteindre l’objectif précédent, il est nécessaire de rendre la découverte de courses aussi simple que possible. Il est plus facile (surtout pour un débutant) de participer à une course qui se passe à côté de chez soi que de devoir prendre le train pour s’y rendre.
+
+Beaucoup de courses très sympathiques sont organisées sans avoir assez de visibilité et peuvent facilement être ignorées par des coureurs qui se seraient inscrits s’ils en avaient eu connaissance. Nous souhaitons faciliter la découverte de courses organisées autour de soi.
+
+### `Motiver les coureurs à prendre part à davantage d’événements`
+
+Directement lié à l’objectif précédent, prendre part à une course est plus qu’un effort physique : c’est découvrir une nouvelle région et de nouvelles personnes, et c’est ce que nous souhaitons encourager.
+
+### `Motiver les spectateurs à courir avec leurs proches`
+
+La dernière, mais sûrement pas la moins importante : courir, c’est aussi l’occasion de passer du temps avec ses proches et de se dépasser ensemble. Mint souhaite encourager ceux qui hésitent à se lancer, que ce soit sur un 5 km ou un ultra.
+
+> [!NOTE]
+> L’objectif de Mint n’est pas (et ne sera jamais) de remplacer les dispositifs de mesure traditionnels ([Chrono-Course](https://www.chrono-course.com/) en France), qui sont centrés sur la performance au service de l’athlète.  
+> Mint se concentre sur l’avant et l’après-course pour l’athlète, mais surtout sur l’expérience du spectateur pendant la course.
+
 
 ### Membres du projet
 
@@ -20,69 +56,75 @@ Mint est un projet étudiant à porté entrepreunariale réalisé dans le but de
 
 ## Constat et définition du projet
 
-Le projet a été proposé par moi-même (Charles Chrismann), pour comprendre le projet il peux être nécéssaire d'en connaître un peux plus sur moi et comprendre les motivations du projet:
+Le projet a été proposé par moi-même (Charles Chrismann). Pour comprendre le projet, il peut être nécessaire d'en connaître un peu plus sur moi et de comprendre les motivations qui le sous-tendent :
 
-Je pratique la course sur route et le trail, ces deux disciplines ont en commun d'être des sports d'endurance.
+Je pratique la course sur route et le trail, deux disciplines qui ont en commun d'être des sports d'endurance.
 
-La course à pied a été une découverte pour moi, au point où elle à changé ma personnalité et mes habitudes, et ce projet s'inscrit dans ma volonté à pousser les gens à commencer à courir.
+La course à pied a été une véritable découverte pour moi, au point qu'elle a changé ma personnalité et mes habitudes. Ce projet s'inscrit dans ma volonté de pousser les gens à commencer à courir.
 
 ### Constat
 
-Mes proches et mes amis sont mes premiers supporter, et je souhaiterai leur rendre en leur fournissant une meilleur expérience de visionnage.
+Mes proches et mes amis sont mes premiers supporters, et je souhaiterais leur rendre hommage en leur fournissant une meilleure expérience de visionnage.
 
-il ne peuvent pas toujours être présents sur place le jour de la course, et quand bien même il le serait, il ne pourront me voir que quelques instant lors de mon passage à leur niveaux.
+Ils ne peuvent pas toujours être présents sur place le jour de la course, et quand bien même ils le seraient, ils ne pourraient me voir que quelques instants lors de mon passage à leur niveau.
 
 > [!NOTE]
-> Certaines courses sont médiatisées mais il ne s'agit que de courses très importantes (en nombre de coureurs), et le focus est souvent mit sur la tête de course. La vaste majorité ne bénéficie pas des moyens nécéssaires pour filmer la course.
+> Certaines courses sont médiatisées, mais il ne s'agit que des courses très importantes (en nombre de coureurs), et le focus est souvent mis sur la tête de course. La vaste majorité ne bénéficie pas des moyens nécessaires pour filmer l'événement.
 
-Actuellement quand je part faire une course et pour tenir au courant mes proches de ma progression, j'utilise la fonctionnalité de balise de l'application [Strava](https://www.strava.com/), qui normalement prévue pour la sécurité du coureur.
+Actuellement, quand je pars faire une course et que je souhaite tenir mes proches informés de ma progression, j'utilise la fonctionnalité de balise de l'application [Strava](https://www.strava.com/), normalement prévue pour la sécurité du coureur.
 
-Cette solution ne fournit à mon entourage que ma position, sans informations supllémentaires, comme le tracé de la course ou mon classement, cette expérience est loin de l'esprit d'une course.
+Cette solution ne fournit à mon entourage que ma position, sans informations supplémentaires comme le tracé de la course ou mon classement. Cette expérience est donc loin de refléter l'esprit d'une course.
 
 ### L'idée
 
-Afin d'améliorer l'expérience du spectateur, l'idée serait une application, que tout les participants aurait sur leur téléphone (idéalement tous, à noter que l'idée fonctionne quand même si seulement une partie possède l'application), celle-ci traque et envoie leur position en temps réel.
+Afin d'améliorer l'expérience du spectateur, l'idée serait de proposer une application que tous les participants auraient sur leur téléphone (idéalement tous, mais l’idée fonctionne même si seule une partie l’utilise). Celle-ci traquerait et enverrait leur position en temps réel.
 
-Le spectateur a de son coté accès à une interface, sous forme de carte avec le tracé de la course, la position de tous les coureurs en direct sur le tracé, avec une mise en évidence du coureur supporté et le classement approximatif de ce dernier.
+Le spectateur aurait de son côté accès à une interface, sous forme de carte, avec le tracé de la course, la position de tous les coureurs en direct, une mise en évidence du coureur soutenu et le classement approximatif de ce dernier.
 
-La position des coureurs et le classement se mettent à jour en direct pour offrir une expérience de visionnage plus proche de celle d'un spectateur qui assisterait à une course médiatisé.
+La position des coureurs et le classement seraient mis à jour en direct pour offrir une expérience de visionnage plus proche de celle d'un spectateur assistant à une course médiatisée.
 
-L'application semble être adapté au format de courses d'endurance: marathons, trail/ultra, triathlon/ironman.
+L'application semble particulièrement adaptée aux formats de courses d’endurance : marathons, trails/ultras, cyclisme et duathlon.
 
-### Idée d'évolution
+### Fonctionnalités
 
-L'évolution de l'application s'inscrit dans cette volonté d'immerger davantage le spectateur dans la course, puisque l'étape suivante serait de pouvoir permettre aux coureurs de filmer et diffuser leurs course en direct sur la plateforme, via des action-cams fixé sur eux, permettant au spectateur de vivre la course du point de vue de l'athlète.
+L'application proposera plusieurs fonctionnalités pour les différentes parties prenantes (coureurs, spectateurs, organisateurs) :
 
-D'autres idées sont en réfléxion, par exemple la possibilité, sur des courses qui disposent de caméra le long du parcour, d'avoir un live adapaté au coureur suivi, en affichant automatiquement les caméras dons lesquelles passe le coureur.
+- [x] Un calendrier des courses passées et à venir
+- [x] La possibilité de rejouer n’importe quelle course
+- [x] La possibilité de consulter les courses autour de soi : actuellement en cours, à venir, ou à venir avec inscriptions encore ouvertes
+- [x] La possibilité pour un coureur de renseigner son équipement et d’ajouter des sponsors (pour les coureurs professionnels/semi-professionnels)
+- [x] La possibilité pour une organisation de renseigner une ou plusieurs courses, avec les informations correspondantes : distances, dates, matériel obligatoire, règlement, etc.
 
-Une autre idée est de proposer un vestiaire virtuel, une salle en 3d sur l'application ou le coureur peut consulter les cadeaux récupéré sur les anciennes courses, par exemple ses anciens dossards, les médailles obtenues à la fin de la course, ou les t-shirt 
+### Idées d’évolution
+
+L’évolution de l’application s’inscrit dans cette volonté d’immerger davantage le spectateur dans la course. L’étape suivante serait de permettre aux coureurs de filmer et diffuser leur course en direct sur la plateforme, via des action-cams fixées sur eux, permettant au spectateur de vivre la course du point de vue de l’athlète.
+
+D'autres idées sont en réflexion, par exemple la possibilité, pour les courses disposant de caméras le long du parcours, d’avoir un live adapté au coureur suivi, en affichant automatiquement les caméras sur lesquelles il passe.
+
+Une autre idée est de proposer un vestiaire virtuel : une salle en 3D dans l’application où le coureur peut consulter les récompenses récupérées lors de ses anciennes courses, comme ses anciens dossards, les médailles obtenues ou les t-shirts.
 
 ## Freins au projet
 
-Nous sommes bien conscient que certains freins se dresseront devant nous, certains plus évidents que d'autres et cherchons activement des réponses à ces questions, **les questions et les suggestions pour des solutions sont toujours les bienvenus**
+Nous sommes bien conscients que certains freins se dresseront devant nous, certains plus évidents que d’autres, et nous cherchons activement des réponses à ces questions.  
+**Les questions et suggestions de solutions sont toujours les bienvenues.**
 
-- Tout les coureurs ne courent pas avec leur téléphone
-  > Il s'agit d'une des premières réfléxions qui nous a été faite, et c'est vrai, nous sommes en train de chercher les statistiques sur la part des coureurs qui courent avec leur téléphone en compétition. 
+- Tous les coureurs ne courent pas avec leur téléphone  
+  > Il s'agit d'une des premières remarques qui nous a été faite, et c’est vrai. Nous sommes en train de chercher des statistiques sur la part des coureurs qui courent avec leur téléphone en compétition.  
+  > À noter que de nombreux coureurs écoutent de la musique, souvent via des équipements comme les produits [Shokz](https://shokz.com), et courent donc avec leur téléphone.  
+  > À noter également que certains formats comme le trail imposent de courir avec un téléphone pour des raisons de sécurité.  
+  > Enfin, l’objectif est de donner une approximation de la forme de la course. Même si tous les coureurs ne sont pas équipés de l’application, la répartition des coureurs qui le sont permet d’identifier des groupes de taille plus ou moins importante. En connaissant le nombre de participants sur l’app et le nombre d’inscrits à la course, on peut obtenir une estimation du nombre total de coureurs. Attention cependant, cette approche peut entraîner des biais (par exemple, les coureurs professionnels sont moins enclins à courir avec leur téléphone).
 
-  > A noter que de nombreux coureurs écoutent de la musique, souvent via des équipement comme les produits [Shokz](https://shokz.com) et qui donc courent avec leur téléphone.
-
-  > A noter également que certains formats comme le trail imposent de courir avec le téléphone pour des rainsons de sécurité
-
-  > A noter enfin, que l'objectif est de donner une approximation de la forme de la course, si tout les coureurs ne sont pas équipés de l'application, la répartition des coureurs équipés fera que l'on pourra identifier des groupes de coureurs de plus ou moin grande taille quand même, en connaissant le nombre de participant sur l'app et le nombre d'inscrit à la course, on peux obtenir une approximation de nombre total de coureurs à partir d'un groupe de coureur sur l'application. Attention cette approche peux entrainer des biais, par exemple les coureurs proffessionnels sont moins enclin à courrir avec leur téléphone.
-
-- Certaines zones ne sont pas couvertes en 4G
-  > En France, la couverture du territoire à énormément augmenté de puis 2015, voir étude de l'[ARCEP](https://www.arcep.fr) disponnible [ici (fr)](../documents/04-24-version-francaise.pdf)
-
-  > [Starlink](https://www.starlink.com) semble être une solution convainquante à ce problème, mais reste en début de démocratisation, en france au moins
+- Certaines zones ne sont pas couvertes en 4G  
+  > En France, la couverture du territoire a énormément progressé depuis 2015. Voir l’étude de l’[ARCEP](https://www.arcep.fr) disponible [ici (fr)](../documents/04-24-version-francaise.pdf).  
+  > [Starlink](https://www.starlink.com) semble être une solution prometteuse à ce problème, mais reste encore peu démocratisée, du moins en France.
 
 - La précision de certains appareils peut laisser à désirer
 
-- L'application peut consommer de la batterie du téléphone
-
+- L’application peut consommer de la batterie du téléphone
 
 ## Concurrents
 
-Il existe des applications qui reproduisent ce fonctionnement, mais ces dernières sont souvent conçuent pour une seul course (ex: New York Road Runner), ou bien les participants à suivre sont à rentrer un par un, et le nombre de suivi et limité.
+Il existe des applications qui reproduisent partiellement ce fonctionnement, mais celles-ci sont souvent conçues pour une seule course (ex : New York Road Runner), ou bien les participants à suivre doivent être ajoutés un par un (ex : [Chrono-Course](https://www.chrono-course.com/)), avec un nombre de suivis limité.
 
 ## Liens utiles
 
