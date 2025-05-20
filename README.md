@@ -11,7 +11,19 @@
 ## Table of contents
 
 - [Introduction to the Mint platform and its philosophy](#introduction-to-the-mint-platform-and-its-philosophy)
+  - [Encouraging more people to run](#encouraging-more-people-to-run)
+  - [Highlighting lesser-known races](#highlighting-lesser-known-races)
+  - [Encouraging runners to participate in more events](#encouraging-runners-to-participate-in-more-events)
+  - [Encouraging spectators to run with their loved ones](#encouraging-spectators-to-run-with-their-loved-ones)
 - [Project Members](#project-members)
+- [Project Context and Definition](#project-context-and-definition)
+  - [Observations](#observations)
+  - [The Idea](#the-idea)
+  - [Features](#features)
+  - [Future Ideas](#future-ideas)
+- [Challenges](#challenges)
+- [Surveys](#surveys)
+- [Acknowledgements](#acknowledgements)
 
 ## Introduction to the Mint platform and its philosophy
 
@@ -157,6 +169,9 @@ If you have any suggestions to improve the surveys, don’t hesitate to reach ou
   </tbody>
 </table>
 
+> [!NOTE]
+> We plan to display a summary of the surveys of this section
+
 ## Acknowledgements
 
 Because Mint focuses on endurance races, gathering insights directly from those who participate in such events is essential. We reached out to runners, trail runners, and triathletes to better understand their needs and expectations. Some generously agreed to share their thoughts and feedback.
@@ -177,18 +192,14 @@ They kindly agreed to answer our surveys:
           <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="AshishNaware's stravas badge" />
         </a>
         <br/>
-        <a href="https://github.com/AshishNaware">AshishNaware</a>
+        <a href="https://github.com/AshishNaware">Ashish Naware</a>
       </th>
       <th>
         <a href="https://github.com/TylerJTimothy">
           <img src="https://github.com/TylerJTimothy.png?size=96" alt="TylerJTimothy's profile picture" />
         </a>
         <br/>
-        <a href="https://www.strava.com/athletes/">
-          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="TylerJTimothy's stravas badge" />
-        </a>
-        <br/>
-        <a href="https://github.com/TylerJTimothy">TylerJTimothy</a>
+        <a href="https://github.com/TylerJTimothy">Tyler Timothy</a>
       </th>
       <th>
         <a href="https://github.com/ericmaster">
@@ -199,7 +210,7 @@ They kindly agreed to answer our surveys:
           <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="ericmaster's stravas badge" />
         </a>
         <br/>
-        <a href="https://github.com/ericmaster">ericmaster</a>
+        <a href="https://github.com/ericmaster">Eric Aguayo</a>
       </th>
       <th>
         <a href="https://github.com/veyselkaya">
@@ -210,7 +221,14 @@ They kindly agreed to answer our surveys:
           <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="veyselkaya's stravas badge" />
         </a>
         <br/>
-        <a href="https://github.com/veyselkaya">veyselkaya</a>
+        <a href="https://github.com/veyselkaya">Veysel Kaya</a>
+      </th>
+      <th>
+        <a href="https://github.com/dancornell">
+          <img src="https://github.com/dancornell.png?size=96" alt="dancornell's profile picture" />
+        </a>
+        <br/>
+        <a href="https://github.com/dancornell">Dan Cornell</a>
       </th>
     </tr>
   </tbody>
