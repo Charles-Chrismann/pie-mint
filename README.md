@@ -122,6 +122,8 @@ Other ideas include smart camera switching, showing the appropriate fixed camera
 
 We’re also considering a virtual locker room—a 3D room in the app where runners can view their past race rewards: bibs, medals, t-shirts, etc.
 
+A tool to help find close other runners for carpooling.
+
 ## Challenges
 
 We’re aware that the project will face several obstacles, and we’re actively exploring solutions.  
