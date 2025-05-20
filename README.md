@@ -124,6 +124,8 @@ We’re also considering a virtual locker room—a 3D room in the app where runn
 
 A tool to help find close other runners for carpooling.
 
+A map of close events, today, in the next days, events with remaining places.
+
 ## Challenges
 
 We’re aware that the project will face several obstacles, and we’re actively exploring solutions.  
