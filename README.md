@@ -130,6 +130,8 @@ Because Mint focuses on endurance races, gathering insights directly from those 
 
 To respect everyone’s privacy, we’ve asked each person whether they’d like to be credited here. Whether they chose to be named or remain anonymous, we are extremely grateful for their time and support, Mint wouldn't be the same without them.
 
+They kindly agreed to answer our surveys:
+
 <table>
   <tbody>
     <tr>
@@ -180,3 +182,7 @@ To respect everyone’s privacy, we’ve asked each person whether they’d like
     </tr>
   </tbody>
 </table>
+
+> [!NOTE]
+> If you notice an error in the acknowledgments section, please let us know at contat.mint.running@gmail.com.
+
