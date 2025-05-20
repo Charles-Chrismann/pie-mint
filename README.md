@@ -8,6 +8,10 @@
 >  
 > We’re very motivated to bring it to life. If you’d like to help, or know someone who could, feel free to reach out to us at contact.mint.running@gmail.com.
 
+## Table of contents
+
+- [Introduction to the Mint platform and its philosophy](#introduction-to-the-mint-platform-and-its-philosophy)
+
 ## Introduction to the Mint platform and its philosophy
 
 Mint is a live tracking platform for endurance race athletes, designed for everyone from beginners to professionals.
@@ -40,7 +44,7 @@ Last but not least: running is also a great way to spend time with loved ones an
 > Mint’s goal is not (and never will be) to replace traditional timing systems (like [Chrono-Course](https://www.chrono-course.com/) in France), which focus on performance for the athlete.  
 > Mint focuses on the athlete’s pre- and post-race experience, but above all, on the spectator’s experience during the race.
 
-### Project Members
+## Project Members
 
 > [!NOTE]
 > Member roles are subject to change.
