@@ -11,6 +11,7 @@
 ## Table of contents
 
 - [Introduction to the Mint platform and its philosophy](#introduction-to-the-mint-platform-and-its-philosophy)
+- [Project Members](#project-members)
 
 ## Introduction to the Mint platform and its philosophy
 
@@ -127,6 +128,34 @@ We’re aware that the project will face several obstacles, and we’re actively
 - Some devices have poor location accuracy
 
 - The app may drain the phone’s battery
+
+## Surveys
+
+In order to create a meaningful product, we need to understand the needs of each user — whether they are spectators, runners, race organizers, or sponsors. To that end, we need as much feedback as possible.
+
+The different surveys are listed below — if you know someone whose input could help us, please feel free to share the links with them. Thank you in advance!
+
+If you have any suggestions to improve the surveys, don’t hesitate to reach out at contact.mint.running@gmail.com.
+
+<table>
+  <thead>
+    <tr>
+      <th>for whom</th>
+      <th>survey link</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Runners</th>
+      <th>
+        <ul>
+          <li>English: <a href="https://forms.gle/P6wqAiU8Q9zQo6J69">https://forms.gle/P6wqAiU8Q9zQo6J69</a></li>
+          <li>French: <a href="https://forms.gle/6RxLb1Ya7jH87PmL6">https://forms.gle/6RxLb1Ya7jH87PmL6</a></li>
+        </ul>
+      </th>
+    </tr>
+  </tbody>
+</table>
 
 ## Acknowledgements
 
