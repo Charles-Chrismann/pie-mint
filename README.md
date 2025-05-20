@@ -123,3 +123,60 @@ We’re aware that the project will face several obstacles, and we’re actively
 - Some devices have poor location accuracy
 
 - The app may drain the phone’s battery
+
+## Acknowledgements
+
+Because Mint focuses on endurance races, gathering insights directly from those who participate in such events is essential. We reached out to runners, trail runners, and triathletes to better understand their needs and expectations. Some generously agreed to share their thoughts and feedback.
+
+To respect everyone’s privacy, we’ve asked each person whether they’d like to be credited here. Whether they chose to be named or remain anonymous, we are extremely grateful for their time and support, Mint wouldn't be the same without them.
+
+<table>
+  <tbody>
+    <tr>
+      <th>
+        <a href="https://github.com/AshishNaware">
+          <img src="https://github.com/AshishNaware.png?size=96" alt="AshishNaware's profile picture" />
+        </a>
+        <br/>
+        <a href="https://www.strava.com/athletes/131324108">
+          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="AshishNaware's stravas badge" />
+        </a>
+        <br/>
+        <a href="https://github.com/AshishNaware">AshishNaware</a>
+      </th>
+      <th>
+        <a href="https://github.com/TylerJTimothy">
+          <img src="https://github.com/TylerJTimothy.png?size=96" alt="TylerJTimothy's profile picture" />
+        </a>
+        <br/>
+        <a href="https://www.strava.com/athletes/">
+          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="TylerJTimothy's stravas badge" />
+        </a>
+        <br/>
+        <a href="https://github.com/TylerJTimothy">TylerJTimothy</a>
+      </th>
+      <th>
+        <a href="https://github.com/ericmaster">
+          <img src="https://github.com/ericmaster.png?size=96" alt="ericmaster's profile picture" />
+        </a>
+        <br/>
+        <a href="https://www.strava.com/athletes/24501866">
+          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="ericmaster's stravas badge" />
+        </a>
+        <br/>
+        <a href="https://github.com/ericmaster">ericmaster</a>
+      </th>
+      <th>
+        <a href="https://github.com/veyselkaya">
+          <img src="https://github.com/veyselkaya.png?size=96" alt="veyselkaya's profile picture" />
+        </a>
+        <br/>
+        <a href="https://www.strava.com/athletes/21694797">
+          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="veyselkaya's stravas badge" />
+        </a>
+        <br/>
+        <a href="https://github.com/veyselkaya">veyselkaya</a>
+      </th>
+    </tr>
+  </tbody>
+</table>
