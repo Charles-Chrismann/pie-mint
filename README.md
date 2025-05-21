@@ -234,6 +234,17 @@ They kindly agreed to answer our surveys:
         <br/>
         <a href="https://github.com/dancornell">Dan Cornell</a>
       </th>
+      <th>
+        <a href="https://github.com/DIOCaraballo">
+          <img src="https://github.com/DIOCaraballo.png?size=96" alt="DIOCaraballo's profile picture" />
+        </a>
+        <br/>
+        <a href="https://www.strava.com/athletes/8869399">
+          <img src="https://img.shields.io/badge/Strava-FC4C02?style=for-the-badge&logo=strava&logoColor=white" alt="DIOCaraballo's stravas badge" />
+        </a>
+        <br/>
+        <a href="https://github.com/DIOCaraballo">Diógenes Caraballo</a>
+      </th>
     </tr>
   </tbody>
 </table>
@@ -241,3 +252,12 @@ They kindly agreed to answer our surveys:
 > [!NOTE]
 > If you notice an error in the acknowledgments section, please let us know at contat.mint.running@gmail.com.
 
+## TODO
+
+<details>
+  <summary>This section is not meant to be clean or readable, it is a whiteboard, feel free to write anything</summary>
+
+  ### TODO
+  - [ ] Add volonteer table
+
+</details>
