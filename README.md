@@ -250,7 +250,7 @@ They kindly agreed to answer our surveys:
 </table>
 
 > [!NOTE]
-> If you notice an error in the acknowledgments section, please let us know at contat.mint.running@gmail.com.
+> If you notice an error in the acknowledgments section, please let us know at contact.mint.running@gmail.com.
 
 ## TODO
 
@@ -259,5 +259,6 @@ They kindly agreed to answer our surveys:
 
   ### TODO
   - [ ] Add volonteer table
+  - [ ] Translate FR markdown files to english
 
 </details>
