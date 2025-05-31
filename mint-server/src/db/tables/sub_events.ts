@@ -34,6 +34,7 @@ export const sub_events_table = pgTable("sub_events", {
   
   event_id: integer("event_id").notNull().references(() => events_table.id),
   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
+  track_id: integer("track_id").references(() => tracks_table.id),
 });
 
 export const registrations_table = pgTable("registrations", {
