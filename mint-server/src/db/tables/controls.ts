@@ -1,6 +1,6 @@
 import { boolean, integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { action_levels_table } from "./enums";
-import { user_profiles_table, users_table } from "./users";
+import { user_profiles_table } from "./users";
 
 export const permissions_table = pgTable("permissions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -16,7 +16,7 @@ export const roles_table = pgTable("roles_table", {
   is_system: boolean("is_system"),
   created_at: timestamp("created_at"),
 
-  created_by_id: integer("created_by_id").references(() => users_table.id),
+  created_by_id: integer("created_by_id").references(() => user_profiles_table.id),
 });
 
 export const roles__permissions_table = pgTable("roles__permissions", {
