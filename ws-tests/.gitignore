@@ -1,0 +1,5 @@
+runs/*
+!runs/.gitkeep
+!lut-2025-37km.gpx
+
+runs.json

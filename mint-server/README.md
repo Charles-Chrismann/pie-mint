@@ -44,3 +44,11 @@ Reset & restart database
 ```
 docker compose down -v && docker compose up -d
 ```
+
+## Todo
+
+Rechecker les notnull dans les différents champs de la db
+faire des clés composites sur les tables de liaison plutot que id autoincrement
+ajouter des tables pour rentrer son équipement
+Ajouter des la localisation de la ville 
+dans le seeder relier les standard_distances
