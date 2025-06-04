@@ -1,7 +1,6 @@
 import {
   insertActionLevels,
   insertCountries,
-  insertGroupUtilities,
   insertLanguages,
   insertMediaContexts,
   insertMediaFormats,
@@ -25,7 +24,6 @@ async function main() {
     insertMediaContexts(),
     insertCountries(),
     insertSettingTypes(),
-    insertGroupUtilities()
   ])
 
   console.log(`Inserting tables with relationship...`)

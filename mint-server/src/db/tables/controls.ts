@@ -9,7 +9,7 @@ export const permissions_table = pgTable("permissions", {
   action_level_id: integer("action_level_id").references(() => action_levels_table.id),
 });
 
-export const roles_table = pgTable("roles_table", {
+export const roles_table = pgTable("roles", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
   name: varchar("name"),
@@ -26,11 +26,6 @@ export const roles__permissions_table = pgTable("roles__permissions", {
   permission_id: integer("permission_id").references(() => permissions_table.id),
 });
 
-export const group_utilities_table = pgTable("group_utilities", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar("name"),
-});
-
 export const groups_table = pgTable("groups", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   name: varchar("name"),
@@ -39,7 +34,7 @@ export const groups_table = pgTable("groups", {
   is_administration_group: boolean("is_administration_group"),
   is_member_group: boolean("is_member_group"),
 
-  group_utility_id: integer("group_utility_id").references(() => group_utilities_table.id),
+  action_level_id: integer("action_level_id").references(() => action_levels_table.id),
 });
 
 export const groups__permissions_table = pgTable("groups__permissions", {

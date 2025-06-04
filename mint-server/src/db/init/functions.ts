@@ -2,7 +2,6 @@ import { db } from "..";
 import {
   action_levels_table,
   countries_table,
-  group_utilities_table,
   languages_table,
   media_contexts_table,
   media_formats_table,
@@ -13,7 +12,6 @@ import {
 } from "../schema";
 import {
   action_levels,
-  DBGroupeUtility,
   DBInitCountries,
   DBInitLanguages,
   DBInitMediaContexts,
@@ -94,10 +92,6 @@ async function insertSettingTypes() {
   await db.insert(setting_types_table).values(DBInitSettingTypes)
 }
 
-async function insertGroupUtilities() {
-  await db.insert(group_utilities_table).values(DBGroupeUtility)
-}
-
 export {
   insertStandardDistances,
   insertActionLevels,
@@ -108,5 +102,4 @@ export {
   insertCountries,
   insertLanguages,
   insertSettingTypes,
-  insertGroupUtilities,
 }

@@ -7,6 +7,7 @@ const standard_distances: [string, string][] = [
 ]
 
 const action_levels = [
+  "system",
   "user",
   "organization",
   "event",
@@ -374,14 +375,6 @@ const DBInitSettingTypes: DBInitSettingType[] = [
   { name: 'string' },
 ]
 
-const DBGroupeUtility: DBGroupUtility[] = [
-  { name: 'runner' },
-  { name: 'staff' },
-  { name: 'volonteer' },
-  { name: 'role' },
-  { name: 'permission' },
-]
-
 export {
   standard_distances,
   action_levels,
@@ -392,5 +385,4 @@ export {
   DBInitCountries,
   DBInitLanguages,
   DBInitSettingTypes,
-  DBGroupeUtility,
 }

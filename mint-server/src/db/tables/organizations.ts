@@ -1,6 +1,7 @@
-import { date, integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { date, integer, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { user_profiles_table } from "./users";
 import { medias_table } from "./medias";
+import { groups_table } from "./controls";
 
 export const organizations_table = pgTable("organizations", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -12,6 +13,13 @@ export const organizations_table = pgTable("organizations", {
   created_by_id: integer("created_by_id").notNull().references(() => user_profiles_table.id),
   owner_id: integer("owner_id").notNull().references(() => user_profiles_table.id),
 });
+
+export const organizations__groups_table = pgTable("organizations__groups", {
+  organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
+  group_id: integer("group_id").notNull().references(() => groups_table.id),
+}, (table) => [
+  primaryKey({ name: 'custom_name', columns: [table.organization_id, table.group_id] }),
+]);
 
 export const events_table = pgTable("events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
