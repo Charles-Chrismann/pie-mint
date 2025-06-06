@@ -46,8 +46,8 @@ export const track_segments_table = pgTable("track_segments", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
   track_id: integer("track_id").references(() => tracks_table.id),
-  start_position_id: integer("start_position_id").references(() => positions_table.id),
-  end_position_id: integer("end_position_id").references(() => positions_table.id),
+  start_position_id: integer("start_position_id").references(() => track_points_table.id),
+  end_position_id: integer("end_position_id").references(() => track_points_table.id),
 })
 
 export const sub_events_table = pgTable("sub_events", {
@@ -63,18 +63,7 @@ export const sub_events_table = pgTable("sub_events", {
   track_id: integer("track_id").references(() => tracks_table.id),
 });
 
-export const registrations_table = pgTable("registrations", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-
-  is_private: boolean("is_private"),
-  bib_number: integer("bib_number"),
-  bib_alias: integer("bib_alias"),
-
-  user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
-  sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
-});
-
-export const positions_table = pgTable("track_points", {
+export const sub_event_positions_table = pgTable("sub_event_positions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   created_at: timestamp("created_at"),
 
@@ -86,10 +75,31 @@ export const positions_table = pgTable("track_points", {
   registration_id: integer("sub_event_id").references(() => registrations_table.id),
 });
 
+export const sub_event_start_waves_table = pgTable("sub_event_start_waves", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+
+  start_time: timestamp('start_time').notNull(),
+
+  sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+});
+
+export const registrations_table = pgTable("registrations", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+
+  is_private: boolean("is_private"),
+  bib_number: integer("bib_number"),
+  bib_alias: integer("bib_alias"),
+
+  user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
+  sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
+  sub_event_start_wave_id: integer("sub_event_start_wave_id").references(() => sub_event_start_waves_table.id)
+});
+
 export const time_barriers_table = pgTable("time_barriers", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
   name: varchar("name").notNull(),
+  is_end: boolean("is_end"),
 
   sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
 

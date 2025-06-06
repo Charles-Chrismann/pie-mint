@@ -18,7 +18,7 @@ export const organizations__groups_table = pgTable("organizations__groups", {
   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
   group_id: integer("group_id").notNull().references(() => groups_table.id),
 }, (table) => [
-  primaryKey({ name: 'custom_name', columns: [table.organization_id, table.group_id] }),
+  primaryKey({ name: 'pk_organizations__groups', columns: [table.organization_id, table.group_id] }),
 ]);
 
 export const events_table = pgTable("events", {
