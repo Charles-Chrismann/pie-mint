@@ -1,10 +1,11 @@
+import 'dotenv/config'
 import * as fs from 'fs/promises'
 import { runnerRace, runnerRaceWithGpx } from "./declarations";
 import { Runner } from "./runner";
 import { XMLParser } from "fast-xml-parser";
 import { getPointsFromGpx } from './utils';
 
-const RUNNER_COUNT = 1000
+const RUNNER_COUNT = process.env.RUNNER_COUNT ? parseInt(process.env.RUNNER_COUNT) : 10
 
 const runsPool: runnerRaceWithGpx[] = []
 
