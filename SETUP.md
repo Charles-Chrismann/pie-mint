@@ -38,7 +38,7 @@ npm run db:dis
 
 4. Start dev server
 ```
-npm run start:dev
+npm run dev
 ```
 
 ### `mint-ws-runners`
@@ -52,10 +52,24 @@ npm i
 
 2. Start dev server
 ```
-npm run start:dev
+npm run dev
 ```
 
 For now the wbesocket server only listen for `position` event and emits `position` events to connected clients
+
+### `mint-administration`
+
+1. Install dependancies
+
+```
+cd mint-administration
+npm i 
+```
+
+2. Start dev server
+```
+npm run dev
+```
 
 ### `ws-tests`
 
@@ -67,3 +81,9 @@ npm i
 ```
 
 2. (optional) create runs.json
+
+3. Start emulation
+
+```
+npm run start 
+```
