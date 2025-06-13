@@ -1,3 +1,5 @@
+node_modules/
+
 runs/*
 !runs/.gitkeep
 !lut-2025-37km.gpx
