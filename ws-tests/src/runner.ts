@@ -39,6 +39,7 @@ export class Runner {
   }
 
   getImprecision() {
+    if(true) return 0
     const imprecisionPool = [-0.000004, -0.000003, -0.000002, -0.000001, 0, 0.000001, 0.000002, 0.000003, 0.000004]
     return imprecisionPool[Math.floor(Math.random()*imprecisionPool.length)]
   }

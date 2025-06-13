@@ -8,13 +8,20 @@ const RUNNER_COUNT = 1000
 
 const runsPool: runnerRaceWithGpx[] = []
 
-console.log(`Start emulation...`)
-
 const WsUrl = 'http://localhost:3001'
 
 async function main() {
+  let runsFile: Buffer | null = null
+  try {
+    runsFile = await fs.readFile('./runsf.json')
+  } catch (e) {}
 
-  const runnerData: runnerRace[] = JSON.parse((await fs.readFile('./runs.json')).toString())
+  const runnerData: runnerRace[] = runsFile ? JSON.parse((runsFile).toString()) : [{
+    "runnerName": "Charles Chrismann",
+    "stravaProfile": "https://www.strava.com/athletes/111252688",
+    "stravaActivity": "https://www.strava.com/activities/14027118099",
+    "fileName": "lut-2025-37km.gpx"
+  }]
 
   const xmlParser = new XMLParser({ ignoreAttributes: false })
 
@@ -33,6 +40,8 @@ async function main() {
 
     return new Runner(WsUrl, race.runnerName, race.points)
   })
+
+  console.log(`Emulation started with ${RUNNER_COUNT} runners, seending events to: ${WsUrl}`)
 
   for(let r of runners) {
     r.startRace()

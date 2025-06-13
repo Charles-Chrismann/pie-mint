@@ -95,5 +95,5 @@ export default function LeafletMap({ track, lastUpdatedRunner }: { track?: Track
     // console.log(map!.hasLayer(lastUpdatedRunner!.marker))
   }, [lastUpdatedRunner])
 
-  return <div ref={mapRef} style={{ height: '400px', width: '100%' }} />;
+  return <div ref={mapRef} style={{ height: '100vh', width: '100%' }} />;
 }

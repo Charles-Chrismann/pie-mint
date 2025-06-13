@@ -14,17 +14,17 @@ export class AppGateway {
 
   count = 0
   @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
+  handleMessage(client: any, payload: any) {
     this.count++
 
     if(this.count % 100 === 0) console.log(this.count)
     // console.log(payload)
-    return 'Hello world!';
+    return;
   }
 
-  handleConnection(socket: Socket): void {
-    console.log('elo')
-  }
+  // handleConnection(socket: Socket): void {
+  //   console.log('elo')
+  // }
 
   @SubscribeMessage('position')
   handlePosition(client: any, payload: any) {
