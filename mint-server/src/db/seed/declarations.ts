@@ -10,7 +10,6 @@ export interface SubEvent {
   distance?: string
   positive_elevation?: string
   standard_distance?: standard_distance
-  start_time: Date
 
   track: Track
 }

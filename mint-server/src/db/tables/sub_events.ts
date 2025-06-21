@@ -4,8 +4,8 @@ import { user_profiles_table } from "./users";
 
 export const standard_distances_table = pgTable("standard_distances", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar("name"),
-  distance: numeric("distance", { precision: 10, scale: 3 }),
+  name: varchar("name").notNull(),
+  distance: numeric("distance", { precision: 10, scale: 3 }).notNull(),
 });
 
 export const tracks_table = pgTable("tracks", {
@@ -54,7 +54,7 @@ export const sub_events_table = pgTable("sub_events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
   name: varchar("name").notNull(),
-  start_time: timestamp("start_time").notNull(),
+  // start_time: timestamp("start_time").notNull(),
   distance: numeric("distance", { precision: 10, scale: 3 }),
   positiveElevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 

@@ -1,57 +1,24 @@
-export { users_table } from "./tables/users"
-export { user_profiles_table } from "./tables/users"
+export * from "./tables/users"
 
-export { organizations_table } from "./tables/organizations"
-export { organizations__groups_table } from "./tables/organizations"
-export { events_table } from "./tables/organizations"
+export *from "./tables/organizations"
 
-export { sponsors_table } from "./tables/sponsors"
-export { sponsors__user_profiles_table } from "./tables/sponsors"
-export { sponsors__events_table } from "./tables/sponsors"
-export { sponsors__organizations_table } from "./tables/sponsors"
+export * from "./tables/sponsors"
 
-export { standard_distances_table } from "./tables/sub_events"
-export { tracks_table } from "./tables/sub_events"
-export { track_points_table } from "./tables/sub_events"
-export { track_segments_table } from "./tables/sub_events"
-export { sub_events_table } from "./tables/sub_events"
-export { sub_event_positions_table } from "./tables/sub_events"
-export { sub_event_start_waves_table } from "./tables/sub_events"
-export { registrations_table } from "./tables/sub_events"
-export { time_barriers_table } from "./tables/sub_events"
+export * from "./tables/sub_events"
 
-export { permissions_table } from "./tables/controls"
-export { roles_table } from "./tables/controls"
-export { roles__permissions_table } from "./tables/controls"
-export { groups_table } from "./tables/controls"
-export { groups__permissions_table } from "./tables/controls"
-export { groups__roles_table } from "./tables/controls"
-export { groups__user_profiles_table } from "./tables/controls"
+export * from "./tables/controls"
 
-export { countries_table } from "./tables/translations"
-export { languages_table } from "./tables/translations"
-export { translations_table } from "./tables/translations"
+export * from "./tables/translations"
 
-export { media_contexts_table } from "./tables/medias"
-export { media_formats_table } from "./tables/medias"
-export { media_types_table } from "./tables/medias"
-export { medias_table } from "./tables/medias"
+export * from "./tables/medias"
 
-export { setting_categories_table } from "./tables/settings"
-export { setting_types_table } from "./tables/settings"
-export { setting_multiple_options_table } from "./tables/settings"
-export { setting_selected_options_table } from "./tables/settings"
-export { setting_keys_table } from "./tables/settings"
-export { custom_settings_table } from "./tables/settings"
+export * from "./tables/settings"
 
-export { social_platforms_table } from "./tables/profile_links"
-export { profile_links_table } from "./tables/profile_links"
+export * from "./tables/profile_links"
 
-export { badges_table } from "./tables/badges"
-export { badge_levels_table } from "./tables/badges"
-export { badge_progressions_table } from "./tables/badges"
+export * from "./tables/badges"
 
-export { action_levels_table } from "./tables/enums"
+export * from "./tables/enums"
 
 // export const track_points_table = pgTable("tracks", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),

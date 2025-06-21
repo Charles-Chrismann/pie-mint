@@ -11,7 +11,10 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
   const passwordHash = hashSync('password', 12)
 
-  const fakeUsers = Array.from({ length: count }).map(
+  const user = (await db.insert(users_table).values({ email: "user@example.com", password: passwordHash }).returning())[0]
+  await db.insert(user_profiles_table).values({ user_id: user.id, firstname: "user", lastname: "user" })
+
+  const fakeUsers = Array.from({ length: count - 1 }).map(
     (_, i) => {
 
       const FakerFirstName = faker.person.firstName()
@@ -146,13 +149,12 @@ async function seedOriganizations({ count }: { count: number }) {
 
         const createdSubEvent = await db.insert(sub_events_table).values({
           name: sub.name,
-          start_time: sub.start_time,
           distance: sub.distance,
           positiveElevation: sub.positive_elevation,
 
           standard_distance_id: standard_distances.find(sd => sd.name === sub.standard_distance)?.id,
-          event_id: createdEvent.id
-
+          event_id: createdEvent.id,
+          track_id: createdTrack.id
         })
 
 
