@@ -9,9 +9,14 @@ import { AuthModule } from './auth/auth.module';
 import { DrizzleModule } from './drizzle/drizzle.module';
 import { StandardDistancesModule } from './module-enums/standard-distances/standard-distances.module';
 import { MeModule } from './me/me.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      ignoreEnvFile: true,
+      isGlobal: true
+    }),
     UsersModule,
     SubEventsModule,
     EventsModule,

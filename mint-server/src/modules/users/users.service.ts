@@ -16,6 +16,14 @@ export class UsersService {
     .limit(1))[0]
   }
 
+  async findTechnicalOneById(id: number) {
+    return (await this.drizzle.client.select()
+    .from(users_table)
+    .innerJoin(user_profiles_table, eq(users_table.id, user_profiles_table.user_id))
+    .where(eq(users_table.id, id))
+    .limit(1))[0]
+  }
+
   // private readonly users = [
   //   {
   //     userId: 1,

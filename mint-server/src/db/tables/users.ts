@@ -2,8 +2,9 @@ import { pgTable, serial, varchar, boolean, integer, date, numeric } from "drizz
 
 export const users_table = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  email: varchar("email"),
+  email: varchar("email").unique(),
   password: varchar("password"),
+  refresh_token: varchar("refresh_token")
 });
 
 export const user_profiles_table = pgTable("user_profiles", {

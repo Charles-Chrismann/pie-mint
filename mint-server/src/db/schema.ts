@@ -1,23 +1,13 @@
 export * from "./tables/users"
-
 export *from "./tables/organizations"
-
 export * from "./tables/sponsors"
-
 export * from "./tables/sub_events"
-
 export * from "./tables/controls"
-
 export * from "./tables/translations"
-
 export * from "./tables/medias"
-
 export * from "./tables/settings"
-
 export * from "./tables/profile_links"
-
 export * from "./tables/badges"
-
 export * from "./tables/enums"
 
 // export const track_points_table = pgTable("tracks", {
