@@ -1,4 +1,4 @@
-import { date, integer, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user_profiles_table } from "./users";
 import { medias_table } from "./medias";
 import { groups_table } from "./controls";
@@ -6,7 +6,8 @@ import { groups_table } from "./controls";
 export const organizations_table = pgTable("organizations", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
-  name: varchar("name"),
+  name: varchar("name").notNull(),
+  is_auto_generated: boolean("is_auto_generated").default(false),
   
   media_avatar_id: integer("media_avatar_id").references(() => medias_table.id),
   media_banner_id: integer("media_banner_id").references(() => medias_table.id),
@@ -25,9 +26,10 @@ export const events_table = pgTable("events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
   name: varchar("name"),
+  is_auto_generated: boolean("is_auto_generated").default(false),
   description: varchar("description"),
-  start_date: date("start_date"),
-  end_date: date("end_date"),
+  start_date: timestamp("start_date"),
+  end_date: timestamp("end_date"),
   
   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
 });

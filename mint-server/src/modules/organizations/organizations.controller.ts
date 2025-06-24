@@ -49,4 +49,11 @@ export class OrganizationsController {
   ) {
     return this.organizationsService.getOrganizanizationEvents(+organizationId)
   }
+
+  @Get(':organizationId/tracks')
+  getOrganizanizationTracks(
+    @Param('organizationId') organizationId: string
+  ) {
+    return this.organizationsService.getOrganizanizationTracks(+organizationId)
+  }
 }

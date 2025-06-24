@@ -7,11 +7,17 @@ import MyOrganizationPage from './pages/me/Organization'
 import OrganizationsPage from './pages/organizations/Organizations'
 import OrganizationSinglePage from './pages/organizations/OrganizationSingle'
 import EventSinglePage from './pages/organizations/events/EventSingle'
+import { AuthProvider } from './contexts/AuthContext'
+import MyEventPage from './pages/me/Event'
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: (
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    ),
     children: [
       {
         path: 'auth',
@@ -34,9 +40,18 @@ export const router = createBrowserRouter([
             element: <MyOrganizationsPage />,
           },
           {
-            path: "organizations/:id",
-            element: <MyOrganizationPage />,
-          }
+            path: "organizations/:organizationId",
+            children: [
+              {
+                path: "",
+                element: <MyOrganizationPage />
+              },
+              {
+                path: "events/:eventId",
+                element: <MyEventPage />
+              }
+            ]
+          },
         ]
       },
       {

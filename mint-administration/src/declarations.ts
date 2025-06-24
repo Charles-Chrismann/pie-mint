@@ -1,5 +1,8 @@
 import * as L from 'leaflet'
 
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+
+
 export interface Track {
   track: {
     id: number
@@ -46,7 +49,7 @@ export interface Organization {
   name: string
   media_avatar_id: number
   media_banner_id: number
-  created_id: number
+  created_by_id: number
   owner_id: number
 }
 
@@ -68,3 +71,40 @@ export interface SubEvent {
   standard_distance_id: number | null
   track_id: number
 }
+
+export interface TechnicalUser {
+  id: number
+  email: string
+}
+
+export interface UserProfile {
+  id: number
+  firstname: string
+  lastname: string
+  user_id: number
+}
+
+export interface ApiResponseLogin {
+  technicalUser: TechnicalUser
+  userProfile: UserProfile
+  access_token: string
+  refresh_token: string
+}
+
+export interface ApiResponseCreateOrganization {
+  id: number
+  name: string
+  media_avatar_id: number
+  media_banner_id: number
+  created_by_id: number
+  owner_id: number
+}
+
+export type ApiResponseGetOrganizationTracks = {
+  tracks: {
+    id: number
+    name: string
+  }
+  sub_events: SubEvent
+  track_points: TrackPoint[]
+}[]

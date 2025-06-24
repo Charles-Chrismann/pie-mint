@@ -119,6 +119,92 @@ const organizations: Organization[] = [
             }
           },
         ]
+      },
+      {
+        name: "Grand Raid Ventoux by UTMB",
+        start_date: new Date("April 25, 2025"),
+        end_date: new Date("April 27, 2025"),
+        sub_events: [
+          {
+            name: "GRV - 100M",
+            distance: "124000",
+            positive_elevation: "6500",
+            track: {
+              name: "GRV - 100M",
+              gpx: "GRV_100_M_3130c5bfc9.gpx"
+            }
+          },
+          {
+            name: "GRV - 100K",
+            distance: "89000",
+            positive_elevation: "4600",
+            track: {
+              name: "GRV - 100K",
+              gpx: "GRV_100_K_d7ac898f01.gpx"
+            }
+          },
+          {
+            name: "GRV - 50K",
+            distance: "49000",
+            positive_elevation: "2200",
+            track: {
+              name: "GRV - 50K",
+              gpx: "GRV_50_K_8a5d694e54.gpx"
+            }
+          },
+          {
+            name: "GRV - 20K",
+            distance: "28000",
+            positive_elevation: "1200",
+            track: {
+              name: "GRV - 20K",
+              gpx: "GRV_20_K_2d74ea6b81.gpx"
+            }
+          }
+        ]
+      },
+      {
+        name: "Restonica Trail by UTMB",
+        start_date: new Date("July 03, 2025"),
+        end_date: new Date("July 05, 2025"),
+        sub_events: [
+          {
+            name: "UTC100M",
+            distance: "110000",
+            positive_elevation: "7200",
+            track: {
+              name: "UTC100M",
+              gpx: "UTC_2025_d905fb7c2a.gpx"
+            }
+          },
+          {
+            name: "RT100K",
+            distance: "67000",
+            positive_elevation: "3900",
+            track: {
+              name: "RT100K",
+              gpx: "RT_2025_47643f828c.gpx"
+            }
+          },
+          {
+            name: "TT50K",
+            distance: "33000",
+            positive_elevation: "2400",
+            track: {
+              name: "TT50K",
+              gpx: "TT_2025_70d0b03ccb.gpx"
+            }
+          },
+          {
+            name: "GT20K",
+            distance: "17000",
+            positive_elevation: "650",
+            track: {
+              name: "GT20K",
+              gpx: "GT_2025_16337d7757.gpx"
+            }
+          }
+        ]
       }
     ]
   },

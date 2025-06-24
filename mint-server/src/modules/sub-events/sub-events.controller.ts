@@ -4,12 +4,18 @@ import { SubEventsService } from './sub-events.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SubEvent } from './entities/sub-event.entity';
 import { CreateSubEventDto } from './dto/sub-event.dto';
+import { getSubEventTrack } from '../../utils';
 
 @ApiTags('SubEvents')
 @Controller('sub-events')
 export class SubEventsController {
 
   constructor(private subEventsService: SubEventsService) { }
+
+  @Get(':subEventId')
+  getSubEventById(@Param('subEventId') subEventId: string) {
+    return this.subEventsService.getSubEventById(+subEventId)
+  }
 
   // @UseInterceptors(FileInterceptor('file'))
   @Post()
@@ -51,6 +57,6 @@ export class SubEventsController {
 
   @Get(':subEventId/track')
   getSubEventTrack(@Param('subEventId') subEventId: number) {
-    return this.subEventsService.getSubEventTrack(subEventId)
+    return getSubEventTrack(subEventId)
   }
 }

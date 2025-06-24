@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function LoginForm({
   className,
@@ -19,20 +20,10 @@ export function LoginForm({
   const navigate = useNavigate()
   const [email, setEmail] = useState<string>()
   const [password, setPassword] = useState<string>()
+  const { login } = useAuth();
 
-  async function login() {
-    const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/auth/login', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    })
-    const data: { access_token: string } = await res.json()
-    localStorage.setItem('access_token', data.access_token)
+  async function handleEmailPasswordLogin() {
+    await login(email!, password!)
   }
 
   return (
@@ -70,7 +61,7 @@ export function LoginForm({
                 <Input id="password" type="password" required onInput={(e) => setPassword((e.target as HTMLInputElement).value)}/>
               </div>
               <div className="flex flex-col gap-3">
-                <Button onClick={login} type="button" className="w-full">
+                <Button onClick={handleEmailPasswordLogin} type="button" className="w-full">
                   Login
                 </Button>
                 {/* <Button variant="outline" className="w-full">

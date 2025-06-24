@@ -6,7 +6,7 @@ async function main() {
 
   const options = {
     counts: {
-      users: 10_000
+      users: +process.env.SEED_USER_COUNT! as number || 10_000
     }
   }
 

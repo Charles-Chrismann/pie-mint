@@ -1,24 +1,15 @@
 import { LoginForm } from "@/components/LoginForm";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
 
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   async function loginAsTestUser() {
-    const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/auth/login', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: "user@example.com",
-        password: "password"
-      })
-    })
-    const data: { access_token: string } = await res.json()
-    localStorage.setItem('access_token', data.access_token)
+    await login("user@example.com", "password")
   }
 
   return (
