@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  mint-server:
+    build: ./mint-server
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgres://postgres:example@db:5432/postgres"
+    volumes:
+      - ./mint-server:/app
+      - mint-server-node-modules:/app/node_modules
+
+    depends_on:
+      - db
+      - adminer
+    restart: always
+
+  mint-ws-runners:
+    build: ./mint-ws-runners
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./mint-ws-runners:/app
+    restart: always
+    depends_on:
+      - mint-server
+
+  mint-administration:
+    platform: linux/amd64
+    build: ./mint-administration
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./mint-administration:/app
+      - mint-admin-node-modules:/app/node_modules
+    depends_on:
+      - mint-server
+    restart: always
+
+volumes:
+  mint-admin-node-modules:
+  mint-server-node-modules:

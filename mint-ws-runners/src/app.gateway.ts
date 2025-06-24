@@ -22,9 +22,9 @@ export class AppGateway {
     return;
   }
 
-  // handleConnection(socket: Socket): void {
-  //   console.log('elo')
-  // }
+  handleConnection(socket: Socket): void {
+    console.log('elo')
+  }
 
   @SubscribeMessage('position')
   handlePosition(client: any, payload: any) {
