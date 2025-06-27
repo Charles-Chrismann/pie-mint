@@ -15,14 +15,17 @@ services:
       - 8080:8080
 
   mint-server:
+    container_name: mint-api
+    env_file:
+      - .env.api
     build: ./mint-server
     ports:
-      - "3000:3000"
+      - ${API_PORT}:3000
     environment:
       DATABASE_URL: "postgres://postgres:example@db:5432/postgres"
     volumes:
       - ./mint-server:/app
-      - mint-server-node-modules:/app/node_modules
+      # - mint-server-node-modules:/app/node_modules
 
     depends_on:
       - db
@@ -30,25 +33,25 @@ services:
     restart: always
 
   mint-ws-runners:
+    env_file:
+      - .env.ws
     build: ./mint-ws-runners
     ports:
-      - "3001:3000"
+      - ${WS_PORT}:3000
     volumes:
       - ./mint-ws-runners:/app
     restart: always
-    depends_on:
-      - mint-server
 
   mint-administration:
-    platform: linux/amd64
+    env_file:
+      - .env.administration
+    # platform: linux/amd64
     build: ./mint-administration
     ports:
-      - "5173:5173"
+      - ${ADMINISTRATION_PORT}:5173
     volumes:
       - ./mint-administration:/app
-      - mint-admin-node-modules:/app/node_modules
-    depends_on:
-      - mint-server
+      # - mint-admin-node-modules:/app/node_modules
     restart: always
 
 volumes:

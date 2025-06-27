@@ -1,0 +1,22 @@
+{
+  "name": "pie-mint",
+  "version": "1.0.0",
+  "description": "> [!NOTE] > For the french version see [here](./project/FR/README.md)",
+  "main": "index.js",
+  "scripts": {
+    "db:d": "docker compose down -v && docker compose up --build --force-recreate",
+    "db:is": "docker exec mint-api ./scripts/is.sh",
+    "db:init": "docker exec mint-api ./scripts/i.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charles-Chrismann/pie-mint.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Charles-Chrismann/pie-mint/issues"
+  },
+  "homepage": "https://github.com/Charles-Chrismann/pie-mint#readme"
+}

@@ -21,4 +21,5 @@ export default defineConfig({
       "@": path.resolve("./src"),
     },
   },
+  clearScreen: false
 })

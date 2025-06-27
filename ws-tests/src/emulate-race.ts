@@ -1,4 +1,6 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
+dotenv.config({ path: '../.env.ws-tests' })
+
 import * as fs from 'fs/promises'
 import { runnerRace, runnerRaceWithGpx } from "./declarations";
 import { Runner } from "./runner";

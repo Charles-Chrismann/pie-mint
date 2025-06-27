@@ -15,6 +15,7 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/node": "^22.15.29",
     "ts-node": "^10.9.2"
   }

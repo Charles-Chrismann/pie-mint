@@ -26,3 +26,13 @@ export interface Organization {
   name: string
   events: Event[]
 }
+
+export interface SeedEventQueryResult {
+  id: number;
+  name: string | null;
+  organization_id: number;
+  is_auto_generated: boolean | null;
+  description: string | null;
+  start_date: Date | null;
+  end_date: Date | null;
+}[]

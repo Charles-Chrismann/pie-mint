@@ -69,3 +69,14 @@ export async function getSubEventTrack(subEventId: number) {
 
   return pointsToReturn
 }
+
+export function chunkify<T>(array: T[], chunkSize: number): T[][] {
+  if (!Array.isArray(array)) throw new TypeError('Le premier argument doit être un tableau');
+  if (typeof chunkSize !== 'number' || chunkSize <= 0) throw new RangeError('chunkSize doit être un entier strictement positif');
+
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}

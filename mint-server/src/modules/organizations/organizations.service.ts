@@ -42,7 +42,7 @@ export class OrganizationsService {
     return (await this.drizzle.client.select().from(organizations_table).where(eq(organizations_table.id, organizationId)).limit(1))[0]
   }
 
-  getOrganizanizationEvents(organizationId: number) {
+  async getOrganizanizationEvents(organizationId: number) {
     return this.drizzle.client
     .select()
     .from(events_table)

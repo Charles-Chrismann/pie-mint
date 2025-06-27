@@ -15,60 +15,45 @@ Le backend est séparée en deux serveurs, `mint-server` et `mint-ws-runners`, a
 
 ## Setup des différents projets
 
+Avant tout il est nécessaire de copier tout les fichiers du dossier `.env.exmaples/` à la racine du projet, et de retirer la partie `.example` du nom du fichier.
+
+Par défaut les applications écouterons sur les ports:
+
+- `mint-server`: 3000
+- `mint-ws-runners`: 3001
+- `mint-administration`: 5173
+
+Pour changer les ports, modifier le `.env` précédement dupliqué.
+
 Requirements: 
 
 - Node
 - Docker
 
-### `mint-server`
+Les projets `mint-server`, `mint-ws-runners`, `mint-administration` ont été dockerisés, les commandes suivantes sont utiles:
 
-1. Install dependancies
+Lancer tout les services:
 
-```
-cd mint-server
-npm i 
-```
-
-2. Clone the .env.example and rename it .env
-
-3. The following commande drops the database, init it and seed it
-```
-npm run db:dis
+```sh
+docker compose up --build --force-recreate
 ```
 
-4. Start dev server
-```
-npm run dev
-```
+Init la db:
 
-### `mint-ws-runners`
-
-1. Install dependancies
-
-```
-cd mint-server
-npm i 
+```sh
+# equivalent à (npm run db:init)
+docker exec mint-api ./i.sh
 ```
 
-2. Start dev server
-```
-npm run dev
-```
+Drop, init et seed la db:
 
-For now the wbesocket server only listen for `position` event and emits `position` events to connected clients
+```sh
+# equivalent à (npm run db:d)
+docker compose down -v
+docker compose up --build --force-recreate
 
-### `mint-administration`
-
-1. Install dependancies
-
-```
-cd mint-administration
-npm i 
-```
-
-2. Start dev server
-```
-npm run dev
+# Dans un autre terminal (npm run db:is)
+docker exec mint-api ./is.sh
 ```
 
 ### `ws-tests`

@@ -5,7 +5,8 @@ import { events_table, organizations_table, standard_distances_table, sub_events
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
-import { getPointsFromGpx } from "../../utils";
+import { chunkify, getPointsFromGpx } from "../../utils";
+import { SeedEventQueryResult } from "./declarations";
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
@@ -50,117 +51,126 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 }
 
 async function seedOriganizations({ count }: { count: number }) {
-  const users = await db.select().from(user_profiles_table)
   const standard_distances = await db.select().from(standard_distances_table)
 
-  for (const org of organizations) {
-    const createdOrg = (await db.insert(organizations_table).values({ name: org.name, created_by_id: 1, owner_id: 1 }).returning())[0]
+  const createdOrgs = await db
+    .insert(organizations_table)
+    .values(
+      organizations.map(
+        org => ({
+          name: org.name,
+          created_by_id: 1,
+          owner_id: 1
+        })
+      )
+    )
+    .returning()
 
-    for (const event of org.events) {
-      const createdEvent = (await db.insert(events_table).values({ name: event.name, start_date: event.start_date, end_date: event.end_date, organization_id: createdOrg.id }).returning())[0]
+  const values = organizations.map(
+    org => org.events.map(
+      event => ({
+        name: event.name,
+        start_date: event.start_date,
+        end_date: event.end_date,
+        organization_id: (createdOrgs as any).find(co => co.name === org.name)!.id
+      })
 
-      for (const sub of event.sub_events) {
-        const createdTrack = (await db.insert(tracks_table).values({
-          name: sub.track.name
-        }).returning())[0]
+    )
+  ).filter(v => v.length).flat()
 
-        if (sub.track.gpx) {
-          const gpxStr = await fs.readFile('./src/db/seed/gpxs/' + sub.track.gpx)
-          const parser = new XMLParser({ ignoreAttributes: false })
-          const gpxData = parser.parse(gpxStr)
-          const points = getPointsFromGpx(gpxData)
-          // .slice(0, 100)
+  const createdEvents = await db
+    .insert(events_table)
+    .values(
+      values
+    )
+    .returning() as unknown as SeedEventQueryResult[]
 
-          // await db.insert(track_points_table).values({
-          //   alt: 0,
-          //   lat: 0,
-          //   lng: 0,
-          //   track_id: createdTrack.id,
-          //   in_track_id: 0,
-          //   in_track_previous_id: 0
-          // })
+  const createdTracks = await db
+    .insert(tracks_table)
+    .values(
+      organizations.map(
+        org => org.events.map(
+          evt => evt.sub_events.map(
+            se => ({
+              name: se.track.name
+            })
+          )
+        )
+      ).flat(2)
+    )
+    .returning()
 
-          // await db.insert(track_points_table).values({
-          //   alt: points[0].alt,
-          //   lat: points[0].lat,
-          //   lng: points[0].lng,
-          //   track_id: createdTrack.id,
-          //   in_track_id: 0 + 1,
-          //   in_track_previous_id: 0 === 0 ? null : 0
-          // })
+  const parser = new XMLParser({ ignoreAttributes: false })
 
-          // await db.insert(track_points_table).values({
-          //   alt: points[1].alt,
-          //   lat: points[1].lat,
-          //   lng: points[1].lng,
-          //   track_id: createdTrack.id,
-          //   in_track_id: 1 + 1,
-          //   in_track_previous_id: 1
-          // })
+  const createdTrackpointLists = await Promise.all(
+    organizations.map(org => org.events.map(evt => evt.sub_events.map(async se => {
+      if (!se.track.gpx) return
 
-          // await db.insert(track_points_table).values({
-          //   alt: points[2].alt,
-          //   lat: points[2].lat,
-          //   lng: points[2].lng,
-          //   track_id: createdTrack.id,
-          //   in_track_id: 2 + 1,
-          //   in_track_previous_id: 2
-          // })
+      const track_id = createdTracks.find(ct => ct.name === se.track.name)?.id
+      if (!track_id) return
 
-          // console.log('fffff')
+      const gpxStr = await fs.readFile('./src/db/seed/gpxs/' + se.track.gpx)
+      const gpxData = parser.parse(gpxStr)
+      const points = getPointsFromGpx(gpxData)
 
-          // await db.insert(track_points_table).values({
-          //   alt: points[2].alt,
-          //   lat: points[2].lat,
-          //   lng: points[2].lng,
-          //   track_id: createdTrack.id,
-          //   in_track_id: 3 + 1,
-          //   in_track_previous_id: 2
-          // })
+      const chunks = chunkify(points, 512)
 
-          // console.log(points)
-
-          const createdPoints = (await Promise.all(
-            points.map((p, i) => db.insert(track_points_table).values({
+      return Promise.all(
+        chunks.map((chunk, chunkI) =>
+          db.insert(track_points_table).values(
+            chunk.map((p, i) => ({
               alt: p.alt,
               lat: p.lat,
               lng: p.lng,
-              is_first_point: i === 0,
-              is_last_point: i === points.length - 1,
-              track_id: createdTrack.id,
-            }).returning())
-          )).flat()
+              is_first_point: i === 0 && chunkI === 0,
+              is_last_point: i === chunk.length - 1 && chunkI === chunks.length - 1,
+              track_id,
+            }))
+          ).returning()
+        )
+      )
+    }))).flat(2)
+  )
 
-          // console.log(createdPoints)
+  const createdTrackpointListsFlat = createdTrackpointLists.map(ctl => ctl ? ctl!.flat() : [])
 
-          const createdSegments = await Promise.all(
-            createdPoints.map((p, i) => {
-              if(i === createdPoints.length - 1) return
+  const createdSegmentsList = await Promise.all(
+    createdTrackpointListsFlat.map((points) => {
+      const chunks = chunkify(points, 512)
+      return Promise.all(
+        chunks.map(
+          (chunk, chunkI) => db.insert(track_segments_table).values(
+            chunk.map((point, pointI) => {
+              let end_position_id: undefined | number
+              // si c'est le dernier point du dernier chunk
+              if (chunkI === chunks.length - 1 && pointI === chunk.length - 1)end_position_id = undefined
+              else {
+                // Si y a un point derrière
+                if (pointI !== chunk.length - 1) end_position_id = chunk[pointI + 1].id
+                else end_position_id = chunks[chunkI + 1][0].id
+              }
+              return ({
+                track_id: point.track_id,
+                start_position_id: point.id,
+                end_position_id
+              })
+            })).returning()
+        ))
+    })
+  )
 
-              return db.insert(track_segments_table).values({
-                track_id: createdTrack.id,
+  const createdSubEvents = await db.insert(sub_events_table).values(
+    organizations.map(org => org.events.map(evt => evt.sub_events.map(se => ({
+      name: se.name,
+      distance: se.distance,
+      positiveElevation: se.positive_elevation,
 
-                start_position_id: p.id,
-                end_position_id: createdPoints[i + 1].id
-              }).returning()
-            })
-          )
-        }
-
-        const createdSubEvent = await db.insert(sub_events_table).values({
-          name: sub.name,
-          distance: sub.distance,
-          positiveElevation: sub.positive_elevation,
-
-          standard_distance_id: standard_distances.find(sd => sd.name === sub.standard_distance)?.id,
-          event_id: createdEvent.id,
-          track_id: createdTrack.id
-        })
-
-
-      }
-    }
-  }
+      standard_distance_id: standard_distances.find(sd => sd.name === se.standard_distance)?.id,
+      event_id: createdEvents!.find(e => e.name === evt.name)!.id,
+      track_id: createdTracks!.find(t => t.name === se.track.name)!.id,
+    })))).flat(2)
+  )
+    .returning()
 }
 
 export {
