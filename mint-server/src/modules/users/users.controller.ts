@@ -29,7 +29,7 @@ export class UsersController {
     return await this.usersService.getVisitorsByUserId(userId);
   }
   @UseGuards(JwtAuthGuard)
-  @Post('me/visitor')
+  @Post('me/visitors')
   async create(@Request() req) {
     const userId = req.user.userId;
     return (await this.usersService.createVisitorByUserId(userId))[0];

@@ -21,7 +21,7 @@ export const user_profiles_table = pgTable('user_profiles', {
 export const visitors_table = pgTable('visitors', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   code: varchar('code').unique(),
-  user_id: integer('user_id')
+  user_profiles_id: integer('user_profiles_id')
     .notNull()
-    .references(() => users_table.id),
+    .references(() => user_profiles_table.id),
 });

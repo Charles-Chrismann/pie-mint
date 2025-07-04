@@ -43,7 +43,7 @@ export class UsersService {
     return await this.drizzle.client
       .select()
       .from(visitors_table)
-      .where(eq(visitors_table.user_id, userId));
+      .where(eq(visitors_table.user_profiles_id, userId));
   }
 
   async createVisitorByUserId(userId: number) {
@@ -52,7 +52,7 @@ export class UsersService {
       .insert(visitors_table)
       .values({
         code: randomCode,
-        user_id: userId,
+        user_profiles_id: userId,
       })
       .returning();
   }
