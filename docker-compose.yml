@@ -27,7 +27,7 @@ services:
       DATABASE_URL: "postgres://postgres:example@db:5432/postgres"
     volumes:
       - ./mint-server:/app
-      # - mint-server-node-modules:/app/node_modules
+      - mint-server-node-modules:/app/node_modules
 
     depends_on:
       - db
@@ -45,6 +45,7 @@ services:
     restart: always
 
   mint-administration:
+    platform: linux/amd64
     env_file:
       - .env.administration
     # platform: linux/amd64
@@ -53,7 +54,7 @@ services:
       - ${ADMINISTRATION_PORT}:5173
     volumes:
       - ./mint-administration:/app
-      # - mint-admin-node-modules:/app/node_modules
+      - mint-admin-node-modules:/app/node_modules
     restart: always
 
 volumes:
