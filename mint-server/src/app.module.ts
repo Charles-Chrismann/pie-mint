@@ -11,6 +11,7 @@ import { StandardDistancesModule } from './module-enums/standard-distances/stand
 import { MeModule } from './me/me.module';
 import { ConfigModule } from '@nestjs/config';
 import { VisitorsModule } from './modules/visitors/visitors.module';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { VisitorsModule } from './modules/visitors/visitors.module';
     StandardDistancesModule,
     MeModule,
     VisitorsModule,
+    AuthorizationModule
   ],
   controllers: [AppController],
   providers: [AppService],

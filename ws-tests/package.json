@@ -11,7 +11,9 @@
   "description": "",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.43.1",
     "fast-xml-parser": "^5.2.3",
+    "pg": "^8.15.6",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

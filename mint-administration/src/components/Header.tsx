@@ -11,8 +11,9 @@ export default function Header() {
     <header className="h-18 px-8 shadow-md flex items-center justify-between">
       <nav>
         <ul>
-          <li className="flex">
+          <li className="flex gap-4">
             <Link to="/organizations">Organisations</Link>
+            <Link to="/emulate-run">Emulate Run</Link>
             {/* <Link to="/me/organizations">Mes organisations</Link> */}
           </li>
         </ul>

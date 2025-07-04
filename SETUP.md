@@ -53,7 +53,7 @@ docker compose down -v
 docker compose up --build --force-recreate
 
 # Dans un autre terminal (npm run db:is)
-docker exec mint-api ./is.sh
+docker exec mint-api ./scripts/is.sh
 ```
 
 ### `ws-tests`

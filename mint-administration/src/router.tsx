@@ -9,6 +9,8 @@ import OrganizationSinglePage from './pages/organizations/OrganizationSingle'
 import EventSinglePage from './pages/organizations/events/EventSingle'
 import { AuthProvider } from './contexts/AuthContext'
 import MyEventPage from './pages/me/Event'
+import MySubEventPage from './pages/me/SubEvent'
+import EmulateRunPage from './pages/emulate-run/EmulateRun'
 
 export const router = createBrowserRouter([
   {
@@ -48,7 +50,18 @@ export const router = createBrowserRouter([
               },
               {
                 path: "events/:eventId",
-                element: <MyEventPage />
+                children: [
+                  {
+                    path: '',
+                    index: true,
+                    element: <MyEventPage />
+                  },
+                  {
+                    path: 'sub-events/:subEventId',
+                    index: true,
+                    element: <MySubEventPage />
+                  }
+                ]
               }
             ]
           },
@@ -86,15 +99,19 @@ export const router = createBrowserRouter([
                     index: true,
                     element: null
                   },
-                  {
-                    path: ":subEventId",
-                    element: null
-                  }
+                  // {
+                  //   path: ":subEventId",
+                  //   element: <SubEventPage />
+                  // }
                 ]
               }
             ]
           }
         ]
+      },
+      {
+        path: 'emulate-run',
+        element: <EmulateRunPage />
       }
     ]
   },

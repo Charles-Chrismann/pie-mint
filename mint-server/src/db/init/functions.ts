@@ -35,7 +35,7 @@ async function insertActionLevels() {
   await db.insert(action_levels_table)
   .values(
     action_levels.map( 
-      i => ({ name: i[0] })
+      i => ({ name: i })
     )
   )
 }

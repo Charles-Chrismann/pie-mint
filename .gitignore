@@ -5,3 +5,5 @@
 !.env.examples/**
 
 !.env.examples/.*
+
+docker-compose.prod.yml
