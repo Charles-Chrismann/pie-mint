@@ -27,8 +27,8 @@ import { AuthorizationModule } from './authorization/authorization.module';
     DrizzleModule,
     StandardDistancesModule,
     MeModule,
+    AuthorizationModule,
     VisitorsModule,
-    AuthorizationModule
   ],
   controllers: [AppController],
   providers: [AppService],
