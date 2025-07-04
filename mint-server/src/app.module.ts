@@ -29,6 +29,7 @@ import { AuthorizationModule } from './authorization/authorization.module';
     MeModule,
     AuthorizationModule,
     VisitorsModule,
+    AuthorizationModule
   ],
   controllers: [AppController],
   providers: [AppService],
