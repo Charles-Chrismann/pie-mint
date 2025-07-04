@@ -54,6 +54,13 @@ interface DBGroupUtility {
   name: string
 }
 
+interface DBInitPermission {
+  name: string
+  description: string
+  name_key: string
+  description_key: string
+}
+
 export {
   DBInitMediaFormat,
   DBInitMediaType,
@@ -63,5 +70,6 @@ export {
   DBInitLanguage,
   DBInitSettingCategory,
   DBInitSettingType,
-  DBGroupUtility
+  DBGroupUtility,
+  DBInitPermission,
 }

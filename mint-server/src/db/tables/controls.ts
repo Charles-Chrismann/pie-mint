@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { action_levels_table } from "./enums";
 import { user_profiles_table } from "./users";
 
@@ -6,6 +6,10 @@ export const permissions_table = pgTable("permissions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
   name: varchar("name"),
+  description: text("description"),
+  name_key:  varchar("name_key"),
+  description_key: varchar("description_key"),
+  
   action_level_id: integer("action_level_id").references(() => action_levels_table.id),
 });
 

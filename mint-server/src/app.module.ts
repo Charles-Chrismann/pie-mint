@@ -10,6 +10,7 @@ import { DrizzleModule } from './drizzle/drizzle.module';
 import { StandardDistancesModule } from './module-enums/standard-distances/standard-distances.module';
 import { MeModule } from './me/me.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     DrizzleModule,
     StandardDistancesModule,
-    MeModule
+    MeModule,
+    AuthorizationModule
   ],
   controllers: [AppController],
   providers: [AppService],

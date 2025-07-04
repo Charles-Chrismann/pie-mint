@@ -86,9 +86,10 @@ export const sub_event_start_waves_table = pgTable("sub_event_start_waves", {
 export const registrations_table = pgTable("registrations", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
+  is_accepted: boolean("is_accepted").default(false),
   is_private: boolean("is_private"),
   bib_number: integer("bib_number"),
-  bib_alias: integer("bib_alias"),
+  bib_alias: varchar("bib_alias"),
 
   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
   sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),

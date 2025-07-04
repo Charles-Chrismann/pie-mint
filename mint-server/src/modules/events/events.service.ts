@@ -4,11 +4,15 @@ import { events_table, organizations_table, sub_events_table } from 'src/db/sche
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 import { CreateEventDto } from './dto/event.dto';
 import { DBOrganization, JWTUser } from 'src/declaration';
+import { AuthorizationService } from 'src/authorization/authorization.service';
 
 @Injectable()
 export class EventsService {
 
-  constructor(private drizzle: DrizzleService) { }
+  constructor(
+    private drizzle: DrizzleService,
+    private authorization: AuthorizationService
+  ) { }
 
   async getEventById(eventId: number) {
     return (await this.drizzle.client
@@ -33,27 +37,10 @@ export class EventsService {
       )
   }
 
-  async isAllowedToCreateEvent(userId: number, organization: DBOrganization) {
-
-    if(organization.owner_id === userId) return true
-
-    // TODO: add logic for groups and permissions
-
-    return false
-  }
-
   async createEvent(user: JWTUser, createEventDto: CreateEventDto) {
-    const organization  = (await this.drizzle.client
-      .select()
-      .from(organizations_table)
-      .where(eq(organizations_table.id, createEventDto.organization_id))
-      .limit(1)
-    )[0] as DBOrganization | undefined
-
-    if(!organization) throw new NotFoundException()
 
     if (
-      !(await this.isAllowedToCreateEvent(user.userId, organization))
+      !(await this.authorization.isAllowedToCreateEvent(user.userId, createEventDto.organization_id))
     ) throw new ForbiddenException('You are not allowed to create an event in this organization.');
 
     const createdEvent = (await this.drizzle.client
@@ -63,7 +50,7 @@ export class EventsService {
         description: createEventDto.description,
         start_date: new Date(createEventDto.start_date),
         end_date: new Date(createEventDto.end_date),
-        organization_id: organization.id,
+        organization_id: createEventDto.organization_id,
       })
       .returning()
     )[0]

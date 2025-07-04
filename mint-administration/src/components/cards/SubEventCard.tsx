@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import type { SubEvent, Track, TrackPoint } from "@/declarations";
 import TrackPreview from "../TrackPreview";
 import Api from "@/Api";
+import { Link } from "react-router-dom";
 
-export default function SubEventCard({ subEventId }: { subEventId: number }) {
+export default function SubEventCard({ subEventId, link = '#' }: { subEventId: number, link?: string }) {
 
   const [loading, setLoading] = useState(true)
   const [subEvent, setSubEvent] = useState<SubEvent>()
@@ -32,23 +33,25 @@ export default function SubEventCard({ subEventId }: { subEventId: number }) {
     //   loading
     // </div> :
     <div>
-      {
-        subEvent &&
-        <Card>
-          <CardHeader>
-            <CardTitle>{subEvent.name}</CardTitle>
-            <CardDescription>
-              <p>Distance: {subEvent.distance}</p>
-              <p>Dénivelé positif: {subEvent.positive_elevation}</p>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="w-full aspect-video">
-            {
-              track && <TrackPreview track={track} />
-            }
-          </CardContent>
-        </Card>
-      }
+      <Link to={link}>
+        {
+          subEvent &&
+          <Card>
+            <CardHeader>
+              <CardTitle>{subEvent.name}</CardTitle>
+              <CardDescription>
+                <p>Distance: {subEvent.distance}</p>
+                <p>Dénivelé positif: {subEvent.positive_elevation}</p>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="w-full aspect-video" onClick={(e) => e.preventDefault()}>
+              {
+                track && <TrackPreview track={track} />
+              }
+            </CardContent>
+          </Card>
+        }
+      </Link>
     </div>
   )
 }

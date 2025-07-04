@@ -18,7 +18,9 @@ services:
     container_name: mint-api
     env_file:
       - .env.api
-    build: ./mint-server
+    build: 
+      context: ./mint-server
+      target: development
     ports:
       - ${API_PORT}:3000
     environment:

@@ -1,4 +1,13 @@
-import { DBInitMediaFormat, DBInitMediaType, DBInitMediaContext, DBInitCountry, DBInitLanguage, DBInitSettingType, DBGroupUtility } from "./declarations"
+import {
+  DBInitMediaFormat,
+  DBInitMediaType,
+  DBInitMediaContext,
+  DBInitCountry,
+  DBInitLanguage,
+  DBInitSettingType,
+  DBGroupUtility,
+  DBInitPermission,
+} from "./declarations"
 
 const standard_distances: [string, string][] = [
   ["10k", "10000"],
@@ -13,6 +22,15 @@ const action_levels = [
   "event",
   "sub_event",
   "registration",
+]
+
+const permissions: DBInitPermission[] = [
+  {
+    name: "organization:profile:update",
+    description: "Modifier le profile de l'organisation",
+    name_key: "permissions:name:organization:profile:update",
+    description_key: "permissions:description:organization:profile:update",
+  }
 ]
 
 const social_platforms: [string][] = [

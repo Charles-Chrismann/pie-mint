@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "db:d": "docker compose down -v && docker compose up --build --force-recreate",
-    "db:is": "docker exec mint-api ./scripts/is.sh",
-    "db:init": "docker exec mint-api ./scripts/i.sh"
+    "db:init": "docker exec mint-api ./scripts/i.sh",
+    "db:is": "docker exec mint-api ./scripts/is.sh"
   },
   "repository": {
     "type": "git",

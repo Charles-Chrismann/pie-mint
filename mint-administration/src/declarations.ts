@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import type { MAP_STYLES } from './constants';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -72,6 +73,22 @@ export interface SubEvent {
   track_id: number
 }
 
+export interface Registration {
+  id: number
+  is_private?: boolean
+  bib_number?: number
+  alias?:string
+  user_profile_id: number
+  sub_event_id: number
+  sub_event_start_wave_id: number
+  is_accepted: boolean
+}
+
+export interface SubEventRegistrationRunners {
+  registrations: Registration
+  user_profiles: UserProfile
+}
+
 export interface TechnicalUser {
   id: number
   email: string
@@ -108,3 +125,13 @@ export type ApiResponseGetOrganizationTracks = {
   sub_events: SubEvent
   track_points: TrackPoint[]
 }[]
+
+export interface FormAddRunner {
+  user_profile_id?: number | null;
+  is_private?: boolean | null;
+  bib_number?: number | null;
+  bib_alias?: string | null;
+  sub_event_start_wave_id?: number | null;
+}
+
+export type MapStyleKey = keyof typeof MAP_STYLES;
