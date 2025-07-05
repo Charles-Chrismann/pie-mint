@@ -22,9 +22,22 @@ async function bootstrap() {
     .setDescription('The mint API')
     .setVersion('1.0')
     .addTag('SubEvents')
-    .build();
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token'
+    )
+    .build()
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api', app, documentFactory, {
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    }
+  });
 
   await app.listen(process.env.PORT ?? 3000);
   logger.log(`🚀 App running on: ${await app.getUrl()} 🚀`)

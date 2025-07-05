@@ -20,7 +20,7 @@ const organizations: Organization[] = [
 
             track: {
               name: 'La track du marathon de Nantes 2026',
-            }
+            },
           }
         ]
       }
@@ -43,7 +43,33 @@ const organizations: Organization[] = [
             track: {
               name: 'La track du LUT 2025 - 37km',
               gpx: 'lut-2025-37km.gpx'
-            }
+            },
+            start_waves: [
+              {
+                is_elite: true,
+                name: "La vague elite du lut 2025",
+                start_time: new Date("March 30, 2025 07:30:00"),
+                wave_index: 1
+              },
+              {
+                is_elite: false,
+                name: "La vague 1 du lut 2025",
+                start_time: new Date("March 30, 2025 07:30:00"),
+                wave_index: 2
+              },
+              {
+                is_elite: false,
+                name: "La vague 2 du lut 2025",
+                start_time: new Date("March 30, 2025 07:35:00"),
+                wave_index: 3
+              },
+              {
+                is_elite: false,
+                name: "La vague 3 du lut 2025",
+                start_time: new Date("March 30, 2025 07:40:00"),
+                wave_index: 4
+              },
+            ]
           }
         ]
       }

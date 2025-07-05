@@ -165,7 +165,7 @@ export * from "./tables/enums"
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   name: varchar("name"),
 //   distance: numeric("distance", { precision: 10, scale: 3 }),
-//   positiveElevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
+//   positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 //   event_id: integer("event_id").notNull().references(() => events_table.id),
 //   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
 // });

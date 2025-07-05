@@ -5,6 +5,8 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestj
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTUser } from 'src/declaration';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateOrganizationResponse } from './entities/organization.entity';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -16,14 +18,20 @@ export class OrganizationsController {
     return this.organizationsService.getAllOrganizanizations()
   }
 
+  @ApiOperation({ summary: 'Create an organization' })
+  @ApiResponse({
+    status: 201,
+    description: 'The created organization',
+    type: CreateOrganizationResponse
+  })
   @UseGuards(JwtAuthGuard)
-  @Post()
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'logo', maxCount: 1 },
       { name: 'banner', maxCount: 1 },
     ]),
   )
+  @Post('')
   createOrganization(
     @CurrentUser() user: JWTUser,
     @Body() createOrganizationDto: CreateOrganizationDto,
@@ -32,7 +40,7 @@ export class OrganizationsController {
       logo?: Express.Multer.File[];
       banner?: Express.Multer.File[];
     }
-  ) {
+  ): Promise<CreateOrganizationResponse> {
     return this.organizationsService.createOrganization(user, createOrganizationDto, files)
   }
 

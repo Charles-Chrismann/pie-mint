@@ -1,11 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateSubEventDto {
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    example: "A new race"
+  })
   readonly name: string;
+
+  @IsDateString()
+  @ApiProperty({
+    example: "2025-07-05T09:00:00.000Z",
+  })
+  readonly start_date: string;
 
   @IsOptional()
   @Type(() => Number)
@@ -17,51 +25,72 @@ export class CreateSubEventDto {
   readonly distance?: string;
 
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({
+    example: "100.001"
+  })
   readonly positive_elevation?: string;
 
   @IsInt()
   @Type(() => Number)
-  @ApiProperty()
+  @ApiProperty({
+    example: 1
+  })
   readonly event_id: number;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  @ApiProperty()
-  readonly track_id?: number;
-
-  @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
-    required: false
+    required: false,
+    default: "",
+    description: "Utile si la course est dans un format standard type marathon, voir /api/standard-distances" // TODO: ajouter une table pour la discipline: (running, trail, triathlon, vélo...)
   })
   readonly standard_distance_id?: number;
 }
 
+export class CreateSubEventWithFileDto extends CreateSubEventDto {
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'GPX file to upload',
+  })
+  file: Express.Multer.File;
+}
+
 export class AddRunnerToSubEventDto {
   @IsNumber()
-  @ApiProperty()
+  @ApiProperty({
+    example: 1
+  })
   readonly user_profile_id: number;
 
 
   @IsBoolean()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({
+    default: false
+  })
   readonly is_private?: boolean;
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({
+    example: 22066
+  })
   readonly bib_number?: number;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({
+    example: "John Doe"
+  })
   readonly bib_alias?: string;
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty()
+  @Transform(({ value }) => value === "" ? undefined : value)
+  @ApiProperty({
+    required: false,
+    default: ""
+  })
   readonly sub_event_start_wave_id?: number;
 }

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "..";
-import { events_table, organizations_table, standard_distances_table, sub_events_table, track_points_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
+import { events_table, organizations_table, standard_distances_table, sub_event_start_waves_table, sub_events_table, track_points_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
@@ -143,7 +143,7 @@ async function seedOriganizations({ count }: { count: number }) {
             chunk.map((point, pointI) => {
               let end_position_id: undefined | number
               // si c'est le dernier point du dernier chunk
-              if (chunkI === chunks.length - 1 && pointI === chunk.length - 1)end_position_id = undefined
+              if (chunkI === chunks.length - 1 && pointI === chunk.length - 1) end_position_id = undefined
               else {
                 // Si y a un point derrière
                 if (pointI !== chunk.length - 1) end_position_id = chunk[pointI + 1].id
@@ -163,13 +163,25 @@ async function seedOriganizations({ count }: { count: number }) {
     organizations.map(org => org.events.map(evt => evt.sub_events.map(se => ({
       name: se.name,
       distance: se.distance,
-      positiveElevation: se.positive_elevation,
-
+      positive_elevation: se.positive_elevation,
+      start_date: evt.start_date,
       standard_distance_id: standard_distances.find(sd => sd.name === se.standard_distance)?.id,
       event_id: createdEvents!.find(e => e.name === evt.name)!.id,
       track_id: createdTracks!.find(t => t.name === se.track.name)!.id,
     })))).flat(2)
-  )
+  ).returning() as any[]
+
+  const createdStartWaves = await db
+    .insert(sub_event_start_waves_table)
+    .values(
+      organizations.map(org => org.events.map(evt => evt.sub_events.map(se => {
+        const correspondingCreatedSubEventId: number = createdSubEvents.find(cse => cse.name === se.name)!.id
+        return se.start_waves ? se.start_waves.map(sw => ({
+          ...sw,
+          sub_event_id: correspondingCreatedSubEventId
+        })) : []
+      }))).flat(3)
+    )
     .returning()
 }
 
