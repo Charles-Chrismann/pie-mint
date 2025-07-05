@@ -12,7 +12,7 @@ export class StandardDistancesController {
   @Get()
   @ApiOperation({ summary: 'Get all standards distances' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Get all standards distances',
     isArray: true,
     type: StandardDistance

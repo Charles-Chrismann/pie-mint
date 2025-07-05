@@ -8,6 +8,7 @@ import { JWTUser } from 'src/declaration';
 import { AuthorizationService } from 'src/authorization/authorization.service';
 import { chunkify, getPointsFromGpx, getSubEventTrack } from 'src/utils';
 import { XMLParser } from 'fast-xml-parser';
+import { alias } from 'drizzle-orm/pg-core';
 
 @Injectable()
 export class SubEventsService {
@@ -25,7 +26,9 @@ export class SubEventsService {
     return (await this.drizzle.client.select().from(sub_events_table).where(eq(sub_events_table.id, subEventId)).limit(1))[0]
   }
 
-  async createSubEvent(createSubEventDto: CreateSubEventDto, file: Express.Multer.File) {
+  async createSubEvent(user: JWTUser, createSubEventDto: CreateSubEventDto, file: Express.Multer.File) {
+
+    // TODO: Check authorizations
 
     const createdTrack = (await this.drizzle.client
       .insert(tracks_table)
@@ -81,7 +84,8 @@ export class SubEventsService {
         event_id: createSubEventDto.event_id,
         name: createSubEventDto.name,
         distance: createSubEventDto.distance,
-        positiveElevation: createSubEventDto.positive_elevation,
+        start_date: new Date(createSubEventDto.start_date),
+        positive_elevation: createSubEventDto.positive_elevation,
         standard_distance_id: createSubEventDto.standard_distance_id,
         track_id: createdTrack.id
       })
@@ -117,13 +121,15 @@ export class SubEventsService {
     return createdRegistrations
   }
 
-  async getSubEventRunner(
+  async getSubEventRunners(
     subEventId: number
   ) {
+    const registration = alias(registrations_table, "registration")
+    const user_profile = alias(user_profiles_table, "user_profile")
     return this.drizzle.client
       .select()
-      .from(registrations_table)
-      .innerJoin(user_profiles_table, eq(user_profiles_table.id, registrations_table.user_profile_id))
-      .where(eq(registrations_table.sub_event_id, subEventId))
+      .from(registration)
+      .innerJoin(user_profile, eq(user_profile.id, registration.user_profile_id))
+      .where(eq(registration.sub_event_id, subEventId))
   }
 }

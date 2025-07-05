@@ -5,6 +5,13 @@ export interface Track {
   gpx?: string
 }
 
+export interface StartWave {
+  name: string
+  start_time: Date
+  wave_index: number
+  is_elite: boolean
+}
+
 export interface SubEvent {
   name: string
   distance?: string
@@ -12,6 +19,7 @@ export interface SubEvent {
   standard_distance?: standard_distance
 
   track: Track
+  start_waves?: StartWave[]
 }
 
 export interface Event {

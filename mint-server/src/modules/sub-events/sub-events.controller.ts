@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, ParseArrayPipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SubEventsService } from './sub-events.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SubEvent } from './entities/sub-event.entity';
-import { AddRunnerToSubEventDto, CreateSubEventDto } from './dto/sub-event.dto';
+import { AddRunnerToSubEventDto, CreateSubEventDto, CreateSubEventWithFileDto } from './dto/sub-event.dto';
 import { getSubEventTrack } from '../../utils';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
@@ -20,24 +20,26 @@ export class SubEventsController {
     return this.subEventsService.getSubEventById(+subEventId)
   }
 
-  @UseInterceptors(FileInterceptor('file'))
-  @Post()
-  @ApiOperation({ summary: 'Create cat' })
+  @ApiOperation({ summary: 'Create a subEvent (a race)' })
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateSubEventWithFileDto })
   @ApiResponse({
     status: 201,
-    description: 'Create a SubEvent',
+    description: 'The created subEvent (or race)',
     type: SubEvent
   })
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard)
+  @Post('')
   async createSubEvent(
+    @CurrentUser() user: JWTUser,
     @Body() createSubEventDto: CreateSubEventDto,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile('file') file: Express.Multer.File
   )
-  // : Promise<SubEvent> 
-  {
-
-    // console.log(createSubEventDto, file)
-    // return
-    return this.subEventsService.createSubEvent(createSubEventDto, file)
+    : Promise<SubEvent> {
+    console.log(file)
+    return this.subEventsService.createSubEvent(user, createSubEventDto, file)
   }
 
   @Get()
@@ -68,17 +70,24 @@ export class SubEventsController {
 
   @Get(':subEventId/runners')
   getSubEventRunner(
-      @Param('subEventId') subEventId: string,) {
-    return this.subEventsService.getSubEventRunner(+subEventId)
+    @Param('subEventId') subEventId: string
+  ) {
+    return this.subEventsService.getSubEventRunners(+subEventId)
   }
 
+  @ApiOperation({ summary: 'Add runners to race' })
+  @ApiBearerAuth('access-token')
+  @ApiBody({
+    type: AddRunnerToSubEventDto,
+    isArray: true
+  })
   @UseGuards(JwtAuthGuard)
   @Post(':subEventId/add-runners')
   addRunnerToSubEvent(
-      @CurrentUser() user: JWTUser,
-      @Param('subEventId') subEventId: string,
-      @Body(new ParseArrayPipe({ items: AddRunnerToSubEventDto })) AddRunnerToSubEventDto: AddRunnerToSubEventDto[]
-    ) {
+    @CurrentUser() user: JWTUser,
+    @Param('subEventId') subEventId: string,
+    @Body(new ParseArrayPipe({ items: AddRunnerToSubEventDto })) AddRunnerToSubEventDto: AddRunnerToSubEventDto[]
+  ) {
     return this.subEventsService.addRunnerToSubEvent(user.userId, +subEventId, AddRunnerToSubEventDto)
   }
 }

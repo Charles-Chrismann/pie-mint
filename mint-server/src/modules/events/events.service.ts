@@ -5,6 +5,8 @@ import { DrizzleService } from 'src/drizzle/drizzle.service';
 import { CreateEventDto } from './dto/event.dto';
 import { DBOrganization, JWTUser } from 'src/declaration';
 import { AuthorizationService } from 'src/authorization/authorization.service';
+import { Event } from './entities/event.entity';
+import { SubEvent } from '../sub-events/entities/sub-event.entity';
 
 @Injectable()
 export class EventsService {
@@ -14,7 +16,7 @@ export class EventsService {
     private authorization: AuthorizationService
   ) { }
 
-  async getEventById(eventId: number) {
+  async getEventById(eventId: number): Promise<Event> {
     return (await this.drizzle.client
       .select()
       .from(events_table)
@@ -25,7 +27,7 @@ export class EventsService {
         )
       )
       .limit(1)
-    )[0]
+    )[0] as Event
   }
 
   getEventSubEvents(eventId: number) {

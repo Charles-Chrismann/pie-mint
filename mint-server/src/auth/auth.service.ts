@@ -45,12 +45,13 @@ export class AuthService {
       lastname: user.lastname,
     }).returning())[0]
 
-    const { password, ...safeUser } = createdUser;
+    const { password, refresh_token, ...safeUser } = createdUser;
     const payload = { email: createdUser.email, sub: createdUserProfile.id, technicalId: createdUser.id };
     return {
       user: safeUser,
       profile: createdUserProfile,
       access_token: this.jwtService.sign(payload),
+      // TODO: add refresh token
     };
   }
 

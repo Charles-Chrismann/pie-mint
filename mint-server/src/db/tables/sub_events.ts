@@ -54,9 +54,9 @@ export const sub_events_table = pgTable("sub_events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
   name: varchar("name").notNull(),
-  // start_time: timestamp("start_time").notNull(),
+  start_date: timestamp("start_date").notNull(),
   distance: numeric("distance", { precision: 10, scale: 3 }),
-  positiveElevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
+  positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 
   event_id: integer("event_id").notNull().references(() => events_table.id),
   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
@@ -67,7 +67,7 @@ export const sub_event_positions_table = pgTable("sub_event_positions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   created_at: timestamp("created_at"),
 
-  lat: doublePrecision("lat"),
+  lat: doublePrecision("lat"), // TODO: change precision to have full lat & lng
   lng: doublePrecision("lng"),
   alt: doublePrecision("alt"),
 
@@ -78,7 +78,10 @@ export const sub_event_positions_table = pgTable("sub_event_positions", {
 export const sub_event_start_waves_table = pgTable("sub_event_start_waves", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
+  name: varchar("name"),
   start_time: timestamp('start_time').notNull(),
+  wave_index: integer("wave_index").notNull(),
+  is_elite: boolean("is_elite").notNull(),
 
   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
 });
