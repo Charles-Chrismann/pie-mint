@@ -28,7 +28,7 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t charleschrismann/mint-api:latest \
-            --push .
+            --push ./mint-server/
 
       - name: SSH and Deploy on Server
         uses: appleboy/ssh-action@v1.0.0
