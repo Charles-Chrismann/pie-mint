@@ -1,9 +1,9 @@
 import Api from "@/Api";
 import TrackPreview from "@/components/TrackPreview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Organization, SubEvent, Event, Track, TrackPoint } from "@/declarations";
+import type { SubEvent, Event, TrackPoint } from "@/declarations";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function EventSinglePage() {
   const { eventId } = useParams();

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import config from "@/config"
 import type { ApiResponseCreateOrganization, Organization } from "@/declarations"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
@@ -12,8 +13,8 @@ export default function OrganizationsPage() {
 
   // forms
   const [orgName, setOrgname] = useState("")
-  const [orgLogo, setOrgLogo] = useState<File>()
-  const [orgBanner, setOrgBanner] = useState<File>()
+  const [_orgLogo, setOrgLogo] = useState<File>()
+  const [_orgBanner, setOrgBanner] = useState<File>()
 
   function handleLogoUpload(e: React.FormEvent<HTMLInputElement>) {
     const file = (e.target as HTMLInputElement)?.files?.[0];
@@ -35,7 +36,7 @@ export default function OrganizationsPage() {
 
   useEffect(() => {
     async function fetchMyOrgs() {
-      const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/me/organizations', {
+      const res = await fetch(config.API_BASE_URL + '/api/me/organizations', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }

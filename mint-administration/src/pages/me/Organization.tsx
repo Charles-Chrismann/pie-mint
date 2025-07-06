@@ -1,17 +1,34 @@
 import Api from "@/Api";
-import { DatePicker } from "@/components/DatePicker";
 import { DateRangeMultipleMonthPicker } from "@/components/DateRangeMultipleMonthPicker";
 import MultipleTracksPreview from "@/components/MultipleTracksPreview";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Organization, SubEvent, Event, ApiResponseGetOrganizationTracks, TrackPoint } from "@/declarations";
+import config from "@/config";
+import type {
+  Organization,
+  SubEvent,
+  Event,
+  ApiResponseGetOrganizationTracks
+} from "@/declarations";
 import React from "react";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState
+} from "react";
 import type { DateRange } from "react-day-picker";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useParams
+} from "react-router-dom";
 
 export default function OrganizationPage() {
   const { organizationId } = useParams();
@@ -40,7 +57,7 @@ export default function OrganizationPage() {
 
   useEffect(() => {
     async function fetchOrg() {
-      const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/me/organizations/' + organizationId, {
+      const res = await fetch(config.API_BASE_URL + '/api/me/organizations/' + organizationId, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }
@@ -49,7 +66,7 @@ export default function OrganizationPage() {
       setOrganization(data)
     }
     async function fetchEvents() {
-      const res = await fetch(import.meta.env.VITE_API_BASE_URL + `/api/organizations/${organizationId}/events`, {
+      const res = await fetch(config.API_BASE_URL + `/api/organizations/${organizationId}/events`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }
@@ -66,7 +83,7 @@ export default function OrganizationPage() {
     async function fetchSubEvents() {
       if (!events.length) return
 
-      const ress = await Promise.all(events.map(e => fetch(import.meta.env.VITE_API_BASE_URL + `/api/events/${e.id}/sub-events/`, {
+      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/sub-events/`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }

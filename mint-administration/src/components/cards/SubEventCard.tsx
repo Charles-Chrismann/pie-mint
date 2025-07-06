@@ -1,13 +1,25 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import type { SubEvent, Track, TrackPoint } from "@/declarations";
+import {
+  useEffect,
+  useState
+} from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "../ui/card";
+import type {
+  SubEvent,
+  TrackPoint
+} from "@/declarations";
 import TrackPreview from "../TrackPreview";
 import Api from "@/Api";
 import { Link } from "react-router-dom";
 
 export default function SubEventCard({ subEventId, link = '#' }: { subEventId: number, link?: string }) {
 
-  const [loading, setLoading] = useState(true)
+  const [_loading, _setLoading] = useState(true)
   const [subEvent, setSubEvent] = useState<SubEvent>()
   const [track, setTrack] = useState<TrackPoint[]>()
 

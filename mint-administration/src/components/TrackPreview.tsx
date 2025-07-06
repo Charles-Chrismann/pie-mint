@@ -1,12 +1,11 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import { useEffect, useRef, useState } from "react";
-import type { Track, TrackPoint } from "@/declarations";
+import type { TrackPoint } from "@/declarations";
 
 export default function TrackPreview({track}: {track: TrackPoint[]}) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<L.Map>()
+  const [_map, setMap] = useState<L.Map>()
 
   useEffect(() => {
     if (!mapRef.current) return

@@ -45,17 +45,18 @@ services:
     restart: always
 
   mint-administration:
-    platform: linux/amd64
-    env_file:
-      - .env.administration
-    # platform: linux/amd64
-    build: ./mint-administration
+    build:
+      context: ./mint-administration
+      target: dev
     ports:
       - ${ADMINISTRATION_PORT}:5173
     volumes:
       - ./mint-administration:/app
       - mint-admin-node-modules:/app/node_modules
+    env_file:
+      - .env.administration
     restart: always
+
 
 volumes:
   mint-admin-node-modules:

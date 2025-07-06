@@ -1,15 +1,31 @@
 import Api from "@/Api"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { LastUpdatedRunner, MapStyleKey, Runner, SubEvent, SubEventRegistrationRunners, Track, TrackPoint } from "@/declarations"
-import { useEffect, useState } from "react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import type {
+  LastUpdatedRunner,
+  MapStyleKey,
+  Runner,
+  SubEvent,
+  SubEventRegistrationRunners,
+  TrackPoint
+} from "@/declarations"
+import {
+  useEffect,
+  useState
+} from "react"
 import { socket } from '../../socket'
 import LeafletMap from "@/LeafletMap"
 import { MAP_STYLES } from "@/constants"
 
 export default function EmulateRunPage() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [subEvents, setSubEvents] = useState<SubEvent[]>([])
-  const [subEventRunners, setSubEventRunners] = useState<SubEventRegistrationRunners[]>([])
+  const [_isConnected, setIsConnected] = useState(socket.connected);
+  const [_subEvents, setSubEvents] = useState<SubEvent[]>([])
+  const [_subEventRunners, _setSubEventRunners] = useState<SubEventRegistrationRunners[]>([])
   const [track, setTrack] = useState<TrackPoint[]>()
   const [lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
@@ -52,9 +68,9 @@ export default function EmulateRunPage() {
     };
   }, []);
 
-  async function fetchSubEventRunners(subEventId: string) {
-    setSubEventRunners(await Api.getPublic<SubEventRegistrationRunners[]>(`/sub-events/${subEventId}/runners`))
-  }
+  // async function fetchSubEventRunners(subEventId: string) {
+  //   setSubEventRunners(await Api.getPublic<SubEventRegistrationRunners[]>(`/sub-events/${subEventId}/runners`))
+  // }
 
   function changeMapStyle(e: MapStyleKey) {
     setMapStyle({name: e, tileLayer: MAP_STYLES[e] })
