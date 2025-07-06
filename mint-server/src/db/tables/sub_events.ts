@@ -67,7 +67,7 @@ export const sub_event_positions_table = pgTable("sub_event_positions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   created_at: timestamp("created_at"),
 
-  lat: doublePrecision("lat"), // TODO: change precision to have full lat & lng
+  lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   alt: doublePrecision("alt"),
 

@@ -1,11 +1,8 @@
 import { LoginForm } from "@/components/LoginForm";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-
-  const navigate = useNavigate()
   const { login } = useAuth()
 
   async function loginAsTestUser() {

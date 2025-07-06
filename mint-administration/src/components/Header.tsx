@@ -1,7 +1,18 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "./ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "./ui/avatar";
 import { Button } from "./ui/button";
 
 export default function Header() {

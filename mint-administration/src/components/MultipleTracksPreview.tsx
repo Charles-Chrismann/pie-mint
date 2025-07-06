@@ -1,7 +1,11 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef, useState } from "react";
-import type { ApiResponseGetOrganizationTracks, Track, TrackPoint } from "@/declarations";
+import {
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import type { ApiResponseGetOrganizationTracks} from "@/declarations";
 import { Button } from "./ui/button";
 import { MapPinned } from "lucide-react";
 

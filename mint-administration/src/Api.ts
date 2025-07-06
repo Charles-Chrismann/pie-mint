@@ -1,15 +1,14 @@
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "./contexts/AuthContext"
+import config from "./config"
 import type { ApiResponseLogin, HttpMethod } from "./declarations"
 import { UnauthorizedError } from "./errors/unauthorized.error"
 import { UnexistingError } from "./errors/unexisting.error"
 
 class Api {
-  API_BASE_HOST: string = import.meta.env.VITE_API_BASE_URL
-  API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL + '/api'
+  API_BASE_HOST: string = config.API_BASE_URL
+  API_BASE_URL: string = config.API_BASE_URL + '/api'
 
   async login(email: string, password: string): Promise<ApiResponseLogin> {
-    const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/auth/login', {
+    const res = await fetch(config.API_BASE_URL + '/api/auth/login', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"

@@ -1,10 +1,9 @@
 import Api from "@/Api"
 import ResponsiveCardGrid from "@/components/cards/ResponsiveCardGrid"
 import SubEventCard from "@/components/cards/SubEventCard"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Event, SubEvent } from "@/declarations"
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 export default function EventPage() {
   const { eventId } = useParams()

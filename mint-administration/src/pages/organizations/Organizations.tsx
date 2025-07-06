@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import config from "@/config"
 import type { Organization } from "@/declarations"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
@@ -8,7 +9,7 @@ export default function OrganizationsPage() {
 
   useEffect(() => {
     async function fetchMyOrgs() {
-      const res = await fetch(import.meta.env.VITE_API_BASE_URL + '/api/organizations', {
+      const res = await fetch(config.API_BASE_URL + '/api/organizations', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }

@@ -1,20 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
-import * as L from 'leaflet'
-import LeafletMap from './LeafletMap'
 import type { LastUpdatedRunner, Runner, Track } from './declarations'
 import { socket } from './socket'
 
 function App() {
-  const [pos, setPos] = useState("no pos")
-  const [error, setError] = useState("no error")
-  const [start, setStart] = useState(new Date)
-  const [end, setEnd] = useState(new Date)
-  const [count, setCount] = useState(0)
-  const [track, setTrack] = useState<Track>()
-  const [lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
+  const [_pos, _setPos] = useState("no pos")
+  const [_error, _setError] = useState("no error")
+  const [_start, _setStart] = useState(new Date)
+  const [_end, _setEnd] = useState(new Date)
+  const [_count, _setCount] = useState(0)
+  const [_track, setTrack] = useState<Track>()
+  const [_lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
   
   // const mapContainer = useRef<HTMLElement | null>(null);
 
@@ -52,8 +48,7 @@ function App() {
   //   triggerPos()
   // }, [])
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState<any[]>([]);
+  const [_isConnected, setIsConnected] = useState(socket.connected);
 
   useEffect(() => {
     function onConnect() {
@@ -62,10 +57,6 @@ function App() {
 
     function onDisconnect() {
       setIsConnected(false);
-    }
-
-    function onFooEvent(value: any) {
-      setFooEvents(previous => [...previous, value]);
     }
 
     function onPosition(data: Runner) {
@@ -103,13 +94,11 @@ function App() {
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('foo', onFooEvent);
     socket.on('position', onPosition)
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('foo', onFooEvent);
       socket.off('position', onPosition)
     };
   }, []);
@@ -127,7 +116,8 @@ function App() {
   }, [])
 
   return (
-    <LeafletMap track={track} lastUpdatedRunner={lastUpdatedRunner} />
+    <div></div>
+    // <LeafletMap track={track} lastUpdatedRunner={lastUpdatedRunner} />
   );
 
 

@@ -1,4 +1,4 @@
-name: Build & Deploy Mint API
+name: Build & Deploy Mint API + Front
 
 on:
   push:
@@ -7,13 +7,26 @@ on:
 
 jobs:
   build-and-deploy:
-    name: Build & Push Docker image, Deploy via SSH
+    name: Build & Push Docker images, Deploy via SSH
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # ---------- BUILD FRONT ----------
+      - name: Install and build mint-administration
+        working-directory: ./mint-administration
+        run: |
+          npm ci
+          npm run build
+
+      # ---------- DOCKER ----------
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -23,13 +36,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker Image
+      # --- Build and push API
+      - name: Build and Push mint-api Docker image
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t charleschrismann/mint-api:latest \
             --push ./mint-server/
 
+      # --- Build and push FRONT (mint-administration)
+      - name: Build and Push mint-administration Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t charleschrismann/mint-administration:latest \
+            --push ./mint-administration/
+
+      # ---------- DEPLOY ----------
       - name: SSH and Deploy on Server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -39,8 +62,10 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             cd mint/
-            echo "Pull de la dernière image..."
-            docker compose -f docker-compose.prod.yml pull mint-api
 
-            echo "Recréation et relancement du service..."
-            docker compose -f docker-compose.prod.yml up -d mint-api
+            echo "Pull des dernières images..."
+            docker compose -f docker-compose.prod.yml pull mint-api
+            docker compose -f docker-compose.prod.yml pull mint-administration
+
+            echo "Relancement des services..."
+            docker compose -f docker-compose.prod.yml up -d mint-api mint-administration

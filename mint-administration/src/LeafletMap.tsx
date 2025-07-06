@@ -1,13 +1,12 @@
-// LeafletMap.tsx
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LastUpdatedRunner, Runner, Track, TrackPoint } from './declarations';
+import type { LastUpdatedRunner, Runner, TrackPoint } from './declarations';
 
 export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: TrackPoint[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
-  const [markers, setMarkers] = useState<L.Marker[]>([])
+  const [_markers, _setMarkers] = useState<L.Marker[]>([])
   const [currentLayer, setCurrentLayer] = useState(mapStyle)
 
   const [runners, setRunners] = useState<Runner[]>([])
