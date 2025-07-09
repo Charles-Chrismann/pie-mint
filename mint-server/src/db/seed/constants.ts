@@ -12,11 +12,17 @@ const organizations: Organization[] = [
         name: 'Marathon de Nantes 2026',
         start_date: new Date("April 25, 2026"),
         end_date: new Date("April 26, 2026"),
+        event_campaign: {
+          id: 1,
+          name: 'Marathon de Nantes',
+          description: 'Les éditions du marathon de Nantes',
+        },
 
         sub_events: [
           {
             name: 'Marathon',
             standard_distance: 'Marathon',
+            race_discipline_id: 1,
 
             track: {
               name: 'La track du marathon de Nantes 2026',
@@ -39,6 +45,7 @@ const organizations: Organization[] = [
             name: 'Le 37km',
             distance: "37000",
             positive_elevation: "1500",
+            race_discipline_id: 2,
 
             track: {
               name: 'La track du LUT 2025 - 37km',
@@ -88,6 +95,7 @@ const organizations: Organization[] = [
             name: 'Ultra du Saint Jacques - 100M',
             distance: "134000",
             positive_elevation: "6050",
+            race_discipline_id: 2,
 
             track: {
               name: 'Ultra du Saint Jacques - 100M',
@@ -98,6 +106,7 @@ const organizations: Organization[] = [
             name: 'Grand Trail du Saint Jacques - 100K',
             distance: "81000",
             positive_elevation: "3400",
+            race_discipline_id: 2,
 
             track: {
               name: 'Grand Trail du Saint Jacques - 100K',
@@ -108,6 +117,7 @@ const organizations: Organization[] = [
             name: 'Monistrail - 50K',
             distance: "54000",
             positive_elevation: "2050",
+            race_discipline_id: 2,
 
             track: {
               name: 'Monistrail - 50K',
@@ -118,6 +128,7 @@ const organizations: Organization[] = [
             name: 'Les Chibottes - 20K',
             distance: "26000",
             positive_elevation: "750",
+            race_discipline_id: 2,
 
             track: {
               name: 'Les Chibottes - 20K',
@@ -128,6 +139,7 @@ const organizations: Organization[] = [
             name: 'Le 12 du Dolaizon',
             distance: "12000",
             positive_elevation: "210",
+            race_discipline_id: 2,
 
             track: {
               name: 'Le 12 du Dolaizon',
@@ -138,6 +150,7 @@ const organizations: Organization[] = [
             name: 'Rando 26km',
             distance: "26000",
             positive_elevation: "750",
+            race_discipline_id: 2,
 
             track: {
               name: 'Rando 26km',
@@ -155,6 +168,8 @@ const organizations: Organization[] = [
             name: "GRV - 100M",
             distance: "124000",
             positive_elevation: "6500",
+            race_discipline_id: 2,
+
             track: {
               name: "GRV - 100M",
               gpx: "GRV_100_M_3130c5bfc9.gpx"
@@ -164,6 +179,8 @@ const organizations: Organization[] = [
             name: "GRV - 100K",
             distance: "89000",
             positive_elevation: "4600",
+            race_discipline_id: 2,
+
             track: {
               name: "GRV - 100K",
               gpx: "GRV_100_K_d7ac898f01.gpx"
@@ -173,6 +190,8 @@ const organizations: Organization[] = [
             name: "GRV - 50K",
             distance: "49000",
             positive_elevation: "2200",
+            race_discipline_id: 2,
+
             track: {
               name: "GRV - 50K",
               gpx: "GRV_50_K_8a5d694e54.gpx"
@@ -182,6 +201,8 @@ const organizations: Organization[] = [
             name: "GRV - 20K",
             distance: "28000",
             positive_elevation: "1200",
+            race_discipline_id: 2,
+
             track: {
               name: "GRV - 20K",
               gpx: "GRV_20_K_2d74ea6b81.gpx"
@@ -198,6 +219,8 @@ const organizations: Organization[] = [
             name: "UTC100M",
             distance: "110000",
             positive_elevation: "7200",
+            race_discipline_id: 2,
+
             track: {
               name: "UTC100M",
               gpx: "UTC_2025_d905fb7c2a.gpx"
@@ -207,6 +230,8 @@ const organizations: Organization[] = [
             name: "RT100K",
             distance: "67000",
             positive_elevation: "3900",
+            race_discipline_id: 2,
+
             track: {
               name: "RT100K",
               gpx: "RT_2025_47643f828c.gpx"
@@ -216,6 +241,8 @@ const organizations: Organization[] = [
             name: "TT50K",
             distance: "33000",
             positive_elevation: "2400",
+            race_discipline_id: 2,
+
             track: {
               name: "TT50K",
               gpx: "TT_2025_70d0b03ccb.gpx"
@@ -225,6 +252,8 @@ const organizations: Organization[] = [
             name: "GT20K",
             distance: "17000",
             positive_elevation: "650",
+            race_discipline_id: 2,
+
             track: {
               name: "GT20K",
               gpx: "GT_2025_16337d7757.gpx"

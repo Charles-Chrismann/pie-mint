@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, ParseArrayPipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseArrayPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SubEventsService } from './sub-events.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SubEvent } from './entities/sub-event.entity';
-import { AddRunnerToSubEventDto, CreateSubEventDto, CreateSubEventWithFileDto } from './dto/sub-event.dto';
+import { AddRunnerToSubEventDto, CreateSubEventDto, CreateSubEventWithFileDto, GetSubEventsAroundQueryDto, UpdateSubEventDto, UpdateSubEventWithFileDto } from './dto/sub-event.dto';
 import { getSubEventTrack } from '../../utils';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
@@ -14,11 +14,6 @@ import { JWTUser } from 'src/declaration';
 export class SubEventsController {
 
   constructor(private subEventsService: SubEventsService) { }
-
-  @Get(':subEventId')
-  getSubEventById(@Param('subEventId') subEventId: string) {
-    return this.subEventsService.getSubEventById(+subEventId)
-  }
 
   @ApiOperation({ summary: 'Create a subEvent (a race)' })
   @ApiBearerAuth('access-token')
@@ -38,19 +33,27 @@ export class SubEventsController {
     @UploadedFile('file') file: Express.Multer.File
   )
     : Promise<SubEvent> {
-    console.log(file)
     return this.subEventsService.createSubEvent(user, createSubEventDto, file)
   }
 
-  @Get()
+  @ApiOperation({ summary: 'Update a subEvent (a race)' })
+  @ApiBearerAuth('access-token')
   @ApiResponse({
-    status: 200,
-    description: 'All SubEvents',
-    type: SubEvent,
-    isArray: true,
+    status: 201,
+    description: 'The created subEvent (or race)',
+    type: SubEvent
   })
-  getAllSubEvents(): Promise<SubEvent[]> {
-    return this.subEventsService.getAllSubEvents()
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async updateSubEvent(
+    @CurrentUser() user: JWTUser,
+    @Body() updateSubEventDto: UpdateSubEventDto,
+    @UploadedFile('file') file: Express.Multer.File,
+    @Param('id') id: string,
+  )
+    : Promise<any> {
+    return this.subEventsService.updateSubEvent(+id, user, updateSubEventDto)
   }
 
   // @Get(':id')
@@ -89,5 +92,35 @@ export class SubEventsController {
     @Body(new ParseArrayPipe({ items: AddRunnerToSubEventDto })) AddRunnerToSubEventDto: AddRunnerToSubEventDto[]
   ) {
     return this.subEventsService.addRunnerToSubEvent(user.userId, +subEventId, AddRunnerToSubEventDto)
+  }
+
+  @ApiOperation({ summary: 'Find races around a position' })
+  @ApiResponse({
+    status: 200,
+    description: 'The races around',
+    type: SubEvent,
+    isArray: true
+  })
+  @Get('around-me')
+  getSubEventAround(
+    @Query() query: GetSubEventsAroundQueryDto
+  ) {
+    return this.subEventsService.getSubEventsAround(query)
+  }
+
+  @Get(':subEventId')
+  getSubEventById(@Param('subEventId') subEventId: string) {
+    return this.subEventsService.getSubEventById(+subEventId)
+  }
+
+  @Get('')
+  @ApiResponse({
+    status: 200,
+    description: 'All SubEvents',
+    type: SubEvent,
+    isArray: true,
+  })
+  getAllSubEvents(): Promise<SubEvent[]> {
+    return this.subEventsService.getAllSubEvents()
   }
 }

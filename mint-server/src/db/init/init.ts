@@ -5,6 +5,8 @@ import {
   insertMediaContexts,
   insertMediaFormats,
   insertMediaTypes,
+  insertRaceDiscipline,
+  insertRaceDisciplineCategories,
   insertSettingTypes,
   insertSocialPlatforms,
   insertStandardDistances
@@ -24,6 +26,7 @@ async function main() {
     insertMediaContexts(),
     insertCountries(),
     insertSettingTypes(),
+    insertRaceDisciplineCategories(),
   ])
 
   console.log(`Inserting tables with relationship...`)
@@ -31,6 +34,7 @@ async function main() {
   await Promise.all([
     insertMediaTypes(),
     insertLanguages(),
+    insertRaceDiscipline(),
   ])
 
   console.log(`Database initialized in: ${performance.now() - now} ms`)

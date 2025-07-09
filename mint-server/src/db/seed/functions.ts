@@ -1,12 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "..";
-import { events_table, organizations_table, standard_distances_table, sub_event_start_waves_table, sub_events_table, track_points_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, sub_event_start_waves_table, sub_events_table, track_points_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
 import { chunkify, getPointsFromGpx } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
+import { sql } from "drizzle-orm";
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
@@ -53,7 +54,7 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 async function seedOriganizations({ count }: { count: number }) {
   const standard_distances = await db.select().from(standard_distances_table)
 
-  const createdOrgs = await db
+  const createdOrgs: any[] = await db
     .insert(organizations_table)
     .values(
       organizations.map(
@@ -64,7 +65,13 @@ async function seedOriganizations({ count }: { count: number }) {
         })
       )
     )
-    .returning()
+    .returning() as any[]
+
+  const createdEventCampaigns = await db
+  .insert(event_campaigns_table)
+  .values(
+    organizations.map(org => org.events.map(evt => evt.event_campaign ?? [])).flat(2)
+  )
 
   const values = organizations.map(
     org => org.events.map(
@@ -102,6 +109,13 @@ async function seedOriganizations({ count }: { count: number }) {
 
   const parser = new XMLParser({ ignoreAttributes: false })
 
+  //   await db.insert(track_points_table).values({
+  //               location: sql`ST_SetSRID(ST_MakePoint(-90.99999999999999, 18.7, 150), 4326)`,
+  //               is_first_point: true,
+  //               is_last_point: true,
+  //               track_id: 1,
+  // }).returning()
+
   const createdTrackpointLists = await Promise.all(
     organizations.map(org => org.events.map(evt => evt.sub_events.map(async se => {
       if (!se.track.gpx) return
@@ -113,15 +127,13 @@ async function seedOriganizations({ count }: { count: number }) {
       const gpxData = parser.parse(gpxStr)
       const points = getPointsFromGpx(gpxData)
 
-      const chunks = chunkify(points, 512)
+      const chunks = chunkify(points, 256)
 
       return Promise.all(
         chunks.map((chunk, chunkI) =>
           db.insert(track_points_table).values(
             chunk.map((p, i) => ({
-              alt: p.alt,
-              lat: p.lat,
-              lng: p.lng,
+              location: sql`ST_SetSRID(ST_MakePoint(${p.lng}, ${p.lat}, ${p.alt}), 4326)`,
               is_first_point: i === 0 && chunkI === 0,
               is_last_point: i === chunk.length - 1 && chunkI === chunks.length - 1,
               track_id,
@@ -136,7 +148,7 @@ async function seedOriganizations({ count }: { count: number }) {
 
   const createdSegmentsList = await Promise.all(
     createdTrackpointListsFlat.map((points) => {
-      const chunks = chunkify(points, 512)
+      const chunks = chunkify(points, 256)
       return Promise.all(
         chunks.map(
           (chunk, chunkI) => db.insert(track_segments_table).values(
@@ -166,8 +178,11 @@ async function seedOriganizations({ count }: { count: number }) {
       positive_elevation: se.positive_elevation,
       start_date: evt.start_date,
       standard_distance_id: standard_distances.find(sd => sd.name === se.standard_distance)?.id,
-      event_id: createdEvents!.find(e => e.name === evt.name)!.id,
+      race_discipline_id: se.race_discipline_id,
+
       track_id: createdTracks!.find(t => t.name === se.track.name)!.id,
+      event_id: createdEvents!.find(e => e.name === evt.name)!.id,
+      organization_id: createdOrgs.find(o => o.name === org.name)!.id,
     })))).flat(2)
   ).returning() as any[]
 

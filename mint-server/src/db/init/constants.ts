@@ -7,6 +7,8 @@ import {
   DBInitSettingType,
   DBGroupUtility,
   DBInitPermission,
+  DBInitRaceDiscipline,
+  DBInitRaceDisciplineCategory,
 } from "./declarations"
 
 const standard_distances: [string, string][] = [
@@ -393,6 +395,19 @@ const DBInitSettingTypes: DBInitSettingType[] = [
   { name: 'string' },
 ]
 
+const DBInitRaceDisciplineCategories: DBInitRaceDisciplineCategory[] = [
+  {id: 1, name: 'Running'},
+  {id: 2, name: 'Cycling'},
+]
+
+const DBInitRaceDisciplines: DBInitRaceDiscipline[] = [
+  { id: 1, race_discipline_category_id: 1, name: 'Road' },
+  { id: 2, race_discipline_category_id: 1, name: 'Trail' },
+  { id: 3, race_discipline_category_id: 1, name: 'Canicross' },
+  { id: 4, race_discipline_category_id: 1, name: 'Obstacle' },
+  { id: 5, race_discipline_category_id: 2, name: 'Road' },
+]
+
 export {
   standard_distances,
   action_levels,
@@ -403,4 +418,6 @@ export {
   DBInitCountries,
   DBInitLanguages,
   DBInitSettingTypes,
+  DBInitRaceDisciplineCategories,
+  DBInitRaceDisciplines,
 }

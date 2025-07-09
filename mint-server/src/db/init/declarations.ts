@@ -61,6 +61,17 @@ interface DBInitPermission {
   description_key: string
 }
 
+interface DBInitRaceDiscipline {
+  id: number
+  name: string
+  race_discipline_category_id: number
+}
+
+interface DBInitRaceDisciplineCategory {
+  id: number
+  name: string
+}
+
 export {
   DBInitMediaFormat,
   DBInitMediaType,
@@ -72,4 +83,6 @@ export {
   DBInitSettingType,
   DBGroupUtility,
   DBInitPermission,
+  DBInitRaceDiscipline,
+  DBInitRaceDisciplineCategory,
 }

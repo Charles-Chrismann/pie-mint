@@ -1,4 +1,4 @@
-import { boolean, date, integer, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user_profiles_table } from "./users";
 import { medias_table } from "./medias";
 import { groups_table } from "./controls";
@@ -22,6 +22,13 @@ export const organizations__groups_table = pgTable("organizations__groups", {
   primaryKey({ name: 'pk_organizations__groups', columns: [table.organization_id, table.group_id] }),
 ]);
 
+export const event_campaigns_table = pgTable("event_campaigns", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+
+  name: varchar("name", { length: 256 }).notNull(),
+  description: text("description"),
+});
+
 export const events_table = pgTable("events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
@@ -31,5 +38,6 @@ export const events_table = pgTable("events", {
   start_date: timestamp("start_date"),
   end_date: timestamp("end_date"),
   
+  event_campaign_id: integer("event_campaign_id").references(() => event_campaigns_table.id),
   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
 });

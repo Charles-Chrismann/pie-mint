@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    image: postgis/postgis
     restart: always
     ports:
       - 5432:5432
@@ -50,7 +50,7 @@ services:
       target: dev
     ports:
       - ${ADMINISTRATION_PORT}:5173
-    volumes:
+    volumes:  
       - ./mint-administration:/app
       - mint-admin-node-modules:/app/node_modules
     env_file:

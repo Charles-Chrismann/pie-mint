@@ -67,7 +67,7 @@ export interface SubEvent {
   id: number
   name: string
   distance: string | null
-  positive_elevation: number | null
+  positive_elevation: string | null
   event_id: number
   standard_distance_id: number | null
   track_id: number
@@ -135,3 +135,17 @@ export interface FormAddRunner {
 }
 
 export type MapStyleKey = keyof typeof MAP_STYLES;
+
+export interface FormUpdateSubEvent {
+  name?: string
+  start_date?: Date
+  distance?: string
+  standard_distance_id?: number
+  positive_elevation?: string
+}
+
+export interface StandardDistance {
+  id: number
+  name: string
+  distance: string
+}

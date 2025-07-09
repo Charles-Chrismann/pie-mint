@@ -17,15 +17,23 @@ export interface SubEvent {
   distance?: string
   positive_elevation?: string
   standard_distance?: standard_distance
+  race_discipline_id: number
 
   track: Track
   start_waves?: StartWave[]
+}
+
+export interface EventCampaign {
+  id: number
+  name: string
+  description: string
 }
 
 export interface Event {
   name: string
   start_date: Date
   end_date: Date
+  event_campaign?: EventCampaign
 
   sub_events: SubEvent[]
 }

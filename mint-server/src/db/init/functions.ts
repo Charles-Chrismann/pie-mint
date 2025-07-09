@@ -6,6 +6,8 @@ import {
   media_contexts_table,
   media_formats_table,
   media_types_table,
+  race_discipline_categories_table,
+  race_discipline_table,
   setting_types_table,
   social_platforms_table,
   standard_distances_table
@@ -17,6 +19,8 @@ import {
   DBInitMediaContexts,
   DBInitMediaFormats,
   DBInitMediaTypes,
+  DBInitRaceDisciplineCategories,
+  DBInitRaceDisciplines,
   DBInitSettingTypes,
   social_platforms,
   standard_distances 
@@ -92,6 +96,14 @@ async function insertSettingTypes() {
   await db.insert(setting_types_table).values(DBInitSettingTypes)
 }
 
+async function insertRaceDisciplineCategories() {
+  await db.insert(race_discipline_categories_table).values(DBInitRaceDisciplineCategories)
+}
+
+async function insertRaceDiscipline() {
+  await db.insert(race_discipline_table).values(DBInitRaceDisciplines)
+}
+
 export {
   insertStandardDistances,
   insertActionLevels,
@@ -102,4 +114,6 @@ export {
   insertCountries,
   insertLanguages,
   insertSettingTypes,
+  insertRaceDisciplineCategories,
+  insertRaceDiscipline,
 }

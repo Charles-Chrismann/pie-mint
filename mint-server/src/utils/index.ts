@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { eq, sql } from "drizzle-orm"
 import { db } from "../db"
 import { track_points_table, track_segments_table, tracks_table } from "../db/schema"
 
@@ -27,8 +27,8 @@ export async function getSubEventTrack(subEventId: number) {
       .select(
         {
           id: track_points_table.id,
-          lat: track_points_table.lat,
-          lng: track_points_table.lng,
+          lat: sql<number>`ST_Y(${track_points_table.location})`,
+          lng: sql<number>`ST_X(${track_points_table.location})`,
           is_first_point: track_points_table.is_first_point,
           is_last_point: track_points_table.is_last_point,
           track_id: track_points_table.track_id,

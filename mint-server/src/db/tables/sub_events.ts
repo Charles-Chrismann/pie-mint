@@ -1,6 +1,8 @@
-import { boolean, doublePrecision, foreignKey, geometry, integer, numeric, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
-import { events_table } from "./organizations";
+import { boolean, check, doublePrecision, foreignKey, geometry, integer, numeric, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { events_table, organizations_table } from "./organizations";
 import { user_profiles_table } from "./users";
+import { sql } from "drizzle-orm";
+import { race_disciplines_table } from "./enums";
 
 export const standard_distances_table = pgTable("standard_distances", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -19,9 +21,10 @@ export const track_points_table = pgTable("track_points", {
   // in_track_id: integer("in_track_id").notNull(),
 
   // point: geometry('point', {type: "point", srid: 4326}),
-  lat: doublePrecision("lat"),
-  lng: doublePrecision("lng"),
-  alt: doublePrecision("alt"),
+  // lat: doublePrecision("lat"),
+  // lng: doublePrecision("lng"),
+  // alt: doublePrecision("alt"),
+  location: geometry('location', { type: 'point', srid: 4326 }).notNull(),
   is_first_point: boolean('is_first_point').notNull(),
   is_last_point: boolean('is_last_point').notNull(),
 
@@ -58,10 +61,23 @@ export const sub_events_table = pgTable("sub_events", {
   distance: numeric("distance", { precision: 10, scale: 3 }),
   positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 
-  event_id: integer("event_id").notNull().references(() => events_table.id),
   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
   track_id: integer("track_id").references(() => tracks_table.id),
-});
+  race_discipline_id: integer("race_discipline_id").notNull().references(() => race_disciplines_table.id),
+  event_id: integer("event_id").references(() => events_table.id),
+  organization_id: integer("organization_id").references(() => organizations_table.id),
+  organizer_id: integer("created_by_id").references(() => user_profiles_table.id),
+},
+  (table) => [
+    check("event_requires_org", sql`
+      ${table.event_id} IS NULL OR ${table.organization_id} IS NOT NULL
+    `),
+
+    check("organizer_must_be_alone", sql`
+      ${table.organizer_id} IS NULL OR 
+      (${table.event_id} IS NULL AND ${table.organization_id} IS NULL)
+    `)
+  ]);
 
 export const sub_event_positions_table = pgTable("sub_event_positions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
