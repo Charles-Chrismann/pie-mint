@@ -1,19 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateSubEventDto {
+export class CreateRaceDto {
   @IsString()
   @ApiProperty({
     example: "A new race"
   })
   readonly name: string;
 
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @ApiProperty({
     example: "2025-07-05T09:00:00.000Z",
+    nullable: true,
   })
-  readonly start_date: string;
+  readonly start_date: Date;
 
   @IsOptional()
   @Type(() => Number)
@@ -30,12 +32,23 @@ export class CreateSubEventDto {
   })
   readonly positive_elevation?: string;
 
+  @IsOptional()
   @IsInt()
   @Type(() => Number)
   @ApiProperty({
-    example: 1
+    required: false,
+    example: 1,
   })
-  readonly event_id: number;
+  readonly event_id?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  @ApiProperty({
+    required: false,
+    example: 1,
+  })
+  readonly organization_id?: number;
 
   @IsOptional()
   @Transform(({ value }) => value === "" ? undefined : value)
@@ -45,9 +58,18 @@ export class CreateSubEventDto {
     description: "Utile si la course est dans un format standard type marathon, voir /api/standard-distances" // TODO: ajouter une table pour la discipline: (running, trail, triathlon, vélo...)
   })
   readonly standard_distance_id?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => value === "" ? undefined : value)
+  @ApiProperty({
+    required: false,
+    default: "",
+    description: "" // TODO: ajouter une table pour la discipline: (running, trail, triathlon, vélo...)
+  })
+  readonly race_discipline_id: number = 2;
 }
 
-export class CreateSubEventWithFileDto extends CreateSubEventDto {
+export class CreateRaceWithFileDto extends CreateRaceDto {
   @ApiProperty({
     type: 'string',
     format: 'binary',
@@ -56,7 +78,7 @@ export class CreateSubEventWithFileDto extends CreateSubEventDto {
   file: Express.Multer.File;
 }
 
-export class UpdateSubEventDto {
+export class UpdateRaceDto {
 
   @IsOptional()
   @IsString()
@@ -89,7 +111,7 @@ export class UpdateSubEventDto {
   readonly standard_distance_id?: number;
 }
 
-export class UpdateSubEventWithFileDto extends UpdateSubEventDto {
+export class UpdateRaceWithFileDto extends UpdateRaceDto {
   @ApiProperty({
     type: 'string',
     format: 'binary',
@@ -98,7 +120,7 @@ export class UpdateSubEventWithFileDto extends UpdateSubEventDto {
   file: Express.Multer.File;
 }
 
-export class AddRunnerToSubEventDto {
+export class AddRunnerToRaceDto {
   @IsNumber()
   @ApiProperty({
     example: 1
@@ -137,7 +159,7 @@ export class AddRunnerToSubEventDto {
   readonly sub_event_start_wave_id?: number;
 }
 
-export class GetSubEventsAroundQueryDto {
+export class GetRacesAroundQueryDto {
   @ApiProperty({
     required: true,
     default: "44.99637,3.82174"

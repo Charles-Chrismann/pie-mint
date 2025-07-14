@@ -38,6 +38,7 @@ export const events_table = pgTable("events", {
   start_date: timestamp("start_date"),
   end_date: timestamp("end_date"),
   
+  // TODO: add created_by
   event_campaign_id: integer("event_campaign_id").references(() => event_campaigns_table.id),
   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
 });

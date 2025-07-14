@@ -1,4 +1,4 @@
-import { boolean, check, doublePrecision, foreignKey, geometry, integer, numeric, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, check, customType, doublePrecision, foreignKey, integer, numeric, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { events_table, organizations_table } from "./organizations";
 import { user_profiles_table } from "./users";
 import { sql } from "drizzle-orm";
@@ -16,44 +16,56 @@ export const tracks_table = pgTable("tracks", {
   name: varchar("name"),
 });
 
-export const track_points_table = pgTable("track_points", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  // in_track_id: integer("in_track_id").notNull(),
+// export const track_points_table = pgTable("track_points", {
+//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   // in_track_id: integer("in_track_id").notNull(),
 
-  // point: geometry('point', {type: "point", srid: 4326}),
-  // lat: doublePrecision("lat"),
-  // lng: doublePrecision("lng"),
-  // alt: doublePrecision("alt"),
-  location: geometry('location', { type: 'point', srid: 4326 }).notNull(),
-  is_first_point: boolean('is_first_point').notNull(),
-  is_last_point: boolean('is_last_point').notNull(),
+//   // point: geometry('point', {type: "point", srid: 4326}),
+//   // lat: doublePrecision("lat"),
+//   // lng: doublePrecision("lng"),
+//   // alt: doublePrecision("alt"),
+//   location: geometry('location', { type: 'point', srid: 4326 }).notNull(),
+//   is_first_point: boolean('is_first_point').notNull(),
+//   is_last_point: boolean('is_last_point').notNull(),
 
-  track_id: integer("track_id").notNull(),
-  // in_track_previous_id: integer("in_track_previous_id"),
-}, 
-// (table) => [
-//   primaryKey({
-//     columns: [
-//       table.track_id,
-//       table.in_track_id
-//     ],
-//   }),
-//   foreignKey({
-//     columns: [table.track_id, table.in_track_previous_id],
-//     foreignColumns: [table.track_id, table.in_track_id],
-//   })
-// ]
-);
+//   track_id: integer("track_id").notNull(),
+//   // in_track_previous_id: integer("in_track_previous_id"),
+// }, 
+// // (table) => [
+// //   primaryKey({
+// //     columns: [
+// //       table.track_id,
+// //       table.in_track_id
+// //     ],
+// //   }),
+// //   foreignKey({
+// //     columns: [table.track_id, table.in_track_previous_id],
+// //     foreignColumns: [table.track_id, table.in_track_id],
+// //   })
+// // ]
+// );
+
+const geometry = customType<{
+  data: string;
+  driverData: string;
+}>({
+  dataType() {
+    return 'geometry(LINESTRINGZ,4326)';
+  },
+});
 
 export const track_segments_table = pgTable("track_segments", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
   track_id: integer("track_id").references(() => tracks_table.id),
-  start_position_id: integer("start_position_id").references(() => track_points_table.id),
-  end_position_id: integer("end_position_id").references(() => track_points_table.id),
+  // segment: geometry('pointz', {type: "pointz", srid: 4326})
+  segment: geometry('segment').notNull(),
+  segment_index: integer('segment_index').notNull(),
+  // start_position_id: integer("start_position_id").references(() => track_points_table.id),
+  // end_position_id: integer("end_position_id").references(() => track_points_table.id),
 })
 
-export const sub_events_table = pgTable("sub_events", {
+export const races_table = pgTable("race", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
   name: varchar("name").notNull(),
@@ -64,9 +76,14 @@ export const sub_events_table = pgTable("sub_events", {
   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
   track_id: integer("track_id").references(() => tracks_table.id),
   race_discipline_id: integer("race_discipline_id").notNull().references(() => race_disciplines_table.id),
+
+  //If a race is in an event, in wich case the property organization_id should be defined
   event_id: integer("event_id").references(() => events_table.id),
   organization_id: integer("organization_id").references(() => organizations_table.id),
-  organizer_id: integer("created_by_id").references(() => user_profiles_table.id),
+
+  // If a race is owned by a user, event_id && organization_id should be null
+  created_by_id: integer("created_by_id").references(() => user_profiles_table.id),
+  owner_id: integer("owner_id").references(() => user_profiles_table.id),
 },
   (table) => [
     check("event_requires_org", sql`
@@ -74,9 +91,16 @@ export const sub_events_table = pgTable("sub_events", {
     `),
 
     check("organizer_must_be_alone", sql`
-      ${table.organizer_id} IS NULL OR 
-      (${table.event_id} IS NULL AND ${table.organization_id} IS NULL)
-    `)
+  (
+    ${table.created_by_id} IS NULL AND ${table.owner_id} IS NULL
+  ) OR (
+    ${table.created_by_id} IS NOT NULL AND 
+    ${table.owner_id} IS NOT NULL AND 
+    ${table.event_id} IS NULL AND 
+    ${table.organization_id} IS NULL
+  )
+`)
+
   ]);
 
 export const sub_event_positions_table = pgTable("sub_event_positions", {
@@ -99,7 +123,7 @@ export const sub_event_start_waves_table = pgTable("sub_event_start_waves", {
   wave_index: integer("wave_index").notNull(),
   is_elite: boolean("is_elite").notNull(),
 
-  sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+  sub_event_id: integer("sub_event_id").notNull().references(() => races_table.id),
 });
 
 export const registrations_table = pgTable("registrations", {
@@ -111,7 +135,7 @@ export const registrations_table = pgTable("registrations", {
   bib_alias: varchar("bib_alias"),
 
   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
-  sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
+  sub_event_id: integer("sub_event_id").references(() => races_table.id),
   sub_event_start_wave_id: integer("sub_event_start_wave_id").references(() => sub_event_start_waves_table.id)
 });
 
@@ -121,7 +145,7 @@ export const time_barriers_table = pgTable("time_barriers", {
   name: varchar("name").notNull(),
   is_end: boolean("is_end"),
 
-  sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
+  sub_event_id: integer("sub_event_id").references(() => races_table.id),
 
   track_id: integer("position_id").notNull(),
   position_id: integer("position_id").notNull(),

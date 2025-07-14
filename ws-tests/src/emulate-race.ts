@@ -19,7 +19,7 @@ const API_BASE_URL = (process.env.API_URL || 'http://localhost:3000') + '/api'
 
 async function main() {
 
-  const registrations = await (await fetch(API_BASE_URL + '/sub-events/2/runners')).json()
+  const registrations = await (await fetch(API_BASE_URL + '/races/2/runners')).json()
 
   console.log(registrations)
 

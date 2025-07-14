@@ -1,5 +1,5 @@
 {
-  "id": "f750cdb8-00ce-4b8a-ab99-68331738c771",
+  "id": "ef60ec83-0a7f-4612-8980-8848f68ef32f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -186,6 +186,48 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.event_campaigns": {
+      "name": "event_campaigns",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "event_campaigns_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.events": {
       "name": "events",
       "schema": "",
@@ -238,6 +280,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "event_campaign_id": {
+          "name": "event_campaign_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "organization_id": {
           "name": "organization_id",
           "type": "integer",
@@ -247,6 +295,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "events_event_campaign_id_event_campaigns_id_fk": {
+          "name": "events_event_campaign_id_event_campaigns_id_fk",
+          "tableFrom": "events",
+          "tableTo": "event_campaigns",
+          "columnsFrom": [
+            "event_campaign_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "events_organization_id_organizations_id_fk": {
           "name": "events_organization_id_organizations_id_fk",
           "tableFrom": "events",
@@ -740,6 +801,203 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.race": {
+      "name": "race",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "race_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "distance": {
+          "name": "distance",
+          "type": "numeric(10, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "positive_elevation": {
+          "name": "positive_elevation",
+          "type": "numeric(10, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "standard_distance_id": {
+          "name": "standard_distance_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "race_discipline_id": {
+          "name": "race_discipline_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by_id": {
+          "name": "created_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_standard_distance_id_standard_distances_id_fk": {
+          "name": "race_standard_distance_id_standard_distances_id_fk",
+          "tableFrom": "race",
+          "tableTo": "standard_distances",
+          "columnsFrom": [
+            "standard_distance_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_track_id_tracks_id_fk": {
+          "name": "race_track_id_tracks_id_fk",
+          "tableFrom": "race",
+          "tableTo": "tracks",
+          "columnsFrom": [
+            "track_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_race_discipline_id_race_discipline_id_fk": {
+          "name": "race_race_discipline_id_race_discipline_id_fk",
+          "tableFrom": "race",
+          "tableTo": "race_discipline",
+          "columnsFrom": [
+            "race_discipline_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_event_id_events_id_fk": {
+          "name": "race_event_id_events_id_fk",
+          "tableFrom": "race",
+          "tableTo": "events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_organization_id_organizations_id_fk": {
+          "name": "race_organization_id_organizations_id_fk",
+          "tableFrom": "race",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_created_by_id_user_profiles_id_fk": {
+          "name": "race_created_by_id_user_profiles_id_fk",
+          "tableFrom": "race",
+          "tableTo": "user_profiles",
+          "columnsFrom": [
+            "created_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "race_owner_id_user_profiles_id_fk": {
+          "name": "race_owner_id_user_profiles_id_fk",
+          "tableFrom": "race",
+          "tableTo": "user_profiles",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "event_requires_org": {
+          "name": "event_requires_org",
+          "value": "\n      \"race\".\"event_id\" IS NULL OR \"race\".\"organization_id\" IS NOT NULL\n    "
+        },
+        "organizer_must_be_alone": {
+          "name": "organizer_must_be_alone",
+          "value": "\n  (\n    \"race\".\"created_by_id\" IS NULL AND \"race\".\"owner_id\" IS NULL\n  ) OR (\n    \"race\".\"created_by_id\" IS NOT NULL AND \n    \"race\".\"owner_id\" IS NOT NULL AND \n    \"race\".\"event_id\" IS NULL AND \n    \"race\".\"organization_id\" IS NULL\n  )\n"
+        }
+      },
+      "isRLSEnabled": false
+    },
     "public.registrations": {
       "name": "registrations",
       "schema": "",
@@ -820,10 +1078,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "registrations_sub_event_id_sub_events_id_fk": {
-          "name": "registrations_sub_event_id_sub_events_id_fk",
+        "registrations_sub_event_id_race_id_fk": {
+          "name": "registrations_sub_event_id_race_id_fk",
           "tableFrom": "registrations",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
           ],
@@ -1042,124 +1300,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sub_event_start_waves_sub_event_id_sub_events_id_fk": {
-          "name": "sub_event_start_waves_sub_event_id_sub_events_id_fk",
+        "sub_event_start_waves_sub_event_id_race_id_fk": {
+          "name": "sub_event_start_waves_sub_event_id_race_id_fk",
           "tableFrom": "sub_event_start_waves",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.sub_events": {
-      "name": "sub_events",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "sub_events_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "start_date": {
-          "name": "start_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "distance": {
-          "name": "distance",
-          "type": "numeric(10, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "positive_elevation": {
-          "name": "positive_elevation",
-          "type": "numeric(10, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "standard_distance_id": {
-          "name": "standard_distance_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "track_id": {
-          "name": "track_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "sub_events_event_id_events_id_fk": {
-          "name": "sub_events_event_id_events_id_fk",
-          "tableFrom": "sub_events",
-          "tableTo": "events",
-          "columnsFrom": [
-            "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sub_events_standard_distance_id_standard_distances_id_fk": {
-          "name": "sub_events_standard_distance_id_standard_distances_id_fk",
-          "tableFrom": "sub_events",
-          "tableTo": "standard_distances",
-          "columnsFrom": [
-            "standard_distance_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sub_events_track_id_tracks_id_fk": {
-          "name": "sub_events_track_id_tracks_id_fk",
-          "tableFrom": "sub_events",
-          "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
           ],
           "columnsTo": [
             "id"
@@ -1222,10 +1368,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "time_barriers_sub_event_id_sub_events_id_fk": {
-          "name": "time_barriers_sub_event_id_sub_events_id_fk",
+        "time_barriers_sub_event_id_race_id_fk": {
+          "name": "time_barriers_sub_event_id_race_id_fk",
           "tableFrom": "time_barriers",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
           ],
@@ -1236,60 +1382,6 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.track_points": {
-      "name": "track_points",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "track_points_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
-        },
-        "location": {
-          "name": "location",
-          "type": "geometry(point)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_first_point": {
-          "name": "is_first_point",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_last_point": {
-          "name": "is_last_point",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "track_id": {
-          "name": "track_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -1323,17 +1415,17 @@
           "primaryKey": false,
           "notNull": false
         },
-        "start_position_id": {
-          "name": "start_position_id",
-          "type": "integer",
+        "segment": {
+          "name": "segment",
+          "type": "geometry(LINESTRINGZ,4326)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "end_position_id": {
-          "name": "end_position_id",
+        "segment_index": {
+          "name": "segment_index",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -1344,32 +1436,6 @@
           "tableTo": "tracks",
           "columnsFrom": [
             "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "track_segments_start_position_id_track_points_id_fk": {
-          "name": "track_segments_start_position_id_track_points_id_fk",
-          "tableFrom": "track_segments",
-          "tableTo": "track_points",
-          "columnsFrom": [
-            "start_position_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "track_segments_end_position_id_track_points_id_fk": {
-          "name": "track_segments_end_position_id_track_points_id_fk",
-          "tableFrom": "track_segments",
-          "tableTo": "track_points",
-          "columnsFrom": [
-            "end_position_id"
           ],
           "columnsTo": [
             "id"
@@ -2379,10 +2445,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "medias_sub_event_id_sub_events_id_fk": {
-          "name": "medias_sub_event_id_sub_events_id_fk",
+        "medias_sub_event_id_race_id_fk": {
+          "name": "medias_sub_event_id_race_id_fk",
           "tableFrom": "medias",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
           ],
@@ -2511,10 +2577,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "custom_settings_sub_event_id_sub_events_id_fk": {
-          "name": "custom_settings_sub_event_id_sub_events_id_fk",
+        "custom_settings_sub_event_id_race_id_fk": {
+          "name": "custom_settings_sub_event_id_race_id_fk",
           "tableFrom": "custom_settings",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
           ],
@@ -2965,10 +3031,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "profile_links_sub_event_id_sub_events_id_fk": {
-          "name": "profile_links_sub_event_id_sub_events_id_fk",
+        "profile_links_sub_event_id_race_id_fk": {
+          "name": "profile_links_sub_event_id_race_id_fk",
           "tableFrom": "profile_links",
-          "tableTo": "sub_events",
+          "tableTo": "race",
           "columnsFrom": [
             "sub_event_id"
           ],
@@ -3319,7 +3385,7 @@
           "primaryKey": true,
           "notNull": true,
           "identity": {
-            "type": "always",
+            "type": "byDefault",
             "name": "action_levels_id_seq",
             "schema": "public",
             "increment": "1",
@@ -3332,13 +3398,105 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_discipline_categories": {
+      "name": "race_discipline_categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "race_discipline_categories_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.race_discipline": {
+      "name": "race_discipline",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "race_discipline_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "race_discipline_category_id": {
+          "name": "race_discipline_category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "race_discipline_race_discipline_category_id_race_discipline_categories_id_fk": {
+          "name": "race_discipline_race_discipline_category_id_race_discipline_categories_id_fk",
+          "tableFrom": "race_discipline",
+          "tableTo": "race_discipline_categories",
+          "columnsFrom": [
+            "race_discipline_category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

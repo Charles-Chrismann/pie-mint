@@ -7,7 +7,7 @@ import {
   media_formats_table,
   media_types_table,
   race_discipline_categories_table,
-  race_discipline_table,
+  race_disciplines_table,
   setting_types_table,
   social_platforms_table,
   standard_distances_table
@@ -101,7 +101,7 @@ async function insertRaceDisciplineCategories() {
 }
 
 async function insertRaceDiscipline() {
-  await db.insert(race_discipline_table).values(DBInitRaceDisciplines)
+  await db.insert(race_disciplines_table).values(DBInitRaceDisciplines)
 }
 
 export {

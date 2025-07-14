@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LastUpdatedRunner, Runner, TrackPoint } from './declarations';
+import type { LastUpdatedRunner, LineString, Runner, TrackPoint } from './declarations';
 
-export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: TrackPoint[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
+export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: LineString[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
   const [_markers, _setMarkers] = useState<L.Marker[]>([])
@@ -61,8 +61,15 @@ export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { tra
 
     // console.log(points)
 
-    const polyline = L.polyline(track.map((p: any) => [p['lat'], p['lng']]), { color: 'blue' }).addTo(map!);
-    console.log(polyline)
+    console.log(track)
+
+    const geoJSON = L.geoJSON(track, {
+          style: {
+            color: 'blue',
+            weight: 4
+          }
+        }).addTo(map!);
+    console.log(geoJSON)
     // map!.fitBounds(polyline.getBounds());
 
     // for(let p of track.points) {

@@ -6,15 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { FormAddRunner, FormUpdateSubEvent, StandardDistance, SubEvent, SubEventRegistrationRunners } from "@/declarations";
+import type {
+  FormAddRunner,
+  FormUpdateRace,
+  StandardDistance,
+  Race,
+  RaceRegistrationRunners
+} from "@/declarations";
 import { formUpdator } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-export default function SubEventPage() {
-  const { subEventId } = useParams();
-  const [subEvent, setSubEvent] = useState<SubEvent>()
-  const [subEventRunners, setSubEventRunners] = useState<SubEventRegistrationRunners[]>([])
+export default function RacePage() {
+  const { raceId } = useParams();
+  const [race, setRace] = useState<Race>()
+  const [raceRunners,setRaceRunners] = useState<RaceRegistrationRunners[]>([])
   const [form, setForm] = useState<FormAddRunner>({
     user_profile_id: undefined,
     bib_alias: undefined,
@@ -23,31 +29,31 @@ export default function SubEventPage() {
     sub_event_start_wave_id: undefined
   })
 
-  const [subEventUpdateForm, setSubEventUpdateForm] = useState<FormUpdateSubEvent>({})
+  const [raceUpdateForm, setRaceUpdateForm] = useState<FormUpdateRace>({})
   const [is_standard_distance, setIs_standard_distance] = useState(false)
   const [standardDistances, setStandardDistances] = useState<StandardDistance[]>([])
 
-  const [updateForm] = formUpdator(subEvent!, subEventUpdateForm, setSubEventUpdateForm)
+  const [updateForm] = formUpdator(race!, raceUpdateForm, setRaceUpdateForm)
 
   useEffect(() => {
-    async function fetchSubEvent() {
-      setSubEvent(await Api.getPublic<SubEvent>(`/sub-events/${subEventId}`))
+    async function fetchRace() {
+      setRace(await Api.getPublic<Race>(`/races/${raceId}`))
     }
 
-    fetchSubEvent()
+    fetchRace()
   }, [])
 
   useEffect(() => {
-    if (!subEvent) return
-    setIs_standard_distance(!!subEvent.standard_distance_id)
-  }, [subEvent])
+    if (!race) return
+    setIs_standard_distance(!!race.standard_distance_id)
+  }, [race])
 
   useEffect(() => {
-    async function fetchSubEventRunners() {
-      setSubEventRunners(await Api.getPublic<SubEventRegistrationRunners[]>(`/sub-events/${subEventId}/runners`))
+    async function fetchRaceRunners() {
+      setRaceRunners(await Api.getPublic<RaceRegistrationRunners[]>(`/races/${raceId}/runners`))
     }
 
-    fetchSubEventRunners()
+    fetchRaceRunners()
   }, [])
 
   useEffect(() => {
@@ -59,7 +65,7 @@ export default function SubEventPage() {
   }, [])
 
   async function addRunner() {
-    await Api.authenticatedFetch(`/sub-events/${subEventId}/add-runners`, "POST", [
+    await Api.authenticatedFetch(`/races/${raceId}/add-runners`, "POST", [
       form
     ])
   }
@@ -67,13 +73,13 @@ export default function SubEventPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData: Record<string, any> = {}
-    for (let [key, value] of Object.entries(subEventUpdateForm)) {
+    for (let [key, value] of Object.entries(raceUpdateForm)) {
       formData[key] = value
       if (key === "distance") formData["standard_distance_id"] = null
       if (key === "standard_distance_id") formData["distance"] = null
     }
     console.log(formData)
-    const res = await Api.authenticatedFetch(`/sub-events/${subEventId}`, 'PATCH', formData)
+    const res = await Api.authenticatedFetch(`/races/${raceId}`, 'PATCH', formData)
   }
 
   return (
@@ -90,7 +96,7 @@ export default function SubEventPage() {
           </TableHeader>
           <TableBody>
             {
-              subEventRunners.map(ser => (
+              raceRunners.map(ser => (
                 <TableRow key={ser.registrations.id}>
                   <TableCell>{ser.user_profiles.firstname} {ser.user_profiles.lastname}</TableCell>
                   <TableCell>{ser.registrations.bib_number}</TableCell>
@@ -101,7 +107,7 @@ export default function SubEventPage() {
         </Table>
       </div>
       {
-        subEvent ?
+        race ?
           <div>
             <Card>
               <CardHeader>
@@ -141,7 +147,7 @@ export default function SubEventPage() {
                 <CardHeader>
                   <CardTitle>
                     <Input
-                      value={subEventUpdateForm.name ?? subEvent.name}
+                      value={raceUpdateForm.name ?? race.name}
                       onInput={(e) => updateForm("name", (e.target as HTMLInputElement).value)}
                     />
                   </CardTitle>
@@ -158,13 +164,13 @@ export default function SubEventPage() {
                       onCheckedChange={(e) => {
                         setIs_standard_distance(e as boolean)
 
-                        const clone = { ...subEventUpdateForm }
+                        const clone = { ...raceUpdateForm }
                         console.log(e, clone)
-                        if ((e && subEventUpdateForm.distance) || (!e && subEventUpdateForm.standard_distance_id)) {
+                        if ((e && raceUpdateForm.distance) || (!e && raceUpdateForm.standard_distance_id)) {
                           delete clone.standard_distance_id
                           delete clone.distance
 
-                          setSubEventUpdateForm(clone)
+                          setRaceUpdateForm(clone)
                         }
                       }}
                     />
@@ -176,7 +182,7 @@ export default function SubEventPage() {
                         <div className="grid gap-3 w-full">
                           <Label htmlFor="distance">Distance</Label>
                           <Input
-                            value={subEventUpdateForm.distance ?? subEvent.distance ?? ""}
+                            value={raceUpdateForm.distance ?? race.distance ?? ""}
                             id="distance"
                             type="number"
                             step={.001}
@@ -188,12 +194,12 @@ export default function SubEventPage() {
                           <Label className="opacity-0">.</Label>
                           <Select
                             onValueChange={e => {
-                              const clone = { ...subEventUpdateForm }
+                              const clone = { ...raceUpdateForm }
                               clone.standard_distance_id = +e
                               delete clone.distance
-                              setSubEventUpdateForm(clone)
+                              setRaceUpdateForm(clone)
                             }}
-                            value={String(subEventUpdateForm.standard_distance_id ?? subEvent.standard_distance_id)}
+                            value={String(raceUpdateForm.standard_distance_id ?? race.standard_distance_id)}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a distance" />
@@ -216,7 +222,7 @@ export default function SubEventPage() {
                     <div className="grid gap-3 w-full">
                       <Label htmlFor="postive_elevation">Positive Elevation</Label>
                       <Input
-                        value={subEventUpdateForm.positive_elevation ?? subEvent.positive_elevation ?? ""}
+                        value={raceUpdateForm.positive_elevation ?? race.positive_elevation ?? ""}
                         id="postive_elevation"
                         type="number"
                         required
@@ -230,13 +236,13 @@ export default function SubEventPage() {
                     <Input
                       id="track"
                       type="file"
-                      onInput={(e) => setSubEventUpdateForm(c => ({ ...c, track_file: (e.target as HTMLInputElement).files![0] }))}
+                      onInput={(e) => setRaceUpdateForm(c => ({ ...c, track_file: (e.target as HTMLInputElement).files![0] }))}
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button
-                    disabled={!Object.keys(subEventUpdateForm).length}
+                    disabled={!Object.keys(raceUpdateForm).length}
                     type="submit"
                   >Mettre à jour la course</Button>
                 </CardFooter>

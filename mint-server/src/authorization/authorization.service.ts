@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { events_table, organizations_table, sub_events_table } from 'src/db/schema';
+import { events_table, organizations_table, races_table } from 'src/db/schema';
 import { DBOrganization } from 'src/declaration';
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 
@@ -26,17 +26,17 @@ export class AuthorizationService {
     return false
   }
 
-  async canAddRunnerToSubEvent(
+  async canAddRunnerToRace(
     userId: number,
-    subEventId: number
+    raceId: number
   ) {
 
     const org: any = (await this.drizzle.client
       .select()
       .from(organizations_table)
       .innerJoin(events_table, eq(events_table.organization_id, organizations_table.id))
-      .innerJoin(sub_events_table, eq(sub_events_table.event_id, events_table.id))
-      .where(eq(sub_events_table.id, subEventId))
+      .innerJoin(races_table, eq(races_table.event_id, events_table.id))
+      .where(eq(races_table.id, raceId))
       .limit(1))[0]
 
       console.log(org)

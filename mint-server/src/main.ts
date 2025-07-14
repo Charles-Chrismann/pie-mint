@@ -21,7 +21,7 @@ async function bootstrap() {
     .setTitle('Mint Api')
     .setDescription('The mint API')
     .setVersion('1.0')
-    .addTag('SubEvents')
+    .addTag('Races')
     .addBearerAuth(
       {
         type: 'http',

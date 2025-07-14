@@ -5,11 +5,13 @@ import {
   useRef,
   useState
 } from "react";
-import type { ApiResponseGetOrganizationTracks} from "@/declarations";
+import type {
+  LineString
+} from "@/declarations";
 import { Button } from "./ui/button";
 import { MapPinned } from "lucide-react";
 
-export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseGetOrganizationTracks }) {
+export default function MultipleTracksPreview({ tracks }: { tracks: LineString[] }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
@@ -31,6 +33,7 @@ export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseG
   )
 
   useEffect(() => {
+    console.log(tracks)
     if (!mapRef.current) return
     if (!tracks.length) return
 
@@ -56,9 +59,16 @@ export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseG
 
       let isSelected = false
 
-      const polyline = L.polyline(t.track_points.map((p) => [p.lat, p.lng]), trackDefaultStyle).addTo(map!);
+      // const polyline = L.polyline(t.track_points.map((p) => [p.lat, p.lng]), trackDefaultStyle).addTo(map!);
 
-      polyline.on('mouseover', (e) => {
+      const geoJSON = L.geoJSON(t, {
+        style: {
+          color: 'blue',
+          weight: 4
+        }
+      }).addTo(map);
+
+      geoJSON.on('mouseover', (e) => {
         const layer = e.target as L.Polyline
 
         if (!isSelected) {
@@ -74,14 +84,14 @@ export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseG
         layer.bringToFront();
       })
 
-      polyline.on('mouseout', (e) => {
+      geoJSON.on('mouseout', (e) => {
         const layer = e.target
         if (!isSelected) {
           layer.setStyle(trackDefaultStyle);
         }
       })
 
-      polyline.on('click', (e) => {
+      geoJSON.on('click', (e) => {
         console.log(t)
         const layer = e.target as L.Polyline
 
@@ -97,7 +107,7 @@ export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseG
       })
 
 
-      return polyline
+      return geoJSON
     })
 
 
@@ -115,7 +125,7 @@ export default function MultipleTracksPreview({ tracks }: { tracks: ApiResponseG
     console.log(lastClickedMarkerRef.current)
     if (!clickedPos || !lastClickedMarkerRef.current) return;
     lastClickedMarkerRef.current.setLatLng([clickedPos.lat, clickedPos.lng]);
-    if(!lastClickedMarkerRef.current['_map']) lastClickedMarkerRef.current.addTo(map!)
+    if (!lastClickedMarkerRef.current['_map']) lastClickedMarkerRef.current.addTo(map!)
   }, [clickedPos])
 
   // return <MapContainer style={{width: "400px", height: "400px"}} center={[45.761401, 4.825875]} zoom={15} scrollWheelZoom={true}>

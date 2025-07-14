@@ -22,15 +22,15 @@ An organization is created by one [user](#user) and its ownership can be transfe
 
 ### Event:
 
-An event is a group of races (also called [SubEvent](#SubEvent))
+An event is a group of races (also called [Race](#Race))
 
 `Exemple`: The [Trail du Saint-Jacques by UTMB - UTMB World Series
  2025](https://saint-jacques.utmb.world/fr) is an event.
 
 ---
 
-### SubEvent:
+### Race:
 
 Represent the races inside of an [event](#event)
 
-`Exemple`: The [Monistrail - 50K](https://saint-jacques.utmb.world/fr/races/50K) is a SubEvent.
+`Exemple`: The [Monistrail - 50K](https://saint-jacques.utmb.world/fr/races/50K) is a Race.

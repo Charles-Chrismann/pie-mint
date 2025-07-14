@@ -12,7 +12,7 @@ export interface StartWave {
   is_elite: boolean
 }
 
-export interface SubEvent {
+export interface Race {
   name: string
   distance?: string
   positive_elevation?: string
@@ -24,7 +24,6 @@ export interface SubEvent {
 }
 
 export interface EventCampaign {
-  id: number
   name: string
   description: string
 }
@@ -35,7 +34,7 @@ export interface Event {
   end_date: Date
   event_campaign?: EventCampaign
 
-  sub_events: SubEvent[]
+  races: Race[]
 }
 
 export interface Organization {

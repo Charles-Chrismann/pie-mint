@@ -13,12 +13,11 @@ const organizations: Organization[] = [
         start_date: new Date("April 25, 2026"),
         end_date: new Date("April 26, 2026"),
         event_campaign: {
-          id: 1,
           name: 'Marathon de Nantes',
           description: 'Les éditions du marathon de Nantes',
         },
 
-        sub_events: [
+        races: [
           {
             name: 'Marathon',
             standard_distance: 'Marathon',
@@ -40,7 +39,7 @@ const organizations: Organization[] = [
         start_date: new Date("March 30, 2025"),
         end_date: new Date("March 30, 2025"),
 
-        sub_events: [
+        races: [
           {
             name: 'Le 37km',
             distance: "37000",
@@ -90,7 +89,7 @@ const organizations: Organization[] = [
         start_date: new Date("June 13, 2025"),
         end_date: new Date("June 15, 2025"),
 
-        sub_events: [
+        races: [
           {
             name: 'Ultra du Saint Jacques - 100M',
             distance: "134000",
@@ -163,7 +162,7 @@ const organizations: Organization[] = [
         name: "Grand Raid Ventoux by UTMB",
         start_date: new Date("April 25, 2025"),
         end_date: new Date("April 27, 2025"),
-        sub_events: [
+        races: [
           {
             name: "GRV - 100M",
             distance: "124000",
@@ -214,7 +213,7 @@ const organizations: Organization[] = [
         name: "Restonica Trail by UTMB",
         start_date: new Date("July 03, 2025"),
         end_date: new Date("July 05, 2025"),
-        sub_events: [
+        races: [
           {
             name: "UTC100M",
             distance: "110000",

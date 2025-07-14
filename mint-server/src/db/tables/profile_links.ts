@@ -1,5 +1,5 @@
 import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
-import { events_table, groups_table, organizations_table, sub_events_table } from "../schema";
+import { events_table, groups_table, organizations_table, races_table } from "../schema";
 import { user_profiles_table } from "./users";
 import { medias_table } from "./medias";
 
@@ -18,5 +18,5 @@ export const profile_links_table = pgTable("profile_links", {
   user_profile_id: integer("user_profile_id").references(() => user_profiles_table.id),
   organization_id: integer("organization_id").references(() =>organizations_table.id),
   event_id: integer("event_id").references(() => events_table.id),
-  sub_event_id: integer("sub_event_id").references(() => sub_events_table.id),
+  sub_event_id: integer("sub_event_id").references(() => races_table.id),
 });
