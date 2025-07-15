@@ -1,12 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
-import { events_table, organizations_table, sub_events_table } from 'src/db/schema';
+import { events_table, organizations_table, races_table } from 'src/db/schema';
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 import { CreateEventDto } from './dto/event.dto';
 import { DBOrganization, JWTUser } from 'src/declaration';
 import { AuthorizationService } from 'src/authorization/authorization.service';
 import { Event } from './entities/event.entity';
-import { SubEvent } from '../sub-events/entities/sub-event.entity';
 
 @Injectable()
 export class EventsService {
@@ -30,12 +29,12 @@ export class EventsService {
     )[0] as Event
   }
 
-  getEventSubEvents(eventId: number) {
+  getEventRaces(eventId: number) {
     return this.drizzle.client
       .select()
-      .from(sub_events_table)
+      .from(races_table)
       .where(
-        eq(sub_events_table.event_id, eventId)
+        eq(races_table.event_id, eventId)
       )
   }
 

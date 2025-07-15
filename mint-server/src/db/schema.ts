@@ -1,7 +1,7 @@
 export * from "./tables/users"
 export *from "./tables/organizations"
 export * from "./tables/sponsors"
-export * from "./tables/sub_events"
+export * from "./tables/races"
 export * from "./tables/controls"
 export * from "./tables/translations"
 export * from "./tables/medias"
@@ -161,7 +161,7 @@ export * from "./tables/enums"
 //   distance: numeric("distance", { precision: 10, scale: 3 }),
 // });
 
-// export const sub_events_table = pgTable("sub_events", {
+// export const races_table = pgTable("races", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   name: varchar("name"),
 //   distance: numeric("distance", { precision: 10, scale: 3 }),
@@ -170,10 +170,10 @@ export * from "./tables/enums"
 //   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
 // });
 
-// export const sub_events__groups_table = pgTable("sub_events__groups", {
+// export const races__groups_table = pgTable("races__groups", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 // });
 
@@ -183,13 +183,13 @@ export * from "./tables/enums"
 //   bib_number: varchar("bib_number"),
 //   bib_alias: varchar("bib_alias"),
 //   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 // });
 
-// export const sub_events__registrations_table = pgTable("sub_events__registrations", {
+// export const races__registrations_table = pgTable("races__registrations", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   registration_id: integer("registration_id").notNull().references(() => registrations_table.id),
 // });
 
@@ -302,7 +302,7 @@ export * from "./tables/enums"
 //   permissions: many(groupes__permissions),
 //   organizationGroups: many(organizations__groups),
 //   eventGroups: many(events__groups),
-//   subEventGroups: many(sub_events__groups),
+//   raceGroups: many(races__groups),
 // }));
 
 // export const groupsUserProfilesRelations = relations(groups__user_profiles, ({ one }) => ({
@@ -380,7 +380,7 @@ export * from "./tables/enums"
 //     references: [organizations.id],
 //   }),
 //   groups: many(events__groups),
-//   subEvents: many(sub_events),
+//   races: many(races),
 //   links: many(event_links),
 // }));
 
@@ -395,26 +395,26 @@ export * from "./tables/enums"
 //   }),
 // }));
 
-// export const subEventsRelations = relations(sub_events, ({ one, many }) => ({
+// export const racesRelations = relations(races, ({ one, many }) => ({
 //   event: one(events, {
-//     fields: [sub_events.event_id],
+//     fields: [races.event_id],
 //     references: [events.id],
 //   }),
 //   standardDistance: one(standard_distances, {
-//     fields: [sub_events.standard_distance_id],
+//     fields: [races.standard_distance_id],
 //     references: [standard_distances.id],
 //   }),
-//   groups: many(sub_events__groups),
+//   groups: many(races__groups),
 //   registrations: many(registrations),
 // }));
 
-// export const subEventsGroupsRelations = relations(sub_events__groups, ({ one }) => ({
-//   subEvent: one(sub_events, {
-//     fields: [sub_events__groups.sub_event_id],
-//     references: [sub_events.id],
+// export const racesGroupsRelations = relations(races__groups, ({ one }) => ({
+//   race: one(races, {
+//     fields: [races__groups.race_id],
+//     references: [races.id],
 //   }),
 //   group: one(groups, {
-//     fields: [sub_events__groups.group_id],
+//     fields: [races__groups.group_id],
 //     references: [groups.id],
 //   }),
 // }));
@@ -424,20 +424,20 @@ export * from "./tables/enums"
 //     fields: [registrations.user_profile_id],
 //     references: [user_profiles.id],
 //   }),
-//   subEvent: one(sub_events, {
-//     fields: [registrations.sub_event_id],
-//     references: [sub_events.id],
+//   race: one(races, {
+//     fields: [registrations.race_id],
+//     references: [races.id],
 //   }),
-//   subEventRegistrations: many(sub_events__registrations),
+//   raceRegistrations: many(races__registrations),
 // }));
 
-// export const subEventsRegistrationsRelations = relations(sub_events__registrations, ({ one }) => ({
-//   subEvent: one(sub_events, {
-//     fields: [sub_events__registrations.sub_event_id],
-//     references: [sub_events.id],
+// export const racesRegistrationsRelations = relations(races__registrations, ({ one }) => ({
+//   race: one(races, {
+//     fields: [races__registrations.race_id],
+//     references: [races.id],
 //   }),
 //   registration: one(registrations, {
-//     fields: [sub_events__registrations.registration_id],
+//     fields: [races__registrations.registration_id],
 //     references: [registrations.id],
 //   }),
 // }));

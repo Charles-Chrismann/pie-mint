@@ -10,8 +10,8 @@ import type {
   LastUpdatedRunner,
   MapStyleKey,
   Runner,
-  SubEvent,
-  SubEventRegistrationRunners,
+  Race,
+  RaceRegistrationRunners,
   TrackPoint
 } from "@/declarations"
 import {
@@ -24,18 +24,18 @@ import { MAP_STYLES } from "@/constants"
 
 export default function EmulateRunPage() {
   const [_isConnected, setIsConnected] = useState(socket.connected);
-  const [_subEvents, setSubEvents] = useState<SubEvent[]>([])
-  const [_subEventRunners, _setSubEventRunners] = useState<SubEventRegistrationRunners[]>([])
+  const [_Races, setRaces] = useState<Race[]>([])
+  const [_raceRunners, _setRaceRunners] = useState<RaceRegistrationRunners[]>([])
   const [track, setTrack] = useState<TrackPoint[]>()
   const [lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
   useEffect(() => {
-    async function fetchSubEvents() {
-      setSubEvents(await Api.getPublic('/sub-events'))
+    async function fetchRaces() {
+      setRaces(await Api.getPublic('/races'))
     }
 
-    fetchSubEvents()
+    fetchRaces()
   }, [])
 
   useEffect(() => {
@@ -68,8 +68,8 @@ export default function EmulateRunPage() {
     };
   }, []);
 
-  // async function fetchSubEventRunners(subEventId: string) {
-  //   setSubEventRunners(await Api.getPublic<SubEventRegistrationRunners[]>(`/sub-events/${subEventId}/runners`))
+  // async function fetchRaceRunners(raceId: string) {
+  //   setRaceRunners(await Api.getPublic<RaceRegistrationRunners[]>(`/races/${raceId}/runners`))
   // }
 
   function changeMapStyle(e: MapStyleKey) {
@@ -78,7 +78,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch('http://localhost:3000/api/sub-events/2/track')
+      const res = await fetch('http://localhost:3000/api/races/2/track')
       const data = await res.json()
       
       setTrack(data)
@@ -91,17 +91,17 @@ export default function EmulateRunPage() {
   return (
     <div className="h-full">
       {/* <div className="flex justify-between p-4">
-        <Select onValueChange={e => fetchSubEventRunners(e)}>
+        <Select onValueChange={e => fetchRaceRunners(e)}>
           <SelectTrigger className="w-[360px]">
             <SelectValue placeholder="Selectionner un évènement" />
           </SelectTrigger>
           <SelectContent>
             {
-              subEvents.map(se => <SelectItem value={String(se.id)}>{se.name}</SelectItem>)
+              races.map(se => <SelectItem value={String(se.id)}>{se.name}</SelectItem>)
             }
           </SelectContent>
         </Select>
-          <span>{subEventRunners.length} runner</span>
+          <span>{raceRunners.length} runner</span>
       </div> */}
       <div className="relative h-full">
         <div className="absolute right-4 top-4 z-9999 bg-white">

@@ -10,50 +10,51 @@ import {
   CardTitle
 } from "../ui/card";
 import type {
-  SubEvent,
+  LineString,
+  Race,
   TrackPoint
 } from "@/declarations";
 import TrackPreview from "../TrackPreview";
 import Api from "@/Api";
 import { Link } from "react-router-dom";
 
-export default function SubEventCard({ subEventId, link = '#' }: { subEventId: number, link?: string }) {
+export default function RaceCard({ raceId, link = '#' }: { raceId: number, link?: string }) {
 
   const [_loading, _setLoading] = useState(true)
-  const [subEvent, setSubEvent] = useState<SubEvent>()
-  const [track, setTrack] = useState<TrackPoint[]>()
+  const [race, setRace] = useState<Race>()
+  const [track, setTrack] = useState<LineString>()
 
   useEffect(() => {
-    async function fetchSubEvent() {
-      setSubEvent(await Api.getPublic<SubEvent>(`/sub-events/${subEventId}`))
+    async function fetchRace() {
+      setRace(await Api.getPublic<Race>(`/races/${raceId}`))
     }
 
-    fetchSubEvent()
+    fetchRace()
   }, [])
 
   useEffect(() => {
     async function fetchTrack() {
-      setTrack(await Api.getPublic<TrackPoint[]>(`/sub-events/${subEventId}/track`))
+      setTrack(await Api.getPublic<LineString>(`/races/${raceId}/track`))
     }
 
     fetchTrack()
   }, [])
 
   return (
-    // !subEvent ?
+    // !race ?
     // <div>
     //   loading
     // </div> :
     <div>
       <Link to={link}>
         {
-          subEvent &&
+          race &&
           <Card>
             <CardHeader>
-              <CardTitle>{subEvent.name}</CardTitle>
+              <CardTitle>{race.name}</CardTitle>
               <CardDescription>
-                <p>Distance: {subEvent.distance}</p>
-                <p>Dénivelé positif: {subEvent.positive_elevation}</p>
+                <p>Distance: {race.distance}</p>
+                <p>Dénivelé positif: {race.positive_elevation}</p>
               </CardDescription>
             </CardHeader>
             <CardContent className="w-full aspect-video" onClick={(e) => e.preventDefault()}>

@@ -17,9 +17,9 @@ export class VisitorsService {
         registrationsBibAlias: registrations_table.bib_alias,
         registrationsBibNumber: registrations_table.bib_number,
         registrationsId: registrations_table.user_profile_id,
-        registrationSubEventId: registrations_table.sub_event_id,
-        registrationSubEventStartWaveId:
-          registrations_table.sub_event_start_wave_id,
+        registrationRaceId: registrations_table.race_id,
+        registrationRaceStartWaveId:
+          registrations_table.race_start_wave_id,
       })
       .from(registrations_table)
       .innerJoin(

@@ -7,6 +7,8 @@ import {
   DBInitSettingType,
   DBGroupUtility,
   DBInitPermission,
+  DBInitRaceDiscipline,
+  DBInitRaceDisciplineCategory,
 } from "./declarations"
 
 const standard_distances: [string, string][] = [
@@ -20,7 +22,7 @@ const action_levels = [
   "user",
   "organization",
   "event",
-  "sub_event",
+  "race",
   "registration",
 ]
 
@@ -363,7 +365,7 @@ const DBInitLanguages: DBInitLanguage[] = [
     contryFrenchName: "Portugal"
   },
   {
-    french_translation: 'Portugais',
+    french_translation: 'Portugais (Brésil)',
     english_translation: 'Portuguese',
     self_translation: 'Português',
     bcp47: 'pt-BR',
@@ -393,6 +395,19 @@ const DBInitSettingTypes: DBInitSettingType[] = [
   { name: 'string' },
 ]
 
+const DBInitRaceDisciplineCategories: DBInitRaceDisciplineCategory[] = [
+  {id: 1, name: 'Running'},
+  {id: 2, name: 'Cycling'},
+]
+
+const DBInitRaceDisciplines: DBInitRaceDiscipline[] = [
+  { id: 1, race_discipline_category_id: 1, name: 'Road' },
+  { id: 2, race_discipline_category_id: 1, name: 'Trail' },
+  { id: 3, race_discipline_category_id: 1, name: 'Canicross' },
+  { id: 4, race_discipline_category_id: 1, name: 'Obstacle' },
+  { id: 5, race_discipline_category_id: 2, name: 'Road' },
+]
+
 export {
   standard_distances,
   action_levels,
@@ -403,4 +418,6 @@ export {
   DBInitCountries,
   DBInitLanguages,
   DBInitSettingTypes,
+  DBInitRaceDisciplineCategories,
+  DBInitRaceDisciplines,
 }

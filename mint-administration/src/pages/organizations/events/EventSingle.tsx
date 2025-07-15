@@ -1,7 +1,14 @@
 import Api from "@/Api";
+import RaceCard from "@/components/cards/RaceCard";
+import ResponsiveCardGrid from "@/components/cards/ResponsiveCardGrid";
 import TrackPreview from "@/components/TrackPreview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SubEvent, Event, TrackPoint } from "@/declarations";
+import type {
+  Race,
+  Event,
+  TrackPoint,
+  LineString
+} from "@/declarations";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -9,8 +16,8 @@ export default function EventSinglePage() {
   const { eventId } = useParams();
 
   const [event, setEvent] = useState<Event>()
-  const [subEvents, setSubEvents] = useState<SubEvent[]>([])
-  const [tracks, setTracks] = useState<TrackPoint[][]>([])
+  const [races, setRaces] = useState<Race[]>([])
+  const [tracks, setTracks] = useState<LineString[]>([])
 
 
   useEffect(() => {
@@ -21,19 +28,19 @@ export default function EventSinglePage() {
   }, [])
 
   useEffect(() => {
-    async function fetchSubEvents() {
-      setSubEvents(await Api.getPublic<SubEvent[]>(`/events/${eventId}/sub-events`))
+    async function fetchRaces() {
+      setRaces(await Api.getPublic<Race[]>(`/events/${eventId}/races`))
     }
-    fetchSubEvents()
+    fetchRaces()
   }, [event])
 
   useEffect(() => {
-    async function fetchSubEventsTrack() {
-      const ts = await Promise.all(subEvents.map(se => Api.getPublic<TrackPoint[]>(`/sub-events/${se.id}/track`)))
+    async function fetchRacesTrack() {
+      const ts = await Promise.all(races.map(se => Api.getPublic<LineString>(`/races/${se.id}/track`)))
       setTracks(ts)
     }
-    fetchSubEventsTrack()
-  }, [subEvents])
+    fetchRacesTrack()
+  }, [races])
 
   return (
     event ?
@@ -44,10 +51,13 @@ export default function EventSinglePage() {
         <p>{event.description}</p>
         <div>
           <h4>Courses:</h4>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-8">
+          <ResponsiveCardGrid children={races.map(se =>
+                  <RaceCard key={se.id} raceId={se.id} link={`./races/${se.id}`} />
+                )} />
+          {/* <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-8">
             {
-              subEvents.length ?
-                subEvents.map(se =>
+              races.length ?
+                races.map(se =>
                   <li key={se.id}>
                     <Card>
                       <CardHeader>
@@ -65,7 +75,7 @@ export default function EventSinglePage() {
                 ) :
                 <div>chargement des courses...</div>
             }
-          </ul>
+          </ul> */}
         </div>
       </div> :
       <div>loading....</div>

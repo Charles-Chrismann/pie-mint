@@ -1,12 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
-import { db } from "..";
-import { events_table, organizations_table, standard_distances_table, sub_event_start_waves_table, sub_events_table, track_points_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
+import { db } from "./seedDB";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
 import { chunkify, getPointsFromGpx } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
+import { sql } from "drizzle-orm";
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
@@ -53,7 +54,7 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 async function seedOriganizations({ count }: { count: number }) {
   const standard_distances = await db.select().from(standard_distances_table)
 
-  const createdOrgs = await db
+  const createdOrgs: any[] = await db
     .insert(organizations_table)
     .values(
       organizations.map(
@@ -64,7 +65,13 @@ async function seedOriganizations({ count }: { count: number }) {
         })
       )
     )
-    .returning()
+    .returning() as any[]
+
+  const createdEventCampaigns = await db
+    .insert(event_campaigns_table)
+    .values(
+      organizations.map(org => org.events.map(evt => evt.event_campaign ?? [])).flat(2)
+    )
 
   const values = organizations.map(
     org => org.events.map(
@@ -90,7 +97,7 @@ async function seedOriganizations({ count }: { count: number }) {
     .values(
       organizations.map(
         org => org.events.map(
-          evt => evt.sub_events.map(
+          evt => evt.races.map(
             se => ({
               name: se.track.name
             })
@@ -102,8 +109,72 @@ async function seedOriganizations({ count }: { count: number }) {
 
   const parser = new XMLParser({ ignoreAttributes: false })
 
-  const createdTrackpointLists = await Promise.all(
-    organizations.map(org => org.events.map(evt => evt.sub_events.map(async se => {
+  //   await db.insert(track_points_table).values({
+  //               location: sql`ST_SetSRID(ST_MakePoint(-90.99999999999999, 18.7, 150), 4326)`,
+  //               is_first_point: true,
+  //               is_last_point: true,
+  //               track_id: 1,
+  // }).returning()
+
+  // const createdTrackpointLists = await Promise.all(
+  //   organizations.map(org => org.events.map(evt => evt.races.map(async se => {
+  //     if (!se.track.gpx) return
+
+  //     const track_id = createdTracks.find(ct => ct.name === se.track.name)?.id
+  //     if (!track_id) return
+
+  //     const gpxStr = await fs.readFile('./src/db/seed/gpxs/' + se.track.gpx)
+  //     const gpxData = parser.parse(gpxStr)
+  //     const points = getPointsFromGpx(gpxData)
+
+  //     const chunks = chunkify(points, 256)
+
+  //     return Promise.all(
+  //       chunks.map((chunk, chunkI) =>
+  //         db.insert(track_points_table).values(
+  //           chunk.map((p, i) => ({
+  //             location: sql`ST_SetSRID(ST_MakePoint(${p.lng}, ${p.lat}, ${p.alt}), 4326)`,
+  //             is_first_point: i === 0 && chunkI === 0,
+  //             is_last_point: i === chunk.length - 1 && chunkI === chunks.length - 1,
+  //             track_id,
+  //           }))
+  //         ).returning()
+  //       )
+  //     )
+  //   }))).flat(2)
+  // )
+
+  // const createdTrackpointListsFlat = createdTrackpointLists.map(ctl => ctl ? ctl!.flat() : [])
+
+  // const createdSegmentsList = await Promise.all(
+  //   createdTrackpointListsFlat.map((points) => {
+  //     const chunks = chunkify(points, 256)
+  //     return Promise.all(
+  //       chunks.map(
+  //         (chunk, chunkI) => db.insert(track_segments_table).values(
+  //           chunk.map((point: any, pointI) => {
+  //             // let end_position_id: undefined | number
+  //             // // si c'est le dernier point du dernier chunk
+  //             // if (chunkI === chunks.length - 1 && pointI === chunk.length - 1) end_position_id = undefined
+  //             // else {
+  //             //   // Si y a un point derrière
+  //             //   if (pointI !== chunk.length - 1) end_position_id = chunk[pointI + 1].id
+  //             //   else end_position_id = chunks[chunkI + 1][0].id
+  //             // }
+  //             return ({
+  //               track_id: point.track_id,
+  //               segment: 'LINESTRINGZ(1.5 45.5 120, 1.51 45.51 140, 1.52 45.52 135)',
+  //               segmentIndex: 1,
+  //               // start_position_id: point.id,
+  //               // end_position_id
+  //             })
+  //           })).returning()
+  //       ))
+  //   })
+  // )
+
+  const createdTrackSegments = await Promise.all(
+    organizations.map(org => org.events.map(evt => evt.races.map(async se => {
       if (!se.track.gpx) return
 
       const track_id = createdTracks.find(ct => ct.name === se.track.name)?.id
@@ -113,72 +184,44 @@ async function seedOriganizations({ count }: { count: number }) {
       const gpxData = parser.parse(gpxStr)
       const points = getPointsFromGpx(gpxData)
 
-      const chunks = chunkify(points, 512)
-
-      return Promise.all(
-        chunks.map((chunk, chunkI) =>
-          db.insert(track_points_table).values(
-            chunk.map((p, i) => ({
-              alt: p.alt,
-              lat: p.lat,
-              lng: p.lng,
-              is_first_point: i === 0 && chunkI === 0,
-              is_last_point: i === chunk.length - 1 && chunkI === chunks.length - 1,
-              track_id,
-            }))
-          ).returning()
-        )
-      )
-    }))).flat(2)
+      return db.insert(track_segments_table).values({
+        track_id,
+        segment_index: 1,
+        segment: `LINESTRINGZ(${points.map(p => `${Number(p.lng.toFixed(8))} ${Number(p.lat.toFixed(8))} ${Number(p.alt.toFixed(8))}`).join(',')})`,
+      })
+    })))
   )
 
-  const createdTrackpointListsFlat = createdTrackpointLists.map(ctl => ctl ? ctl!.flat() : [])
+  // await db.insert(track_segments_table).values({
+  //   track_id: 1,
+  //   segmentIndex: 1,
+  //   segment: 'LINESTRINGZ(1.5 45.5 120, 1.51 45.51 140, 1.52 45.52 135)',
+  // })
 
-  const createdSegmentsList = await Promise.all(
-    createdTrackpointListsFlat.map((points) => {
-      const chunks = chunkify(points, 512)
-      return Promise.all(
-        chunks.map(
-          (chunk, chunkI) => db.insert(track_segments_table).values(
-            chunk.map((point, pointI) => {
-              let end_position_id: undefined | number
-              // si c'est le dernier point du dernier chunk
-              if (chunkI === chunks.length - 1 && pointI === chunk.length - 1) end_position_id = undefined
-              else {
-                // Si y a un point derrière
-                if (pointI !== chunk.length - 1) end_position_id = chunk[pointI + 1].id
-                else end_position_id = chunks[chunkI + 1][0].id
-              }
-              return ({
-                track_id: point.track_id,
-                start_position_id: point.id,
-                end_position_id
-              })
-            })).returning()
-        ))
-    })
-  )
-
-  const createdSubEvents = await db.insert(sub_events_table).values(
-    organizations.map(org => org.events.map(evt => evt.sub_events.map(se => ({
+  const createdRaces = await db.insert(races_table).values(
+    organizations.map(org => org.events.map(evt => evt.races.map(se => ({
       name: se.name,
       distance: se.distance,
       positive_elevation: se.positive_elevation,
       start_date: evt.start_date,
       standard_distance_id: standard_distances.find(sd => sd.name === se.standard_distance)?.id,
-      event_id: createdEvents!.find(e => e.name === evt.name)!.id,
+      race_discipline_id: se.race_discipline_id,
+
       track_id: createdTracks!.find(t => t.name === se.track.name)!.id,
+      event_id: createdEvents!.find(e => e.name === evt.name)!.id,
+      organization_id: createdOrgs.find(o => o.name === org.name)!.id,
+      created_by_id: 1
     })))).flat(2)
   ).returning() as any[]
 
   const createdStartWaves = await db
-    .insert(sub_event_start_waves_table)
+    .insert(race_start_waves_table)
     .values(
-      organizations.map(org => org.events.map(evt => evt.sub_events.map(se => {
-        const correspondingCreatedSubEventId: number = createdSubEvents.find(cse => cse.name === se.name)!.id
+      organizations.map(org => org.events.map(evt => evt.races.map(se => {
+        const correspondingCreatedRaceId: number = createdRaces.find(cse => cse.name === se.name)!.id
         return se.start_waves ? se.start_waves.map(sw => ({
           ...sw,
-          sub_event_id: correspondingCreatedSubEventId
+          race_id: correspondingCreatedRaceId
         })) : []
       }))).flat(3)
     )

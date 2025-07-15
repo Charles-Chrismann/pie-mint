@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
-export class SubEvent {
+export class Race {
 
   @ApiProperty({
     example: "LUT 2025 - 37km",
-    description: 'The name of the SubEvent'
+    description: 'The name of the Race'
   })
   name: string;
 
@@ -34,8 +34,9 @@ export class SubEvent {
     example: 1,
     description: 'The event id of that contains this sub event',
     type: Number,
+    nullable: true
   })
-  event_id: number;
+  event_id: number | null;
 
   @ApiProperty({
     example: 1,

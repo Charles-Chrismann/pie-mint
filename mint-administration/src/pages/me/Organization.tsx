@@ -15,9 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import config from "@/config";
 import type {
   Organization,
-  SubEvent,
+  Race,
   Event,
-  ApiResponseGetOrganizationTracks
+  ApiResponseGetOrganizationTracks,
+  LineString
 } from "@/declarations";
 import React from "react";
 import {
@@ -35,8 +36,8 @@ export default function OrganizationPage() {
 
   const [organization, setOrganization] = useState<Organization>()
   const [events, setEvents] = useState<Event[]>([])
-  const [subEvents, setSubEvents] = useState<Map<number, SubEvent[]>>(new Map())
-  const [tracks, setTracks] = useState<ApiResponseGetOrganizationTracks>([])
+  const [races, setRaces] = useState<Map<number, Race[]>>(new Map())
+  const [tracks, setTracks] = useState<LineString[]>([])
 
   // createEventForm
   const [eventName, setEventName] = useState("")
@@ -80,28 +81,28 @@ export default function OrganizationPage() {
   }, [])
 
   useEffect(() => {
-    async function fetchSubEvents() {
+    async function fetchRaces() {
       if (!events.length) return
 
-      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/sub-events/`, {
+      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/races/`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }
       })))
-      const datas: SubEvent[][] = await Promise.all(ress.map(r => r.json()))
-      const subEventMap = new Map<number, SubEvent[]>()
-      datas.forEach(d => subEventMap.set(d[0].event_id, d))
-      setSubEvents(subEventMap)
+      const datas: Race[][] = await Promise.all(ress.map(r => r.json()))
+      const raceMap = new Map<number, Race[]>()
+      datas.forEach(d => raceMap.set(d[0].event_id, d))
+      setRaces(raceMap)
     }
-    fetchSubEvents()
+    fetchRaces()
   }, [events])
 
   useEffect(() => {
     async function fetchTracks() {
-      const newTracks = await Api.getPublic<ApiResponseGetOrganizationTracks>(`/organizations/${organizationId}/tracks`)
-      const track_points = newTracks.map(t => t.track_points)
+      const newTracks = await Api.getPublic<{track: {segment: LineString}}[]>(`/organizations/${organizationId}/tracks`)
+      const track_points = newTracks.map(t => t.track.segment)
       console.log(track_points)
-      setTracks(newTracks)
+      setTracks(track_points)
     }
 
     fetchTracks()
@@ -129,7 +130,7 @@ export default function OrganizationPage() {
                         <p>Courses durant l'évènement</p>
                         <ul>
                           {
-                            subEvents.get(e.id)?.map(se =>
+                            races.get(e.id)?.map(se =>
                               <li key={se.id}>
                                 {se.name}
                               </li>
