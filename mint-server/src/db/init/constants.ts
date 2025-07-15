@@ -22,7 +22,7 @@ const action_levels = [
   "user",
   "organization",
   "event",
-  "sub_event",
+  "race",
   "registration",
 ]
 
@@ -365,7 +365,7 @@ const DBInitLanguages: DBInitLanguage[] = [
     contryFrenchName: "Portugal"
   },
   {
-    french_translation: 'Portugais',
+    french_translation: 'Portugais (Brésil)',
     english_translation: 'Portuguese',
     self_translation: 'Português',
     bcp47: 'pt-BR',

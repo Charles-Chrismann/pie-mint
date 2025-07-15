@@ -17,7 +17,7 @@ export const setting_categories_table = pgTable("setting_categories", {
 
 export const setting_types_table = pgTable("setting_types", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar("name"),
+  name: varchar("name").notNull().unique(),
 });
 
 export const setting_multiple_options_table = pgTable("setting_multiple_options", {
@@ -56,5 +56,5 @@ export const custom_settings_table = pgTable("custom_settings", {
   sponsor_id: integer("sponsor_id").notNull().references(() => sponsors_table.id),
   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
   event_id: integer("event_id").notNull().references(() => events_table.id),
-  sub_event_id: integer("sub_event_id").notNull().references(() => races_table.id),
+  race_id: integer("race_id").notNull().references(() => races_table.id),
 });

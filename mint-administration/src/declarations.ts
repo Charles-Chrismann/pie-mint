@@ -79,8 +79,8 @@ export interface Registration {
   bib_number?: number
   alias?: string
   user_profile_id: number
-  sub_event_id: number
-  sub_event_start_wave_id: number
+  race_id: number
+  race_start_wave_id: number
   is_accepted: boolean
 }
 
@@ -131,7 +131,7 @@ export interface FormAddRunner {
   is_private?: boolean | null;
   bib_number?: number | null;
   bib_alias?: string | null;
-  sub_event_start_wave_id?: number | null;
+  race_start_wave_id?: number | null;
 }
 
 export type MapStyleKey = keyof typeof MAP_STYLES;

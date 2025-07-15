@@ -26,7 +26,7 @@ export default function RacePage() {
     bib_alias: undefined,
     bib_number: undefined,
     is_private: undefined,
-    sub_event_start_wave_id: undefined
+    race_start_wave_id: undefined
   })
 
   const [raceUpdateForm, setRaceUpdateForm] = useState<FormUpdateRace>({})

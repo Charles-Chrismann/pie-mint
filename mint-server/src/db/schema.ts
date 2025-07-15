@@ -173,7 +173,7 @@ export * from "./tables/enums"
 // export const races__groups_table = pgTable("races__groups", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => races_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 // });
 
@@ -183,13 +183,13 @@ export * from "./tables/enums"
 //   bib_number: varchar("bib_number"),
 //   bib_alias: varchar("bib_alias"),
 //   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => races_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 // });
 
 // export const races__registrations_table = pgTable("races__registrations", {
 //   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => races_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   registration_id: integer("registration_id").notNull().references(() => registrations_table.id),
 // });
 
@@ -410,7 +410,7 @@ export * from "./tables/enums"
 
 // export const racesGroupsRelations = relations(races__groups, ({ one }) => ({
 //   race: one(races, {
-//     fields: [races__groups.sub_event_id],
+//     fields: [races__groups.race_id],
 //     references: [races.id],
 //   }),
 //   group: one(groups, {
@@ -425,7 +425,7 @@ export * from "./tables/enums"
 //     references: [user_profiles.id],
 //   }),
 //   race: one(races, {
-//     fields: [registrations.sub_event_id],
+//     fields: [registrations.race_id],
 //     references: [races.id],
 //   }),
 //   raceRegistrations: many(races__registrations),
@@ -433,7 +433,7 @@ export * from "./tables/enums"
 
 // export const racesRegistrationsRelations = relations(races__registrations, ({ one }) => ({
 //   race: one(races, {
-//     fields: [races__registrations.sub_event_id],
+//     fields: [races__registrations.race_id],
 //     references: [races.id],
 //   }),
 //   registration: one(registrations, {

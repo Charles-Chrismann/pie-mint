@@ -1,3 +1,7 @@
+import { ExtractTablesWithRelations } from "drizzle-orm"
+import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres"
+import { PgTransaction } from "drizzle-orm/pg-core"
+
 interface DBInitMediaFormat {
   name: string
 }
@@ -72,6 +76,8 @@ interface DBInitRaceDisciplineCategory {
   name: string
 }
 
+type TransactionType = PgTransaction<NodePgQueryResultHKT, Record<string, never>, ExtractTablesWithRelations<Record<string, never>>>
+
 export {
   DBInitMediaFormat,
   DBInitMediaType,
@@ -85,4 +91,5 @@ export {
   DBInitPermission,
   DBInitRaceDiscipline,
   DBInitRaceDisciplineCategory,
+  TransactionType,
 }

@@ -156,7 +156,7 @@ export class AddRunnerToRaceDto {
     required: false,
     default: ""
   })
-  readonly sub_event_start_wave_id?: number;
+  readonly race_start_wave_id?: number;
 }
 
 export class GetRacesAroundQueryDto {

@@ -1,0 +1,2 @@
+ALTER TABLE "race_discipline" DROP CONSTRAINT "race_discipline_name_unique";--> statement-breakpoint
+ALTER TABLE "race_discipline" ADD CONSTRAINT "race_discipline_name_race_discipline_category_id_unique" UNIQUE("name","race_discipline_category_id");

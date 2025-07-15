@@ -146,8 +146,8 @@ export class RacesService {
         bib_number: i.bib_number,
         bib_alias: i.bib_alias,
         user_profile_id: i.user_profile_id,
-        sub_event_id: raceId,
-        sub_event_start_wave_id: i.sub_event_start_wave_id,
+        race_id: raceId,
+        race_start_wave_id: i.race_start_wave_id,
       })))
       .returning()
 
@@ -163,7 +163,7 @@ export class RacesService {
       .select()
       .from(registration)
       .innerJoin(user_profile, eq(user_profile.id, registration.user_profile_id))
-      .where(eq(registration.sub_event_id, raceId))
+      .where(eq(registration.race_id, raceId))
   }
 
   async getRacesAround(

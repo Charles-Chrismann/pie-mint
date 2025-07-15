@@ -3,7 +3,7 @@ import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
 export const countries_table = pgTable("countries", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
-  french_translation: varchar("french_translation"),
+  french_translation: varchar("french_translation").notNull().unique(),
   english_translation: varchar("english_translation"),
   self_translation: varchar("self_translation"),
   flag_emoji: varchar("flag_emoji"),
@@ -12,7 +12,7 @@ export const countries_table = pgTable("countries", {
 export const languages_table = pgTable("languages", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   
-  french_translation: varchar("french_translation"),
+  french_translation: varchar("french_translation").notNull().unique(),
   english_translation: varchar("english_translation"),
   self_translation: varchar("self_translation"),
   bcp47: varchar("bcp47"),

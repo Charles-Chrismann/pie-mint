@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "./seedDB";
-import { event_campaigns_table, events_table, organizations_table, standard_distances_table, sub_event_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
@@ -210,17 +210,18 @@ async function seedOriganizations({ count }: { count: number }) {
       track_id: createdTracks!.find(t => t.name === se.track.name)!.id,
       event_id: createdEvents!.find(e => e.name === evt.name)!.id,
       organization_id: createdOrgs.find(o => o.name === org.name)!.id,
+      created_by_id: 1
     })))).flat(2)
   ).returning() as any[]
 
   const createdStartWaves = await db
-    .insert(sub_event_start_waves_table)
+    .insert(race_start_waves_table)
     .values(
       organizations.map(org => org.events.map(evt => evt.races.map(se => {
         const correspondingCreatedRaceId: number = createdRaces.find(cse => cse.name === se.name)!.id
         return se.start_waves ? se.start_waves.map(sw => ({
           ...sw,
-          sub_event_id: correspondingCreatedRaceId
+          race_id: correspondingCreatedRaceId
         })) : []
       }))).flat(3)
     )
