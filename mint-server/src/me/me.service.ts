@@ -25,10 +25,7 @@ export class MeService {
       .select()
       .from(organizations_table)
       .where(
-        and(
-          eq(organizations_table.owner_id, user.userId),
-          eq(organizations_table.is_auto_generated, false)
-        )
+        eq(organizations_table.owner_id, user.userId)
       )
   }
 
@@ -37,10 +34,7 @@ export class MeService {
       .select()
       .from(organizations_table)
       .where(
-        and(
-          eq(organizations_table.id, +id),
-          eq(organizations_table.is_auto_generated, false)
-        )
+        eq(organizations_table.id, +id)
       )
       .limit(1)
     )[0]

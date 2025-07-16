@@ -20,10 +20,7 @@ export class EventsService {
       .select()
       .from(events_table)
       .where(
-        and(
-          eq(events_table.id, eventId),
-          eq(events_table.is_auto_generated, false)
-        )
+        eq(events_table.id, eventId)
       )
       .limit(1)
     )[0] as Event

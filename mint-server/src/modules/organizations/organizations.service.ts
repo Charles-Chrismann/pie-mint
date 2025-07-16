@@ -46,10 +46,7 @@ export class OrganizationsService {
       .select()
       .from(events_table)
       .where(
-        and(
-          eq(events_table.organization_id, organizationId),
-          eq(events_table.is_auto_generated, false),
-        )
+        eq(events_table.organization_id, organizationId)
       )
   }
 
