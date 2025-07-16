@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgis/postgis
+    image: imresamu/postgis
     restart: always
     ports:
       - 5432:5432
