@@ -12,22 +12,29 @@ export interface StartWave {
   is_elite: boolean
 }
 
-export interface SubEvent {
+export interface Race {
   name: string
   distance?: string
   positive_elevation?: string
   standard_distance?: standard_distance
+  race_discipline_id: number
 
   track: Track
   start_waves?: StartWave[]
+}
+
+export interface EventCampaign {
+  name: string
+  description: string
 }
 
 export interface Event {
   name: string
   start_date: Date
   end_date: Date
+  event_campaign?: EventCampaign
 
-  sub_events: SubEvent[]
+  races: Race[]
 }
 
 export interface Organization {
@@ -39,7 +46,6 @@ export interface SeedEventQueryResult {
   id: number;
   name: string | null;
   organization_id: number;
-  is_auto_generated: boolean | null;
   description: string | null;
   start_date: Date | null;
   end_date: Date | null;

@@ -7,7 +7,7 @@ import { JWTUser } from 'src/declaration';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Event } from './entities/event.entity';
-import { SubEvent } from '../sub-events/entities/sub-event.entity';
+import { Race } from '../races/entities/race.entity';
 
 @Controller('events')
 export class EventsController {
@@ -50,13 +50,13 @@ export class EventsController {
     status: 200,
     description: 'The array of sub events',
     isArray: true,
-    type: SubEvent
+    type: Race
   })
   @HttpCode(200)
-  @Get(':eventId/sub-events')
-  getEventSubEvents(
+  @Get(':eventId/races')
+  getEventRaces(
     @Param('eventId') eventId: string
   ) {
-    return this.eventsService.getEventSubEvents(+eventId)
+    return this.eventsService.getEventRaces(+eventId)
   }
 }

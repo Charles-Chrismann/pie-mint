@@ -13,12 +13,6 @@ export class CreateOrganizationResponse {
   name: string;
 
   @ApiProperty({
-    example: false,
-    nullable: true
-  })
-  is_auto_generated: boolean | null;
-
-  @ApiProperty({
     example: 1,
     nullable: true
   })

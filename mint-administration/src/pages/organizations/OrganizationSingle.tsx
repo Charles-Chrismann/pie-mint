@@ -1,13 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import config from "@/config";
-import type { Organization, SubEvent, Event } from "@/declarations";
+import type {
+  Organization,
+  Race,
+  Event
+} from "@/declarations";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 export default function OrganizationSinglePage() {
   const [organization, setOrganization] = useState<Organization>()
   const [events, setEvents] = useState<Event[]>([])
-  const [subEvents, setSubEvents] = useState<Map<number, SubEvent[]>>(new Map())
+  const [races, setRaces] = useState<Map<number, Race[]>>(new Map())
   const { organizationId } = useParams();
 
   useEffect(() => {
@@ -35,21 +39,21 @@ export default function OrganizationSinglePage() {
   }, [])
 
   useEffect(() => {
-    async function fetchSubEvents() {
+    async function fetchRaces() {
       if(!events.length) return
 
-      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/sub-events/`, {
+      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/races/`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
         }
       })))
-      const datas: SubEvent[][] = await Promise.all(ress.map(r => r.json()))
-      const subEventMap = new Map<number, SubEvent[]>()
-      datas.forEach(d => subEventMap.set(d[0].event_id, d))
+      const datas: Race[][] = await Promise.all(ress.map(r => r.json()))
+      const raceMap = new Map<number, Race[]>()
+      datas.forEach(d => raceMap.set(d[0].event_id, d))
       console.log(datas)
-      setSubEvents(subEventMap)
+      setRaces(raceMap)
     }
-    fetchSubEvents()
+    fetchRaces()
   }, [events])
 
   return (
@@ -74,7 +78,7 @@ export default function OrganizationSinglePage() {
                         <p>Courses durant l'évènement</p>
                         <ul>
                           {
-                            subEvents.get(e.id)?.map(se => 
+                            races.get(e.id)?.map(se => 
                               <li key={se.id}>
                                 {se.name}
                               </li>

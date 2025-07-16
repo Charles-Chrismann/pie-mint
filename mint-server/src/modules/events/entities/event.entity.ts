@@ -18,12 +18,6 @@ export class Event {
   description: string | null;
 
   @ApiProperty({
-    description: "Has this event been auto generated ?",
-    example: false
-  })
-  is_auto_generated: boolean | null;
-
-  @ApiProperty({
     example: "2025-08-25T00:00:00.000Z"
   })
   start_date: Date | null;

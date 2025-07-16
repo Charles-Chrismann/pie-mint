@@ -105,7 +105,7 @@ function App() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch('http://localhost:3000/sub-events/2/track')
+      const res = await fetch('http://localhost:3000/races/2/track')
       const data = await res.json()
       
       setTrack(data)

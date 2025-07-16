@@ -251,7 +251,7 @@ Description de l'entité
 Relatif à une organisation, un évènement décrit une course où une série de courses si plusieurs épreuves, chaque évènement possède ses propres rôles
 
 > Relations:
-> - `sub_event`
+> - `race`
 
 ---
 
@@ -281,7 +281,7 @@ Représente les différents réseaux sociaux
 
 ---
 
-### `sub_event`
+### `race`
 
 |Nom du champ| Type   | Nullable | Unique | Default | Description                      |
 |:-----------|:------:|:--------:|:------:|:-------:|:---------------------------------|
@@ -302,7 +302,7 @@ Relatif à un [`event`](#event), il décrit les différentes épreuves de cette 
 
 ### `standard_distance`
 
-Relatif à un [`sub_event`](#sub_event) elle représente les distances classique que l'on peut retrouver.
+Relatif à un [`race`](#race) elle représente les distances classique que l'on peut retrouver.
 
 Ex: Marathon, Semi, 10K
 
@@ -312,23 +312,23 @@ Ex: Marathon, Semi, 10K
 | distance   | Int    | ❌       | ✅     |         | La distance en mètres            |
 
 > Relations:
-> - [`sub_event`](#sub_event): 1---1
+> - [`race`](#race): 1---1
 
 ---
 
 ### `registration`
 
-Relatif à un [`user`](#user) et à un [`sub_event`](#sub_event), elle représente l'inscription d'un utilisateur à une épreuve.
+Relatif à un [`user`](#user) et à un [`race`](#race), elle représente l'inscription d'un utilisateur à une épreuve.
 
 |Nom du champ     | Type   | Nullable | Unique | Default | Description                                                                     |
 |:----------------|:------:|:--------:|:------:|:-------:|:--------------------------------------------------------------------------------|
 | isPrivate       | string | ❌       | ✅     |         | Est-ce que les informations du coureur sont cachés pendant cette course, override ce qui est défini dans les user_settings |
-| bib_number      | string | ❌       | ✅     |         | Le numéro de dossard, unique [`sub_event`, bib_number]                          |
+| bib_number      | string | ❌       | ✅     |         | Le numéro de dossard, unique [`race`, bib_number]                          |
 | bib_alias       | string | ✅       | ❌     |         | Le nom affiché sur le dossard                                                    |
 
 > Relations:
 > - [`user`](#user): 1---1
-> - [`sub_event`](#sub_event): 1---1
+> - [`race`](#race): 1---1
 
 ---
 

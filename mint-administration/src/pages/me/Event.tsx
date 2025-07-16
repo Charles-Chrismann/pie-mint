@@ -1,14 +1,14 @@
 import Api from "@/Api"
 import ResponsiveCardGrid from "@/components/cards/ResponsiveCardGrid"
-import SubEventCard from "@/components/cards/SubEventCard"
-import type { Event, SubEvent } from "@/declarations"
+import RaceCard from "@/components/cards/RaceCard"
+import type { Event, Race } from "@/declarations"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 export default function EventPage() {
   const { eventId } = useParams()
   const [event, setEvent] = useState<Event>()
-  const [subEvent, setSubEvent] = useState<SubEvent[]>([])
+  const [races, setRaces] = useState<Race[]>([])
 
   useEffect(() => {
     async function fetchEvent() {
@@ -20,12 +20,12 @@ export default function EventPage() {
   }, [])
 
   useEffect(() => {
-    async function fetchSuBEvent() {
-      const subEventData = await Api.getPublic<SubEvent[]>(`/events/${eventId}/sub-events`)
-      setSubEvent(subEventData)
+    async function fetchRace() {
+      const raceDate = await Api.getPublic<Race[]>(`/events/${eventId}/races`)
+      setRaces(raceDate)
     }
 
-    fetchSuBEvent()
+    fetchRace()
   }, [])
 
   return (
@@ -37,13 +37,13 @@ export default function EventPage() {
         </div>
       }
 
-      <ResponsiveCardGrid children={subEvent.map(se =>
-        <SubEventCard key={se.id} subEventId={se.id} link={`./sub-events/${se.id}`} />
+      <ResponsiveCardGrid children={races.map(se =>
+        <RaceCard key={se.id} raceId={se.id} link={`./races/${se.id}`} />
       )} />
 
       {/* <ul className="flex">
         {
-          subEvent.map(se => <SubEventCard key={se.id} subEventId={se.id} />)
+          race.map(se => <RaceCard key={se.id} raceId={se.id} />)
         }
       </ul> */}
     </div>

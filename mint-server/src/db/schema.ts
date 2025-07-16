@@ -1,7 +1,7 @@
 export * from "./tables/users"
 export *from "./tables/organizations"
 export * from "./tables/sponsors"
-export * from "./tables/sub_events"
+export * from "./tables/races"
 export * from "./tables/controls"
 export * from "./tables/translations"
 export * from "./tables/medias"
@@ -11,7 +11,7 @@ export * from "./tables/badges"
 export * from "./tables/enums"
 
 // export const track_points_table = pgTable("tracks", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
 //   point: geometry({ type: "pointz" }),
 // });
@@ -19,20 +19,20 @@ export * from "./tables/enums"
 
 
 // export const social_platforms_table = pgTable("social_platforms", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   icon_url: varchar("icon_url"),
 // });
 
 // export const user_profile_links_table = pgTable("user_profile_links", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   url: varchar("url"),
 //   social_platform_id: integer("social_platform_id").references(() => social_platforms_table.id),
 //   user_profile_id: integer("user_profile_id").references(() => user_profiles_table.id),
 // });
 
 // export const setting_keys_table = pgTable("setting_keys", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   key: varchar("key"),
 //   label: varchar("label"),
 //   type: varchar("type"),
@@ -43,38 +43,38 @@ export * from "./tables/enums"
 // });
 
 // export const setting_multiple_options_table = pgTable("setting_multiple_options", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   value: varchar("value").notNull(),
 //   selected_by_default: boolean("selected_by_default"),
 //   setting_key_id: integer("setting_key_id").notNull().references(() => setting_keys_table.id),
 // });
 
 // export const setting_selected_options_table = pgTable("setting_selected_options", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   setting_multiple_option_id: integer("setting_multiple_option_id").notNull().references(() => setting_multiple_options_table.id),
 //   user_setting_id: integer("user_setting_id").notNull().references(() => user_settings_table.id),
 // });
 
 // export const user_settings_table = pgTable("user_settings", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
 //   key_id: integer("key_id").notNull().references(() => setting_keys_table.id),
 //   value: varchar("value"),
 // });
 
 // export const sponsors_table = pgTable("sponsors", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 // });
 
 // export const sponsor_links_table = pgTable("sponsor_links", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   url: varchar("url"),
 //   social_platform_id: integer("social_platform_id").references(() => social_platforms_table.id),
 //   sponsor_id: integer("sponsor_id").references(() => sponsors_table.id),
 // });
 
 // export const organizations_table = pgTable("organizations", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   avatar_url: varchar("avatar_url"),
 //   banner_url: varchar("banner_url"),
@@ -83,57 +83,57 @@ export * from "./tables/enums"
 // });
 
 // export const organization_links_table = pgTable("organization_links", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   url: varchar("url"),
 //   social_platform_id: integer("social_platform_id").references(() => social_platforms_table.id),
 //   organization_id: integer("organization_id").references(() => organizations_table.id),
 // });
 
 // export const groups_table = pgTable("groups", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   is_system: boolean("is_system"),
 // });
 
 // export const groups__user_profiles_table = pgTable("groups__user_profiles", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 //   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
 // });
 
 // export const groups__roles_table = pgTable("groups__roles", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 //   role_id: integer("role_id").notNull().references(() => roles_table.id),
 // });
 
 // export const roles_table = pgTable("roles", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   is_system: boolean("is_system"),
 // });
 
 // export const roles__permissions_table = pgTable("roles__permissions", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   role_id: integer("role_id").notNull().references(() => roles_table.id),
 //   permission_id: integer("permission_id").notNull().references(() => permissions_table.id),
 // });
 
 // export const groupes__permissions_table = pgTable("groupes__permissions", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 //   permission_id: integer("permission_id").notNull().references(() => permissions_table.id),
 // });
 
 // export const organizations__groups_table = pgTable("organizations__groups", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
 //   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 // });
 
 // export const events_table = pgTable("events", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   organization_id: integer("organization_id").notNull().references(() => organizations_table.id),
 //   name: varchar("name"),
 //   description: varchar("description"),
@@ -142,27 +142,27 @@ export * from "./tables/enums"
 // });
 
 // export const event_links_table = pgTable("event_links", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   url: varchar("url"),
 //   social_platform_id: integer("social_platform_id").references(() => social_platforms_table.id),
 //   event_id: integer("event_id").references(() => events_table.id),
 // });
 
 // export const events__groups_table = pgTable("events__groups", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
 //   event_id: integer("event_id").notNull().references(() => events_table.id),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 // });
 
 // export const standard_distances_table = pgTable("standard_distances", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   distance: numeric("distance", { precision: 10, scale: 3 }),
 // });
 
-// export const sub_events_table = pgTable("sub_events", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+// export const races_table = pgTable("races", {
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   distance: numeric("distance", { precision: 10, scale: 3 }),
 //   positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
@@ -170,31 +170,31 @@ export * from "./tables/enums"
 //   standard_distance_id: integer("standard_distance_id").references(() => standard_distances_table.id),
 // });
 
-// export const sub_events__groups_table = pgTable("sub_events__groups", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+// export const races__groups_table = pgTable("races__groups", {
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   group_id: integer("group_id").notNull().references(() => groups_table.id),
 // });
 
 // export const registrations_table = pgTable("registrations", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   is_private: boolean("is_private"),
 //   bib_number: varchar("bib_number"),
 //   bib_alias: varchar("bib_alias"),
 //   user_profile_id: integer("user_profile_id").notNull().references(() => user_profiles_table.id),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 // });
 
-// export const sub_events__registrations_table = pgTable("sub_events__registrations", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+// export const races__registrations_table = pgTable("races__registrations", {
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   is_member_group: boolean("is_member_group"),
-//   sub_event_id: integer("sub_event_id").notNull().references(() => sub_events_table.id),
+//   race_id: integer("race_id").notNull().references(() => races_table.id),
 //   registration_id: integer("registration_id").notNull().references(() => registrations_table.id),
 // });
 
 // export const permissions_table = pgTable("permissions", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   name: varchar("name"),
 //   action_level_id: integer("action_level_id").notNull().references(() => action_levels_table.id),
 // });
@@ -302,7 +302,7 @@ export * from "./tables/enums"
 //   permissions: many(groupes__permissions),
 //   organizationGroups: many(organizations__groups),
 //   eventGroups: many(events__groups),
-//   subEventGroups: many(sub_events__groups),
+//   raceGroups: many(races__groups),
 // }));
 
 // export const groupsUserProfilesRelations = relations(groups__user_profiles, ({ one }) => ({
@@ -380,7 +380,7 @@ export * from "./tables/enums"
 //     references: [organizations.id],
 //   }),
 //   groups: many(events__groups),
-//   subEvents: many(sub_events),
+//   races: many(races),
 //   links: many(event_links),
 // }));
 
@@ -395,26 +395,26 @@ export * from "./tables/enums"
 //   }),
 // }));
 
-// export const subEventsRelations = relations(sub_events, ({ one, many }) => ({
+// export const racesRelations = relations(races, ({ one, many }) => ({
 //   event: one(events, {
-//     fields: [sub_events.event_id],
+//     fields: [races.event_id],
 //     references: [events.id],
 //   }),
 //   standardDistance: one(standard_distances, {
-//     fields: [sub_events.standard_distance_id],
+//     fields: [races.standard_distance_id],
 //     references: [standard_distances.id],
 //   }),
-//   groups: many(sub_events__groups),
+//   groups: many(races__groups),
 //   registrations: many(registrations),
 // }));
 
-// export const subEventsGroupsRelations = relations(sub_events__groups, ({ one }) => ({
-//   subEvent: one(sub_events, {
-//     fields: [sub_events__groups.sub_event_id],
-//     references: [sub_events.id],
+// export const racesGroupsRelations = relations(races__groups, ({ one }) => ({
+//   race: one(races, {
+//     fields: [races__groups.race_id],
+//     references: [races.id],
 //   }),
 //   group: one(groups, {
-//     fields: [sub_events__groups.group_id],
+//     fields: [races__groups.group_id],
 //     references: [groups.id],
 //   }),
 // }));
@@ -424,20 +424,20 @@ export * from "./tables/enums"
 //     fields: [registrations.user_profile_id],
 //     references: [user_profiles.id],
 //   }),
-//   subEvent: one(sub_events, {
-//     fields: [registrations.sub_event_id],
-//     references: [sub_events.id],
+//   race: one(races, {
+//     fields: [registrations.race_id],
+//     references: [races.id],
 //   }),
-//   subEventRegistrations: many(sub_events__registrations),
+//   raceRegistrations: many(races__registrations),
 // }));
 
-// export const subEventsRegistrationsRelations = relations(sub_events__registrations, ({ one }) => ({
-//   subEvent: one(sub_events, {
-//     fields: [sub_events__registrations.sub_event_id],
-//     references: [sub_events.id],
+// export const racesRegistrationsRelations = relations(races__registrations, ({ one }) => ({
+//   race: one(races, {
+//     fields: [races__registrations.race_id],
+//     references: [races.id],
 //   }),
 //   registration: one(registrations, {
-//     fields: [sub_events__registrations.registration_id],
+//     fields: [races__registrations.registration_id],
 //     references: [registrations.id],
 //   }),
 // }));

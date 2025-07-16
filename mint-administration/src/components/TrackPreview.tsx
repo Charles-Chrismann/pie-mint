@@ -1,9 +1,9 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
-import type { TrackPoint } from "@/declarations";
+import type { LineString, TrackPoint } from "@/declarations";
 
-export default function TrackPreview({track}: {track: TrackPoint[]}) {
+export default function TrackPreview({ track }: { track: LineString }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [_map, setMap] = useState<L.Map>()
 
@@ -16,8 +16,14 @@ export default function TrackPreview({track}: {track: TrackPoint[]}) {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    const polyline = L.polyline(track.map((p) => [p.lat, p.lng]), { color: 'blue' }).addTo(map!);
-    map.fitBounds(polyline.getBounds());
+    // const polyline = L.polyline(track.map((p) => [p.lat, p.lng]), { color: 'blue' }).addTo(map!);
+    const geoJSON = L.geoJSON(track, {
+      style: {
+        color: 'blue',
+        weight: 4
+      }
+    }).addTo(map);
+    map.fitBounds(geoJSON.getBounds());
 
     setMap(map)
 
@@ -38,6 +44,6 @@ export default function TrackPreview({track}: {track: TrackPoint[]}) {
   //     </Popup>
   //   </Marker>
   // </MapContainer>;
-  return <div ref={mapRef} style={{width: "100%", height: "100%"}} />;
+  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
   // return <div ref={mapRef} style={{width: "100%", height: "100vh"}} />;
 }
