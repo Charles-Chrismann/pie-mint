@@ -1,7 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
-import type { LineString, TrackPoint } from "@/declarations";
+import type { LineString } from "@/declarations";
 
 export default function TrackPreview({ track }: { track: LineString }) {
   const mapRef = useRef<HTMLDivElement>(null);

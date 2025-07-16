@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LastUpdatedRunner, LineString, Runner, TrackPoint } from './declarations';
+import type { LastUpdatedRunner, LineString, Runner } from './declarations';
 
 export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: LineString[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
   const mapRef = useRef<HTMLDivElement>(null);

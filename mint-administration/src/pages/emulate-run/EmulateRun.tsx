@@ -12,7 +12,7 @@ import type {
   Runner,
   Race,
   RaceRegistrationRunners,
-  TrackPoint
+  LineString
 } from "@/declarations"
 import {
   useEffect,
@@ -26,7 +26,7 @@ export default function EmulateRunPage() {
   const [_isConnected, setIsConnected] = useState(socket.connected);
   const [_Races, setRaces] = useState<Race[]>([])
   const [_raceRunners, _setRaceRunners] = useState<RaceRegistrationRunners[]>([])
-  const [track, setTrack] = useState<TrackPoint[]>()
+  const [track, setTrack] = useState<LineString[]>()
   const [lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
