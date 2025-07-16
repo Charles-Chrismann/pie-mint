@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgis/postgis
+    image: imresamu/postgis
     container_name: mint-vps-db
     restart: always
     ports:
