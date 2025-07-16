@@ -78,8 +78,8 @@ export default function RacePage() {
       if (key === "distance") formData["standard_distance_id"] = null
       if (key === "standard_distance_id") formData["distance"] = null
     }
-    console.log(formData)
-    const res = await Api.authenticatedFetch(`/races/${raceId}`, 'PATCH', formData)
+    
+    await Api.authenticatedFetch(`/races/${raceId}`, 'PATCH', formData)
   }
 
   return (

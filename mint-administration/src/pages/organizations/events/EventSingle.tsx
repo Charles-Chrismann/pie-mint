@@ -1,12 +1,9 @@
 import Api from "@/Api";
 import RaceCard from "@/components/cards/RaceCard";
 import ResponsiveCardGrid from "@/components/cards/ResponsiveCardGrid";
-import TrackPreview from "@/components/TrackPreview";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
   Race,
   Event,
-  TrackPoint,
   LineString
 } from "@/declarations";
 import { useEffect, useState } from "react";
@@ -17,7 +14,7 @@ export default function EventSinglePage() {
 
   const [event, setEvent] = useState<Event>()
   const [races, setRaces] = useState<Race[]>([])
-  const [tracks, setTracks] = useState<LineString[]>([])
+  const [_tracks, setTracks] = useState<LineString[]>([])
 
 
   useEffect(() => {

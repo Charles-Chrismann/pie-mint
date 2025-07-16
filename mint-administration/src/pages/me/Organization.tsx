@@ -17,7 +17,6 @@ import type {
   Organization,
   Race,
   Event,
-  ApiResponseGetOrganizationTracks,
   LineString
 } from "@/declarations";
 import React from "react";

@@ -12,7 +12,6 @@ import {
 import type {
   LineString,
   Race,
-  TrackPoint
 } from "@/declarations";
 import TrackPreview from "../TrackPreview";
 import Api from "@/Api";
