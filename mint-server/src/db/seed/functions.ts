@@ -72,6 +72,7 @@ async function seedOriganizations({ count }: { count: number }) {
     .values(
       organizations.map(org => org.events.map(evt => evt.event_campaign ?? [])).flat(2)
     )
+    .returning()
 
   const values = organizations.map(
     org => org.events.map(
@@ -79,7 +80,8 @@ async function seedOriganizations({ count }: { count: number }) {
         name: event.name,
         start_date: event.start_date,
         end_date: event.end_date,
-        organization_id: (createdOrgs as any).find(co => co.name === org.name)!.id
+        organization_id: (createdOrgs as any).find(co => co.name === org.name)!.id,
+        event_campaign_id: event.event_campaign ? createdEventCampaigns.find(cec => cec.name === event.event_campaign!.name)!.id : undefined
       })
 
     )

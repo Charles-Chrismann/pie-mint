@@ -189,3 +189,14 @@ export class GetRacesAroundQueryDto {
   @Type(() => Boolean)
   startsOnly: boolean = false;
 }
+
+export class GetRaceByIdQueryDto {
+  @ApiProperty({
+    required: true,
+    example: 5,
+    description: 'The id of the race.',
+  })
+  @Type(() => Number)
+  @IsNumber()
+  id: number;
+}

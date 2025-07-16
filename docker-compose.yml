@@ -27,7 +27,7 @@ services:
       DATABASE_URL: "postgres://postgres:example@db:5432/postgres"
     volumes:
       - ./mint-server:/app
-      - mint-server-node-modules:/app/node_modules
+      # - mint-server-node-modules:/app/node_modules
 
     depends_on:
       - db

@@ -4,7 +4,7 @@ import { medias_table } from "./medias";
 import { events_table, organizations_table } from "./organizations";
 
 export const sponsors_table = pgTable("sponsors", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name"),
   

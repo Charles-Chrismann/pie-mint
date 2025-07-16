@@ -6,7 +6,7 @@ import { organizations_table } from "./organizations";
 import { events_table, races_table } from "../schema";
 
 export const setting_categories_table = pgTable("setting_categories", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   is_global: boolean('is_global'),
   name_key: varchar("name_key"),
@@ -16,12 +16,12 @@ export const setting_categories_table = pgTable("setting_categories", {
 });
 
 export const setting_types_table = pgTable("setting_types", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: varchar("name").notNull().unique(),
 });
 
 export const setting_multiple_options_table = pgTable("setting_multiple_options", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   value_key: varchar("value_key"),
   selected_by_default: boolean("selected_by_default"),
@@ -30,14 +30,14 @@ export const setting_multiple_options_table = pgTable("setting_multiple_options"
 });
 
 export const setting_selected_options_table = pgTable("setting_selected_options", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   setting_multiple_option_id: integer("setting_multiple_option_id").notNull().references(() => setting_multiple_options_table.id),
   user_setting_id: integer("setting_key_id").notNull().references(() => user_profiles_table.id),
 });
 
 export const setting_keys_table = pgTable("setting_keys", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   label_key: varchar("label_key"),
   description_key: varchar("description_key"),
@@ -48,7 +48,7 @@ export const setting_keys_table = pgTable("setting_keys", {
 });
 
 export const custom_settings_table = pgTable("custom_settings", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   value: varchar("value"),
 

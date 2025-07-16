@@ -1,14 +1,14 @@
 import { pgTable, varchar, integer } from 'drizzle-orm/pg-core';
 
 export const users_table = pgTable('users', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   email: varchar('email').unique(),
   password: varchar('password'),
   refresh_token: varchar('refresh_token'),
 });
 
 export const user_profiles_table = pgTable('user_profiles', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
 
   firstname: varchar('firstname'),
   lastname: varchar('lastname'),
@@ -19,7 +19,7 @@ export const user_profiles_table = pgTable('user_profiles', {
 });
 
 export const visitors_table = pgTable('visitors', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   code: varchar('code').unique(),
   user_profiles_id: integer('user_profiles_id')
     .notNull()

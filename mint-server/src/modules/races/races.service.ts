@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { and, eq, sql } from 'drizzle-orm';
-import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table } from 'src/db/schema';
+import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table, standard_distances_table, race_disciplines_table, race_discipline_categories_table, organizations_table } from 'src/db/schema';
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 import {
   AddRunnerToRaceDto,
@@ -27,7 +27,82 @@ export class RacesService {
   }
 
   async getRaceById(raceId: number) {
-    return (await this.drizzle.client.select().from(races_table).where(eq(races_table.id, raceId)).limit(1))[0]
+
+    // const subquery = this.drizzle.client
+    //   .select()
+    //   .from(race_discipline_categories_table)
+    //   .where(
+    //     eq()
+    //   )
+    //   .as('userPets')
+
+    const ownerAlias = alias(user_profiles_table, "owner")
+
+    return (await this.drizzle.client
+      .select({
+        id: races_table.id,
+        name: races_table.name,
+        start_date: races_table.start_date,
+        distance: races_table.distance,
+        standard_distance: {
+          id: standard_distances_table.id,
+          name: standard_distances_table.name,
+          distance: standard_distances_table.distance,
+        },
+        track: {
+          id: tracks_table.id,
+          name: tracks_table.name,
+        },
+        race_discipline: {
+          id: race_disciplines_table.id,
+          name: race_disciplines_table.name,
+          race_discipline_category_id: race_disciplines_table.race_discipline_category_id,
+          // category: {
+          //   id: race_discipline_categories_table.id
+          //   // as: race_discipline_categoriesAlias
+          // }
+        },
+        event: {
+          id: events_table.id,
+          name: events_table.name,
+          description: events_table.description,
+          start_date: events_table.start_date,
+          end_date: events_table.end_date,
+
+          event_campaign_id: events_table.event_campaign_id,
+          organization_id: events_table.organization_id,
+        },
+        organization: {
+          id: organizations_table.id,
+          name: organizations_table.name,
+          media_avatar_id: organizations_table.media_avatar_id,
+          media_banner_id: organizations_table.media_banner_id,
+          created_by_id: organizations_table.created_by_id,
+          owner_id: organizations_table.owner_id,
+        },
+        created_by: {
+          id: user_profiles_table.id,
+          firstname: user_profiles_table.firstname,
+          lastname: user_profiles_table.lastname,
+        },
+        owner: {
+          id: ownerAlias.id,
+          firstname: ownerAlias.firstname,
+          lastname: ownerAlias.lastname,
+        }
+      })
+      .from(races_table)
+      .leftJoin(standard_distances_table, eq(standard_distances_table.id, races_table.standard_distance_id))
+      .leftJoin(tracks_table, eq(tracks_table.id, races_table.track_id))
+      .leftJoin(race_disciplines_table, eq(race_disciplines_table.id, races_table.race_discipline_id))
+      .leftJoin(race_discipline_categories_table, eq(race_discipline_categories_table.id, race_disciplines_table.race_discipline_category_id))
+      .leftJoin(events_table, eq(events_table.id, races_table.event_id))
+      .leftJoin(organizations_table, eq(organizations_table.id, races_table.organization_id))
+      .leftJoin(user_profiles_table, eq(user_profiles_table.id, races_table.created_by_id))
+      .leftJoin(ownerAlias, eq(ownerAlias .id, races_table.owner_id))
+      .where(eq(races_table.id, raceId))
+      .limit(1)
+    )[0]
   }
 
   async createRace(user: JWTUser, createRaceDto: CreateRaceDto, file: Express.Multer.File) {
@@ -97,9 +172,9 @@ export class RacesService {
     // return createdRace
     console.log(createRaceDto.start_date)
 
-    const values: any = {...createRaceDto}
+    const values: any = { ...createRaceDto }
 
-    if(!createRaceDto.event_id && !createRaceDto.organization_id) {
+    if (!createRaceDto.event_id && !createRaceDto.organization_id) {
       values.created_by_id = user.userId
       values.owner_id = user.userId
     } else if (!(createRaceDto.event_id && createRaceDto.organization_id)) throw new BadRequestException()

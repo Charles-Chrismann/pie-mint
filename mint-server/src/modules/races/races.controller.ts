@@ -7,6 +7,7 @@ import {
   AddRunnerToRaceDto,
   CreateRaceDto,
   CreateRaceWithFileDto,
+  GetRaceByIdQueryDto,
   GetRacesAroundQueryDto,
   UpdateRaceDto,
   UpdateRaceWithFileDto
@@ -21,13 +22,13 @@ export class RacesController {
 
   constructor(private racesService: RacesService) { }
 
-  @ApiOperation({ summary: 'Create a race (a race)' })
+  @ApiOperation({ summary: 'Create a race' })
   @ApiBearerAuth('access-token')
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateRaceWithFileDto })
   @ApiResponse({
     status: 201,
-    description: 'The created race (or race)',
+    description: 'The created race',
     type: Race
   })
   @UseInterceptors(FileInterceptor('file'))
@@ -42,11 +43,11 @@ export class RacesController {
     return this.racesService.createRace(user, createRaceDto, file)
   }
 
-  @ApiOperation({ summary: 'Update a race (a race)' })
+  @ApiOperation({ summary: 'Update a race' })
   @ApiBearerAuth('access-token')
   @ApiResponse({
     status: 201,
-    description: 'The created race (or race)',
+    description: 'The created race',
     type: Race
   })
   @UseInterceptors(FileInterceptor('file'))
@@ -115,8 +116,10 @@ export class RacesController {
   }
 
   @Get(':raceId')
-  getRaceById(@Param('raceId') raceId: string) {
-    return this.racesService.getRaceById(+raceId)
+  getRaceById(
+    @Query() query: GetRaceByIdQueryDto
+  ) {
+    return this.racesService.getRaceById(query.id)
   }
 
   @Get('')

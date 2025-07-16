@@ -28,7 +28,7 @@ export const race_disciplines_table = pgTable(
 );
 
 export const standard_distances_table = pgTable("standard_distances", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: varchar("name").notNull().unique(),
   distance: numeric("distance", { precision: 10, scale: 3 }).notNull(),
 });

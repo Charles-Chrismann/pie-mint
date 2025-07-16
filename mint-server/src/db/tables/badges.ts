@@ -4,7 +4,7 @@ import { medias_table } from "./medias";
 import { organizations_table } from "../schema";
 
 export const badges_table = pgTable("badges", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name_key: varchar("name_key"),
   description_key: varchar("description_key"),
@@ -16,7 +16,7 @@ export const badges_table = pgTable("badges", {
 });
 
 export const badge_levels_table = pgTable("badge_levels", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   level: integer("level"),
   description_key: varchar("description_key"),
@@ -27,7 +27,7 @@ export const badge_levels_table = pgTable("badge_levels", {
 });
 
 export const badge_progressions_table = pgTable("badge_progressions", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   progress: integer("progress"),
   completed_at: timestamp("completed_at"),

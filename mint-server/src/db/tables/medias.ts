@@ -5,19 +5,19 @@ import { events_table, organizations_table } from "./organizations";
 import { races_table } from "./races";
 
 export const media_contexts_table = pgTable("media_contexts", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name: varchar("name").notNull().unique(),
 });
 
 export const media_formats_table = pgTable("media_formats", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name: varchar("name").notNull().unique(),
 });
 
 export const media_types_table = pgTable("media_types", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name: varchar("name").notNull().unique(),
   mime_type: varchar("mime_type"),
@@ -26,7 +26,7 @@ export const media_types_table = pgTable("media_types", {
 });
 
 export const medias_table = pgTable("medias", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   url: varchar("url"),
   is_system: boolean("is_system"),

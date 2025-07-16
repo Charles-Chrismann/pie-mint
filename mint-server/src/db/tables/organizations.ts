@@ -4,7 +4,7 @@ import { medias_table } from "./medias";
 import { groups_table } from "./controls";
 
 export const organizations_table = pgTable("organizations", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name").notNull(),
   is_auto_generated: boolean("is_auto_generated").default(false),
@@ -23,14 +23,14 @@ export const organizations__groups_table = pgTable("organizations__groups", {
 ]);
 
 export const event_campaigns_table = pgTable("event_campaigns", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name", { length: 256 }).notNull(),
   description: text("description"),
 });
 
 export const events_table = pgTable("events", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name"),
   is_auto_generated: boolean("is_auto_generated").default(false),

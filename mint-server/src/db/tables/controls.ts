@@ -3,7 +3,7 @@ import { action_levels_table } from "./enums";
 import { user_profiles_table } from "./users";
 
 export const permissions_table = pgTable("permissions", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name: varchar("name"),
   description: text("description"),
@@ -14,7 +14,7 @@ export const permissions_table = pgTable("permissions", {
 });
 
 export const roles_table = pgTable("roles", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   name: varchar("name"),
   is_system: boolean("is_system"),
@@ -24,14 +24,14 @@ export const roles_table = pgTable("roles", {
 });
 
 export const roles__permissions_table = pgTable("roles__permissions", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   role_id: integer("role_id").references(() => roles_table.id),
   permission_id: integer("permission_id").references(() => permissions_table.id),
 });
 
 export const groups_table = pgTable("groups", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: varchar("name"),
   is_single_permision_group: boolean("is_single_permision_group"),
   is_system: boolean("is_system"),
@@ -42,21 +42,21 @@ export const groups_table = pgTable("groups", {
 });
 
 export const groups__permissions_table = pgTable("groups__permissions", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   group_id: integer("group_id").references(() => groups_table.id),
   permission_id: integer("permission_id").references(() => permissions_table.id),
 });
 
 export const groups__roles_table = pgTable("groups__roles", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   group_id: integer("group_id").references(() => groups_table.id),
   role_id: integer("permission_id").references(() => roles_table.id),
 });
 
 export const groups__user_profiles_table = pgTable("groups__user_profiles", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   group_id: integer("group_id").references(() => groups_table.id),
   user_profile_id: integer("user_profile_id").references(() => user_profiles_table.id),

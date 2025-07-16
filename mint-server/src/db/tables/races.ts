@@ -6,13 +6,13 @@ import { race_disciplines_table, standard_distances_table } from "./enums";
 
 
 export const tracks_table = pgTable("tracks", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name"),
 });
 
 // export const track_points_table = pgTable("track_points", {
-//   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+//   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 //   // in_track_id: integer("in_track_id").notNull(),
 
 //   // point: geometry('point', {type: "point", srid: 4326}),
@@ -50,7 +50,7 @@ const geometry = customType<{
 });
 
 export const track_segments_table = pgTable("track_segments", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
   track_id: integer("track_id").references(() => tracks_table.id),
   // segment: geometry('pointz', {type: "pointz", srid: 4326})
@@ -60,8 +60,8 @@ export const track_segments_table = pgTable("track_segments", {
   // end_position_id: integer("end_position_id").references(() => track_points_table.id),
 })
 
-export const races_table = pgTable("race", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+export const races_table = pgTable("races", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name").notNull(),
   start_date: timestamp("start_date").notNull(),
@@ -84,16 +84,18 @@ export const races_table = pgTable("race", {
     check("event_requires_org", sql`
       ${table.event_id} IS NULL OR ${table.organization_id} IS NOT NULL
     `),
-
     check("owner_must_be_alone", sql`
       ${table.owner_id} IS NULL OR 
       (${table.event_id} IS NULL AND ${table.organization_id} IS NULL)
-    `)
+    `),
+    check("distance_and_standard_distance_should_not_be_defined_at_the_same_time", sql`
+      ${table.distance} IS NULL OR ${table.standard_distance_id} IS NULL
+    `),
   ]
 );
 
 export const race_positions_table = pgTable("race_positions", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   created_at: timestamp("created_at"),
 
   lat: doublePrecision("lat"),
@@ -105,7 +107,7 @@ export const race_positions_table = pgTable("race_positions", {
 });
 
 export const race_start_waves_table = pgTable("race_start_waves", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name"),
   start_time: timestamp('start_time').notNull(),
@@ -116,7 +118,7 @@ export const race_start_waves_table = pgTable("race_start_waves", {
 });
 
 export const registrations_table = pgTable("registrations", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   is_accepted: boolean("is_accepted").default(false),
   is_private: boolean("is_private"),
@@ -129,7 +131,7 @@ export const registrations_table = pgTable("registrations", {
 });
 
 export const time_barriers_table = pgTable("time_barriers", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   name: varchar("name").notNull(),
   is_end: boolean("is_end"),
