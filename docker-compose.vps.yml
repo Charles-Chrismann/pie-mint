@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgis/postgis
+    container_name: mint-vps-db
+    restart: always
+    ports:
+      - ${PG_PORT}:5432
+    shm_size: 128mb
+    env_file:
+      - .env.db
+    volumes:
+      - mint-vps-db-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: mint-vps-adminer
+    restart: always
+    ports:
+      - ${ADMINER_PORT}:8080
+
+  mint-api:
+    image: charleschrismann/mint-api
+    container_name: mint-vps-api
+    env_file:
+      - .env.api
+    ports:
+      - ${API_PORT}:3000
+
+    depends_on:
+      - db
+      - adminer
+    restart: always
+
+  mint-administration:
+    image: charleschrismann/mint-administration
+    container_name: mint-vps-administration
+    ports:
+      - ${ADMINISTRATION_PORT}:80
+    env_file:
+      - .env.administration
+    restart: always
+
+volumes:
+  mint_db_data:

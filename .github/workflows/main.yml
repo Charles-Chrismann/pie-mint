@@ -61,11 +61,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
-            cd mint/
+            cd mint/pie-mint/
+
+            git checkout main
+            git pull
 
             echo "Pull des dernières images..."
-            docker compose -f docker-compose.prod.yml pull mint-api
-            docker compose -f docker-compose.prod.yml pull mint-administration
+            docker compose -f docker-compose.vps.yml pull mint-api
+            docker compose -f docker-compose.vps.yml pull mint-administration
+
+            docker exec mint-vps-api ./scripts/i.sh
 
             echo "Relancement des services..."
-            docker compose -f docker-compose.prod.yml up -d mint-api mint-administration
+            docker compose -f docker-compose.vps.yml up -d mint-api mint-administration
