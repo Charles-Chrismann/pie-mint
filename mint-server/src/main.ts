@@ -18,23 +18,14 @@ async function bootstrap() {
   }));
   app.use(compression())
   app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          baseUri: ["'self'"],
-          fontSrc: ["'self'", "http:", "https:", "data:"],
-          formAction: ["'self'"],
-          frameAncestors: ["'self'"],
-          imgSrc: ["'self'", "data:", "http:", "https:"],
-          objectSrc: ["'none'"],
-          scriptSrc: ["'self'", "http:", "https:"],
-          scriptSrcAttr: ["'none'"],
-          styleSrc: ["'self'", "'unsafe-inline'", "http:", "https:"],
-        },
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        upgradeInsecureRequests: null,
       },
-    })
-  );
+    },
+  })
+);
   app.enableCors()
   app.setGlobalPrefix('api')
 
