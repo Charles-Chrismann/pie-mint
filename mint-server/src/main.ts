@@ -17,7 +17,11 @@ async function bootstrap() {
     transform: true
   }));
   app.use(compression())
-  app.use(helmet());
+  app.use(helmet({
+    hsts: {
+      maxAge: 0,
+    },
+  }));
   app.enableCors()
   app.setGlobalPrefix('api')
 
