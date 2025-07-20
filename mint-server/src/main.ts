@@ -6,6 +6,7 @@ import * as compression from 'compression';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import logger from './logger';
 import helmet from 'helmet';
+import { db } from './db';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,7 +24,6 @@ async function bootstrap() {
     .setTitle('Mint Api')
     .setDescription('The mint API')
     .setVersion('1.0')
-    .addTag('Races')
     .addBearerAuth(
       {
         type: 'http',

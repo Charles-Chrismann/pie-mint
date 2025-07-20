@@ -1,13 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "./seedDB";
-import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table } from "../schema";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
 import { chunkify, getPointsFromGpx } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
@@ -230,7 +230,22 @@ async function seedOriganizations({ count }: { count: number }) {
     .returning()
 }
 
+async function seedRegistrations() {
+  const users = await db.select().from(user_profiles_table).limit(10)
+  const lut2025 = (await db.select().from(races_table).where(eq(races_table.name, 'Lyon Urban Trail 2025')).limit(1))[0]!
+
+  const createdRegistrations = await db
+  .insert(registrations_table)
+  .values(users.map(u => ({
+    race_id: 2,
+    user_profile_id: u.id,
+    bib_alias: u.firstname,
+    bib_number: u.id
+  })))
+}
+
 export {
   seedUsersAndUserProfiles,
-  seedOriganizations
+  seedOriganizations,
+  seedRegistrations,
 }

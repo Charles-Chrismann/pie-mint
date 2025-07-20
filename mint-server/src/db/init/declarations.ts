@@ -76,7 +76,9 @@ interface DBInitRaceDisciplineCategory {
   name: string
 }
 
-type TransactionType = PgTransaction<NodePgQueryResultHKT, Record<string, never>, ExtractTablesWithRelations<Record<string, never>>>
+// type TransactionType = PgTransaction<NodePgQueryResultHKT, Record<string, never>, ExtractTablesWithRelations<Record<string, never>>>
+
+type TransactionType = any
 
 export {
   DBInitMediaFormat,

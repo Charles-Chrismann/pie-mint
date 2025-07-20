@@ -1,4 +1,4 @@
-import { integer, timestamp } from "drizzle-orm/pg-core";
+import { AnyPgColumn, integer, timestamp } from "drizzle-orm/pg-core";
 import { user_profiles_table, users_table } from "./users";
 
 export const timestamps = {
@@ -8,6 +8,6 @@ export const timestamps = {
 }
 
 export const userRelated = {
-  createdById: integer('created_by_id').references(() => user_profiles_table.id),
-  ownerId: integer('owner_id').references(() => user_profiles_table.id),
+  createdById: integer('created_by_id').references(() :AnyPgColumn => user_profiles_table.id),
+  ownerId: integer('owner_id').references(() :AnyPgColumn => user_profiles_table.id),
 }

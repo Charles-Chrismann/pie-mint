@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsDateString, IsInt, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class CreateRaceDto {
   @IsString()
@@ -196,7 +196,7 @@ export class GetRaceByIdQueryDto {
     example: 5,
     description: 'The id of the race.',
   })
-  @Type(() => Number)
   @IsNumber()
-  id: number;
+  @Type(() => Number)
+  raceId: number;
 }

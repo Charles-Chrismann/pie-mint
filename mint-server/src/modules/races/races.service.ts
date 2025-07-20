@@ -293,7 +293,8 @@ export class RacesService {
         segment: sql<string>`ST_AsGeoJSON(${track_segments_table.segment})`,
       })
       .from(track_segments_table)
-      .where(eq(track_segments_table.id, trackId))
+      .leftJoin(tracks_table, eq(tracks_table.id, track_segments_table.track_id))
+      .where(eq(tracks_table.id, trackId))
       .limit(1)
     )[0]
 

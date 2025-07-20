@@ -1,14 +1,14 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env.ws-tests' })
 import { db } from '../../mint-server/src/db'
-import * as schema from '../../mint-server/src/db/schema'
+import  { schema } from '../../mint-server/src/db/schema'
 
 import * as fs from 'fs/promises'
 import { runnerRace, runnerRaceWithGpx } from "./declarations";
 import { Runner } from "./runner";
 import { XMLParser } from "fast-xml-parser";
 import { getPointsFromGpx } from './utils';
-import { eq } from 'drizzle-orm'
+import { eq, sql } from '../../mint-server/node_modules/drizzle-orm'
 
 const RUNNER_COUNT = process.env.RUNNER_COUNT ? parseInt(process.env.RUNNER_COUNT) : 10
 

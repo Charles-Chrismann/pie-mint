@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, ParseArrayPipe, Patch, Post, Query, Uploa
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RacesService } from './races.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Race } from './entities/race.entity';
+import { NestedRace, Race } from './entities/race.entity';
 import {
   AddRunnerToRaceDto,
   CreateRaceDto,
@@ -115,11 +115,17 @@ export class RacesController {
     return this.racesService.getRacesAround(query)
   }
 
+  @ApiOperation({ summary: 'Get race by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The race infos',
+    type: NestedRace,
+  })
   @Get(':raceId')
   getRaceById(
-    @Query() query: GetRaceByIdQueryDto
+    @Param() params: GetRaceByIdQueryDto
   ) {
-    return this.racesService.getRaceById(query.id)
+    return this.racesService.getRaceById(params.raceId)
   }
 
   @Get('')

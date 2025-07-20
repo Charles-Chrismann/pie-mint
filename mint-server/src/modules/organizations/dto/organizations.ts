@@ -9,3 +9,11 @@ export class CreateOrganizationDto {
   @IsString()
   name: string;
 }
+
+export class ReadOrganizationFlatDto {
+
+  @ApiProperty({
+    example: "Schneider Electric"
+  })
+  name: number;
+}
