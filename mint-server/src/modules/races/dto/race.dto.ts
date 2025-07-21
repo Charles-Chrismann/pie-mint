@@ -37,7 +37,7 @@ export class CreateRaceDto {
   @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
-    example: 1,
+    default: "",
   })
   readonly event_id?: number;
 
@@ -46,7 +46,7 @@ export class CreateRaceDto {
   @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
-    example: 1,
+    default: "",
   })
   readonly organization_id?: number;
 
