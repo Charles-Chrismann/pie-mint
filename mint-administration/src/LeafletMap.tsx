@@ -28,7 +28,7 @@ function animateMarker(
   requestAnimationFrame(animate);
 }
 
-export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: LineString[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
+export default function LeafletMap({ track, lastUpdatedRunners, mapStyle }: { track?: LineString[]; lastUpdatedRunners?: LastUpdatedRunner[], mapStyle: L.TileLayer }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
   const [_markers, _setMarkers] = useState<L.Marker[]>([])
@@ -111,43 +111,41 @@ export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { tra
   // }, [runners])
 
   useEffect(() => {
-    if (!map) return
-    if (!lastUpdatedRunner) return
-    // console.log('lastUpdatedRunner', lastUpdatedRunner, runners.length)
+    if (!map || !lastUpdatedRunners?.length) return;
 
-    const runnerInRunners = runners.find(r => r.runner_id === lastUpdatedRunner.runner_id)
+    const updatedRunners = [...runners];
 
-    const htmlIcon = L.divIcon({
-      className: 'custom-marker',
-      html: `<div class="rounded-full border bg-white w-6 aspect-square grid place-items-center border-black">${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}</div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+    lastUpdatedRunners.forEach(lastUpdatedRunner => {
+      const existingIndex = updatedRunners.findIndex(r => r.runner_id === lastUpdatedRunner.runner_id);
+
+      const htmlIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div class="rounded-full border bg-white w-6 aspect-square grid place-items-center border-black">
+               ${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}
+             </div>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      });
+
+      let marker;
+
+      if (existingIndex !== -1) {
+        marker = updatedRunners[existingIndex].marker;
+      } else {
+        marker = L.marker(
+          [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
+          { icon: htmlIcon }
+        ).addTo(map);
+
+        updatedRunners.push({ ...lastUpdatedRunner, marker });
+      }
+
+      animateMarker(marker, [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng], 1000);
     });
 
-    const marker = runnerInRunners ?
-      runnerInRunners.marker :
-      L.marker(
-        [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
-        {
-          icon: htmlIcon
-        }
-      )
+    setRunners(updatedRunners);
+  }, [lastUpdatedRunners]);
 
-    if (!runnerInRunners) {
-      setRunners([...runners, { ...lastUpdatedRunner, marker }])
-      marker.addTo(map)
-    }
-
-    animateMarker(marker, [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng], 1000);
-
-    // marker.setLatLng([lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng])
-
-    // if(!map!.hasLayer(lastUpdatedRunner!.marker)) {
-    //   lastUpdatedRunner!.marker.addTo(map!)
-    // }
-    // lastUpdatedRunner!.marker.setLatLng([lastUpdatedRunner!.position.lat, lastUpdatedRunner!.position.lng])
-    // console.log(map!.hasLayer(lastUpdatedRunner!.marker))
-  }, [lastUpdatedRunner])
 
   return (
     <div className='h-full w-full z-[-1]'>

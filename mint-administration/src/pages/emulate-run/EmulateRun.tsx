@@ -27,7 +27,7 @@ export default function EmulateRunPage() {
   const [_Races, setRaces] = useState<Race[]>([])
   const [_raceRunners, _setRaceRunners] = useState<RaceRegistrationRunners[]>([])
   const [track, setTrack] = useState<LineString[]>()
-  const [lastUpdatedRunner, setLastUpdatedRunner] = useState<LastUpdatedRunner>()
+  const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
   useEffect(() => {
@@ -48,25 +48,25 @@ export default function EmulateRunPage() {
       setIsConnected(false);
     }
 
-    function onPosition(data: Runner) {
-      setLastUpdatedRunner({
-        runner_id: data.runner_id,
-        name: data.name,
+    function onPosition(data: Runner[]) {
+      setLastUpdatedRunners(data.map(r => ({
+        runner_id: r.runner_id,
+        name: r.name,
         position: {
-          lat: data.position.lat,
-          lng: data.position.lng,
+          lat: r.position.lat,
+          lng: r.position.lng,
         }
-      })
+      })))
     }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('position', onPosition)
+    socket.on('positions', onPosition)
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('position', onPosition)
+      socket.off('positions', onPosition)
     };
   }, []);
 
@@ -121,7 +121,7 @@ export default function EmulateRunPage() {
             </SelectContent>
           </Select>
         </div>
-        <LeafletMap track={track} lastUpdatedRunner={lastUpdatedRunner} mapStyle={mapStyle.tileLayer} />
+        <LeafletMap track={track} lastUpdatedRunners={lastUpdatedRunners} mapStyle={mapStyle.tileLayer} />
       </div>
     </div>
   )

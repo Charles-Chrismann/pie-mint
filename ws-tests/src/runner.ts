@@ -15,12 +15,14 @@ export class Runner {
   constructor(
     wsUrl: string,
     points: position3D[],
-    email: string
+    email: string,
+    currentPointsIndex?: number,
   ) {
     this.io = io(wsUrl)
     this.io.on('position', () => console.log('posit', ++this.pcount))
     this.points = points
     this.email = email
+    if(currentPointsIndex) this.currentPointsIndex = currentPointsIndex
   }
 
   async login() {
