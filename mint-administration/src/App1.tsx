@@ -85,6 +85,7 @@ function App() {
       // setRunners(runnersCopy)
       setLastUpdatedRunner({
         name: data.name,
+        runner_id: data.runner_id,
         position: {
           lat: data.position.lat,
           lng: data.position.lng,
