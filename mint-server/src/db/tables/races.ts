@@ -70,7 +70,7 @@ export const races_table = pgTable("races", {
 
   standard_distance_id: integer("standard_distance_id").references(() :AnyPgColumn => standard_distances_table.id),
   track_id: integer("track_id").references(() :AnyPgColumn => tracks_table.id),
-  race_discipline_id: integer("race_discipline_id").notNull().references(() :AnyPgColumn => race_disciplines_table.id),
+  race_discipline_id: integer("race_discipline_id").references(() :AnyPgColumn => race_disciplines_table.id),
 
   //If a race is in an event, in wich case the property organization_id should be defined
   event_id: integer("event_id").references(() :AnyPgColumn => events_table.id),

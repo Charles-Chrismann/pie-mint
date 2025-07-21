@@ -1,1 +1,0 @@
-ALTER TABLE "badges" ADD CONSTRAINT "badges_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE no action ON UPDATE no action;

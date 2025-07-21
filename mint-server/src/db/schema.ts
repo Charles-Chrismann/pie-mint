@@ -13,6 +13,7 @@ import * as enums from "./tables/enums";
 import * as organizationsRelations from "./relations/organizations.relations";
 import * as mediasRelations from "./relations/medias.relations";
 import * as usersRelations from "./relations/users.relations";
+import * as racesRelations from "./relations/races.relations"
 
 export const schema = {
   ...usersTables,
@@ -30,6 +31,7 @@ export const schema = {
   ...organizationsRelations,
   ...mediasRelations,
   ...usersRelations,
+  ...racesRelations
 };
 
 export * from "./tables/users"
@@ -47,6 +49,7 @@ export * from "./tables/enums"
 export * from "./relations/organizations.relations"
 export * from "./relations/medias.relations"
 export * from "./relations/users.relations"
+export * from "./relations/races.relations"
 
 
 // export const track_points_table = pgTable("tracks", {

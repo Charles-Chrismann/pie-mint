@@ -5,6 +5,12 @@ import { StandardDistance } from 'src/module-enums/standard-distances/entities/s
 export class Race {
 
   @ApiProperty({
+    description: 'The id of the Race',
+    example: 2,
+  })
+  id: number;
+
+  @ApiProperty({
     example: "LUT 2025 - 37km",
     description: 'The name of the Race'
   })
@@ -30,14 +36,16 @@ export class Race {
     nullable: true
   })
   positive_elevation: string | null;
+}
 
+export class RaceWithRelationships extends Race {
   @ApiProperty({
     example: 1,
-    description: 'The event id of that contains this sub event',
+    description: 'The event id of that contains this race',
     type: Number,
     nullable: true
   })
-  event_id: number | null;
+  event_id: number;
 
   @ApiProperty({
     example: 1,
@@ -45,7 +53,7 @@ export class Race {
     type: Number,
     nullable: true
   })
-  standard_distance_id: number | null;
+  standard_distance_id: number;
 
   @ApiProperty({
     example: 1,
@@ -53,8 +61,40 @@ export class Race {
     type: Number,
     nullable: true
   })
-  track_id: number | null;
+  track_id: number;
+}
 
+export class StartWave {
+
+  @ApiProperty({
+    description: 'The id of the startwave',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: 'The name of the startwave',
+    example: "The elite wave of the LUT 2025",
+  })
+  name: string;
+
+  @ApiProperty({
+    description: 'The time of the start of the wave',
+    example: "2025-03-30T07:30:00.000Z",
+  })
+  start_date: Date;
+
+  @ApiProperty({
+    description: 'The index in start order of the wave, pro/elite wave should be 1',
+    example: 1,
+  })
+  wave_index: number;
+
+  @ApiProperty({
+    description: 'Is this wave for elite runners',
+    example: true,
+  })
+  is_elite: boolean;
 }
 
 export class NestedRace {
@@ -88,4 +128,36 @@ export class NestedRace {
     nullable: true,
   })
   standard_distance: StandardDistance
+}
+
+export class NestedRegistrations {
+
+  @ApiProperty({
+    description: "The id of the registration",
+    example: 5
+  })
+  id: number
+
+  @ApiProperty({
+    description: "The number of the bib",
+    example: 22066
+  })
+  bib_number: number
+
+  @ApiProperty({
+    description: "An optionnal alias of the bib",
+    example: 'CharlesTheBoss',
+    nullable: true
+  })
+  bib_alias: string
+
+  @ApiProperty({
+    description: 'The race'
+  })
+  race: Race
+
+  @ApiProperty({
+    description: 'The start wave where the runner is',
+  })
+  start_wave: StartWave
 }

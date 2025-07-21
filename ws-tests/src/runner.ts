@@ -1,21 +1,48 @@
 import { io, Socket } from "socket.io-client";
-import { position2D, position3D } from "./declarations";
+import { position2D, position3D, RunnerAuth } from "./declarations";
+import { API_BASE_URL } from "./constants";
 
 export class Runner {
   io: Socket
-  name: string
   points: position3D[]
   positionIntervalId!: NodeJS.Timeout
   currentPointsIndex = -1
 
+  auth: RunnerAuth | null = null
+  email: string
+  pcount = 0
+
   constructor(
     wsUrl: string,
-    name: string,
-    points: position3D[]
+    points: position3D[],
+    email: string
   ) {
     this.io = io(wsUrl)
-    this.name = name + String(Math.random())
+    this.io.on('position', () => console.log('posit', ++this.pcount))
     this.points = points
+    this.email = email
+  }
+
+  async login() {
+    const datas = await (await fetch(API_BASE_URL + '/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: this.email,
+        password: 'password'
+      })
+    })).json()
+
+    this.auth = {
+      technical_user: datas.technicalUser,
+      user_profile: datas.userProfile,
+      access_token: datas.access_token,
+      refresh_token: datas.refresh_token,
+    }
+
+    console.log(`${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname} is connected!`)
   }
 
   startRace() {
@@ -28,19 +55,20 @@ export class Runner {
     this.currentPointsIndex++
 
     const p = {
-      lat: this.points[this.currentPointsIndex].lat + this.getImprecision(),
-      lng: this.points[this.currentPointsIndex].lng + this.getImprecision()
+      lat: this.points[this.currentPointsIndex][1] + this.getImprecision(),
+      lng: this.points[this.currentPointsIndex][0] + this.getImprecision()
     }
 
     this.io.emit('position', {
       position: p,
-      name: this.name
+      runner_id: this.auth!.user_profile.user_id,
+      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`
     })
   }
 
   getImprecision() {
-    if(false) return 0
+    if (true) return 0
     const imprecisionPool = [-0.000004, -0.000003, -0.000002, -0.000001, 0, 0.000001, 0.000002, 0.000003, 0.000004]
-    return imprecisionPool[Math.floor(Math.random()*imprecisionPool.length)]
+    return imprecisionPool[Math.floor(Math.random() * imprecisionPool.length)]
   }
 }

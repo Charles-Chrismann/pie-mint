@@ -34,7 +34,7 @@ export class CreateRaceDto {
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
+  @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
     example: 1,
@@ -43,7 +43,7 @@ export class CreateRaceDto {
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
+  @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
     example: 1,
@@ -190,7 +190,7 @@ export class GetRacesAroundQueryDto {
   startsOnly: boolean = false;
 }
 
-export class GetRaceByIdQueryDto {
+export class GetRaceByIdParamDto {
   @ApiProperty({
     required: true,
     example: 5,

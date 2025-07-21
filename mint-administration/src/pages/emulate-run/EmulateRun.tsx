@@ -41,6 +41,7 @@ export default function EmulateRunPage() {
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
+      socket.emit('spec')
     }
 
     function onDisconnect() {
@@ -49,6 +50,7 @@ export default function EmulateRunPage() {
 
     function onPosition(data: Runner) {
       setLastUpdatedRunner({
+        runner_id: data.runner_id,
         name: data.name,
         position: {
           lat: data.position.lat,
@@ -78,7 +80,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch('http://localhost:3000/api/races/2/track')
+      const res = await fetch('http://localhost:3000/api/races/1/track')
       const data = await res.json()
       
       setTrack(data)

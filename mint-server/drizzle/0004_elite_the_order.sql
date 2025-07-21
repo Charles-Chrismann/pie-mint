@@ -1,1 +1,0 @@
-ALTER TABLE "registrations" ALTER COLUMN "race_id" SET NOT NULL;

@@ -1,25 +1,32 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '../.env.ws-tests' })
 import { db } from '../../mint-server/src/db'
-import  { schema } from '../../mint-server/src/db/schema'
+import { schema, tracks_table, users_table } from '../../mint-server/src/db/schema'
 
 import * as fs from 'fs/promises'
-import { runnerRace, runnerRaceWithGpx } from "./declarations";
+import { position3D, runnerRace, runnerRaceWithGpx } from "./declarations";
 import { Runner } from "./runner";
 import { XMLParser } from "fast-xml-parser";
 import { getPointsFromGpx } from './utils';
 import { eq, sql } from '../../mint-server/node_modules/drizzle-orm'
+import { API_BASE_URL, WS_URL } from './constants'
 
 const RUNNER_COUNT = process.env.RUNNER_COUNT ? parseInt(process.env.RUNNER_COUNT) : 10
 
 const runsPool: runnerRaceWithGpx[] = []
 
-const WsUrl = process.env.WS_URL || 'http://localhost:3001'
-const API_BASE_URL = (process.env.API_URL || 'http://localhost:3000') + '/api'
-
 async function main() {
 
-  const registrations = await (await fetch(API_BASE_URL + '/races/2/runners')).json()
+  const registrations = await db.query.registrations_table.findMany({
+    with: {
+      user_profile: {
+        with: {
+          user: true
+        }
+      }
+    },
+    limit: RUNNER_COUNT
+  })
 
   console.log(registrations)
 
@@ -28,36 +35,42 @@ async function main() {
     runsFile = await fs.readFile('./runs.json')
   } catch (e) { }
 
-  const runnerData: runnerRace[] = runsFile ? JSON.parse((runsFile).toString()) : [{
+  // const runnerData: runnerRace[] = runsFile ? JSON.parse((runsFile).toString()) : [{
+  const runnerData: runnerRace[] = [{
     "runnerName": "Charles Chrismann",
     "stravaProfile": "https://www.strava.com/athletes/111252688",
-    "stravaActivity": "https://www.strava.com/activities/14027118099",
-    "fileName": "lut-2025-37km.gpx"
+    "stravaActivity": "https://www.strava.com/activities/14300288106",
+    "fileName": "nantes_marathon.gpx"
   }]
 
   const xmlParser = new XMLParser({ ignoreAttributes: false })
 
-  for (const r of runnerData) {
-    const gpxData = xmlParser.parse(await fs.readFile('./runs/' + r.fileName))
-    const points = getPointsFromGpx(gpxData)
-    runsPool.push({
-      ...r,
-      points
-    })
-  }
+  // for (const r of runnerData) {
+  //   const gpxData = xmlParser.parse(await fs.readFile('./runs/' + r.fileName))
+  //   const points = getPointsFromGpx(gpxData)
+  //   runsPool.push({
+  //     ...r,
+  //     points
+  //   })
+  // }
 
-  const runners = Array.from({ length: RUNNER_COUNT }).map((_, i) => {
+  const segments: { coordinates: position3D[] } = await(await fetch(`${API_BASE_URL}/races/1/track`)).json()
+  const race: position3D[] = segments.coordinates.slice(1000)
 
-    const race = runsPool[Math.floor(Math.random() * runsPool.length)]
+  const runners = registrations.map((registration) => {
 
-    return new Runner(WsUrl, race.runnerName, race.points)
+    return new Runner(WS_URL, race, registration.user_profile.user.email)
   })
 
-  console.log(`Emulation started with ${RUNNER_COUNT} runners, seending events to: ${WsUrl}`)
+  await Promise.all(runners.map(r => r.login()))
 
-  for (let r of runners) {
-    r.startRace()
-  }
+  console.log(`Emulation started with ${registrations.length} runners, seending events to: ${WS_URL}`)
+
+  runners.forEach((r, i) => setTimeout(() => r.startRace(), i * 2000))
+
+  // for (let r of runners) {
+  //   setTimeout(() => r.startRace(), Math.random() * 5000)
+  // }
 
 }
 

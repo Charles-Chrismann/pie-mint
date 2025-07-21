@@ -2,8 +2,8 @@ import { pgTable, varchar, integer, AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const users_table = pgTable('users', {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
-  email: varchar('email').unique(),
-  password: varchar('password'),
+  email: varchar('email').unique().notNull(),
+  password: varchar('password').notNull(),
   refresh_token: varchar('refresh_token'),
 });
 

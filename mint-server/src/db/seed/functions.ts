@@ -11,7 +11,7 @@ import { eq, sql } from "drizzle-orm";
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
-  const passwordHash = hashSync('password', 12)
+  const passwordHash = hashSync('password', 8)
 
   const user = (await db.insert(users_table).values({ email: "user@example.com", password: passwordHash }).returning())[0]
   await db.insert(user_profiles_table).values({ user_id: user.id, firstname: "user", lastname: "user" })
@@ -231,13 +231,13 @@ async function seedOriganizations({ count }: { count: number }) {
 }
 
 async function seedRegistrations() {
-  const users = await db.select().from(user_profiles_table).limit(10)
+  const users = await db.select().from(user_profiles_table)
   const lut2025 = (await db.select().from(races_table).where(eq(races_table.name, 'Lyon Urban Trail 2025')).limit(1))[0]!
 
   const createdRegistrations = await db
   .insert(registrations_table)
   .values(users.map(u => ({
-    race_id: 2,
+    race_id: 1,
     user_profile_id: u.id,
     bib_alias: u.firstname,
     bib_number: u.id

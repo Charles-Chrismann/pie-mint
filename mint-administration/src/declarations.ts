@@ -33,7 +33,8 @@ export interface LastUpdatedRunner {
     lat: number,
     lng: number
   },
-  name: string
+  runner_id: number
+  name: string,
 }
 
 export interface Runner {
@@ -41,6 +42,7 @@ export interface Runner {
     lat: number,
     lng: number
   },
+  runner_id: number,
   name: string,
   marker: L.Marker
 }
