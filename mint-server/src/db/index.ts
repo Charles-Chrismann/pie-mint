@@ -4,9 +4,11 @@ if(!process.env.DATABASE_URL)
     path: "../.env.api",
   });
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { schema } from "./schema";
 
 export const db = drizzle(
   process.env.DATABASE_URL!, {
     logger: process.env.MODE === "development",
+    schema
   }
 );

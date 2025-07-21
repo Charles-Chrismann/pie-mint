@@ -44,8 +44,8 @@ async function bootstrap() {
     );
 
   const apiUrl = process.env.NODE_ENV === 'development'
-    ? `http://localhost:${PORT}/api`
-    : `${process.env.SELF_HOST}/api`;
+    ? `http://localhost:${PORT}`
+    : `${process.env.SELF_HOST}`;
 
   configBuilder.addServer(apiUrl);
 

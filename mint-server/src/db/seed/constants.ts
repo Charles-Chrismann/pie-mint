@@ -25,6 +25,7 @@ const organizations: Organization[] = [
 
             track: {
               name: 'La track du marathon de Nantes 2026',
+              gpx: 'nantes_marathon.gpx'
             },
           }
         ]

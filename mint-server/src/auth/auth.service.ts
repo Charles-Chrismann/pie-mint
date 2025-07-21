@@ -19,7 +19,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findTechnicalOne(email);
-    if (user && compareSync(pass, user.users.password!)) {
+    if (user && await compare(pass, user.users.password!)) {
       return user;
     }
     return null;
@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async register(user: CreateUserDto) {
-    const hashedPassword = await hash(user.password, 12)
+    const hashedPassword = await hash(user.password, 8)
     
     // TODO: Put the following in a transaction
     const createdUser = (await this.drizzle.client.insert(users_table).values({
@@ -71,8 +71,7 @@ export class AuthService {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
       expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS
     })
-
-    await this.drizzle.client.update(users_table).set({refresh_token: await hash(refresh_token, 12)}).where(eq(users_table.id, user.users.id))
+    await this.drizzle.client.update(users_table).set({refresh_token: await hash(refresh_token, 8)}).where(eq(users_table.id, user.users.id))
 
     return {
       technicalUser: {

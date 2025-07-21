@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsDateString, IsInt, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class CreateRaceDto {
   @IsString()
@@ -34,7 +34,7 @@ export class CreateRaceDto {
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
+  @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
     example: 1,
@@ -43,7 +43,7 @@ export class CreateRaceDto {
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
+  @Transform(({ value }) => value === "" ? undefined : value)
   @ApiProperty({
     required: false,
     example: 1,
@@ -190,13 +190,13 @@ export class GetRacesAroundQueryDto {
   startsOnly: boolean = false;
 }
 
-export class GetRaceByIdQueryDto {
+export class GetRaceByIdParamDto {
   @ApiProperty({
     required: true,
     example: 5,
     description: 'The id of the race.',
   })
-  @Type(() => Number)
   @IsNumber()
-  id: number;
+  @Type(() => Number)
+  raceId: number;
 }

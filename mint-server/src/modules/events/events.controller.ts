@@ -45,10 +45,10 @@ export class EventsController {
     return this.eventsService.getEventById(+eventId)
   }
 
-  @ApiOperation({ summary: 'Get the sub events in an event' })
+  @ApiOperation({ summary: 'Get the races in an event' })
   @ApiResponse({
     status: 200,
-    description: 'The array of sub events',
+    description: 'The races in the event',
     isArray: true,
     type: Race
   })

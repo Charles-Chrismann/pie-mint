@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { and, eq, sql } from 'drizzle-orm';
-import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table, standard_distances_table, race_disciplines_table, race_discipline_categories_table, organizations_table } from 'src/db/schema';
+import { and, asc, eq, sql } from 'drizzle-orm';
+import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table, standard_distances_table, race_disciplines_table, race_discipline_categories_table, organizations_table, race_start_waves_table } from 'src/db/schema';
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 import {
   AddRunnerToRaceDto,
@@ -13,6 +13,7 @@ import { AuthorizationService } from 'src/authorization/authorization.service';
 import { chunkify, getPointsFromGpx } from 'src/utils';
 import { XMLParser } from 'fast-xml-parser';
 import { alias } from 'drizzle-orm/pg-core';
+import { JoinedRace, JoinedStartWave, JoinedUser } from 'src/utils/drizzle.helpers';
 
 @Injectable()
 export class RacesService {
@@ -99,7 +100,7 @@ export class RacesService {
       .leftJoin(events_table, eq(events_table.id, races_table.event_id))
       .leftJoin(organizations_table, eq(organizations_table.id, races_table.organization_id))
       .leftJoin(user_profiles_table, eq(user_profiles_table.id, races_table.created_by_id))
-      .leftJoin(ownerAlias, eq(ownerAlias .id, races_table.owner_id))
+      .leftJoin(ownerAlias, eq(ownerAlias.id, races_table.owner_id))
       .where(eq(races_table.id, raceId))
       .limit(1)
     )[0]
@@ -170,7 +171,7 @@ export class RacesService {
     // )[0]
 
     // return createdRace
-    console.log(createRaceDto.start_date)
+    console.log(createRaceDto)
 
     const values: any = { ...createRaceDto }
 
@@ -178,6 +179,8 @@ export class RacesService {
       values.created_by_id = user.userId
       values.owner_id = user.userId
     } else if (!(createRaceDto.event_id && createRaceDto.organization_id)) throw new BadRequestException()
+
+    console.log(values)
 
     return (await this.drizzle.client.insert(races_table).values(values).returning())[0]
   }
@@ -232,13 +235,21 @@ export class RacesService {
   async getRaceRunners(
     raceId: number
   ) {
-    const registration = alias(registrations_table, "registration")
-    const user_profile = alias(user_profiles_table, "user_profile")
     return this.drizzle.client
-      .select()
-      .from(registration)
-      .innerJoin(user_profile, eq(user_profile.id, registration.user_profile_id))
-      .where(eq(registration.race_id, raceId))
+      .select({
+        id: registrations_table.id,
+        bib_number: registrations_table.bib_number,
+        bib_alias: registrations_table.bib_alias,
+        user_profile: JoinedUser,
+        race: JoinedRace,
+        start_wave: JoinedStartWave,
+      })
+      .from(registrations_table)
+      .leftJoin(user_profiles_table, eq(user_profiles_table.id, registrations_table.user_profile_id))
+      .leftJoin(races_table, eq(races_table.id, registrations_table.race_id))
+      .leftJoin(race_start_waves_table, eq(race_start_waves_table.id, registrations_table.race_start_wave_id))
+      .where(eq(registrations_table.race_id, raceId))
+      .orderBy(asc(registrations_table.bib_number))
   }
 
   async getRacesAround(
@@ -293,7 +304,8 @@ export class RacesService {
         segment: sql<string>`ST_AsGeoJSON(${track_segments_table.segment})`,
       })
       .from(track_segments_table)
-      .where(eq(track_segments_table.id, trackId))
+      .leftJoin(tracks_table, eq(tracks_table.id, track_segments_table.track_id))
+      .where(eq(tracks_table.id, trackId))
       .limit(1)
     )[0]
 

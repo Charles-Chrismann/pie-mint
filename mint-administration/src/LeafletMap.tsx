@@ -3,6 +3,31 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { LastUpdatedRunner, LineString, Runner } from './declarations';
 
+function animateMarker(
+  marker: L.Marker,
+  toLatLng: L.LatLngExpression,
+  duration: number = 1000
+): void {
+  const fromLatLng: L.LatLng = marker.getLatLng();
+  const to = L.latLng(toLatLng);
+  const start = performance.now();
+
+  function animate(time: number) {
+    const progress = Math.min((time - start) / duration, 1);
+
+    const lat = fromLatLng.lat + (to.lat - fromLatLng.lat) * progress;
+    const lng = fromLatLng.lng + (to.lng - fromLatLng.lng) * progress;
+
+    marker.setLatLng([lat, lng]);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
 export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { track?: LineString[]; lastUpdatedRunner?: LastUpdatedRunner, mapStyle: L.TileLayer }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
@@ -14,7 +39,8 @@ export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { tra
   useEffect(() => {
     if (mapRef.current) {
       // Initialiser la carte
-      const map = L.map(mapRef.current).setView([45.761401, 4.825875], 15); // Lyon
+      const map = L.map(mapRef.current).setView([47.218371, -1.553621], 15);
+
 
       mapStyle.addTo(map);
 
@@ -64,11 +90,11 @@ export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { tra
     console.log(track)
 
     const geoJSON = L.geoJSON(track, {
-          style: {
-            color: 'blue',
-            weight: 4
-          }
-        }).addTo(map!);
+      style: {
+        color: 'blue',
+        weight: 4
+      }
+    }).addTo(map!);
     console.log(geoJSON)
     // map!.fitBounds(polyline.getBounds());
 
@@ -89,23 +115,32 @@ export default function LeafletMap({ track, lastUpdatedRunner, mapStyle }: { tra
     if (!lastUpdatedRunner) return
     // console.log('lastUpdatedRunner', lastUpdatedRunner, runners.length)
 
-    const runnerInRunners = runners.find(r => r.name === lastUpdatedRunner.name)
+    const runnerInRunners = runners.find(r => r.runner_id === lastUpdatedRunner.runner_id)
 
     const htmlIcon = L.divIcon({
       className: 'custom-marker',
-      html: '<div class="marker-content">📍</div>',
-      iconSize: [30, 42],
-      iconAnchor: [15, 42],
+      html: `<div class="rounded-full border bg-white w-6 aspect-square grid place-items-center border-black">${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
     });
 
-    const marker = runnerInRunners ? runnerInRunners.marker : L.marker([lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng], {icon: htmlIcon})
+    const marker = runnerInRunners ?
+      runnerInRunners.marker :
+      L.marker(
+        [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
+        {
+          icon: htmlIcon
+        }
+      )
 
     if (!runnerInRunners) {
       setRunners([...runners, { ...lastUpdatedRunner, marker }])
       marker.addTo(map)
     }
 
-    marker.setLatLng([lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng])
+    animateMarker(marker, [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng], 1000);
+
+    // marker.setLatLng([lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng])
 
     // if(!map!.hasLayer(lastUpdatedRunner!.marker)) {
     //   lastUpdatedRunner!.marker.addTo(map!)

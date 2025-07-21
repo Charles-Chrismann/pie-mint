@@ -8,6 +8,7 @@ import { Server, Socket } from 'socket.io';
 })
 export class AppGateway {
 
+  positions: any[] = []
 
   @WebSocketServer()
   server: Server;
@@ -28,6 +29,11 @@ export class AppGateway {
 
   @SubscribeMessage('position')
   handlePosition(client: any, payload: any) {
-    this.server.emit('position', payload)
+    this.server.to('spec').emit('position', payload);
+  }
+
+  @SubscribeMessage('spec')
+  handleSpec(client: Socket, payload: any) {
+    client.join('spec')
   }
 }

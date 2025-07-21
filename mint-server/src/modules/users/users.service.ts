@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
+import { first } from 'rxjs';
 import {
   user_profiles_table,
   users_table,
@@ -16,7 +17,7 @@ export class UsersService {
       await this.drizzle.client
         .select()
         .from(users_table)
-        .innerJoin(
+        .leftJoin(
           user_profiles_table,
           eq(users_table.id, user_profiles_table.user_id),
         )
@@ -85,4 +86,12 @@ export class UsersService {
   // async findOne(username: string): Promise<any | undefined> {
   //   return this.users.find(user => user.username === username);
   // }
+
+  getUsers() {
+    return this.drizzle.client.select({
+      id: user_profiles_table.id,
+      firstname: user_profiles_table.firstname,
+      lastname: user_profiles_table.lastname,
+    }).from(user_profiles_table)
+  }
 }
