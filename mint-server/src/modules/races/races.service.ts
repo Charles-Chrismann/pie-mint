@@ -314,7 +314,7 @@ export class RacesService {
     //   //   )
   }
 
-  async getRaceTrack(trackId: number) {
+  async getRaceTrack(raceId: number) {
     const results = (await this.drizzle.client // TODO: adapter pour le multi segment 
       .select({
         id: track_segments_table.id,
@@ -324,7 +324,8 @@ export class RacesService {
       })
       .from(track_segments_table)
       .leftJoin(tracks_table, eq(tracks_table.id, track_segments_table.track_id))
-      .where(eq(tracks_table.id, trackId))
+      .leftJoin(races_table, eq(races_table.track_id, track_segments_table.track_id))
+      .where(eq(races_table.id, raceId))
       .limit(1)
     )[0]
 
