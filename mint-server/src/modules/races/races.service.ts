@@ -181,9 +181,27 @@ export class RacesService {
       values.owner_id = user.userId
     } else if (!(createRaceDto.event_id && createRaceDto.organization_id)) throw new BadRequestException()
 
-    console.log(values)
 
-    return (await this.drizzle.client.insert(races_table).values(values).returning())[0]
+    const parser = new XMLParser({ ignoreAttributes: false })
+    const gpxStr = file.buffer.toString()
+    const gpxData = parser.parse(gpxStr)
+    const points = getPointsFromGpx(gpxData)
+
+
+    return await this.drizzle.client.transaction(async (tx) => {
+      const createdTrack = (await tx.insert(tracks_table).values({ name: file.originalname }).returning())[0]
+      const createdRace = (await tx.insert(races_table).values({
+        ...values,
+        track_id: createdTrack.id
+      }).returning())[0]
+      const createdsegment = (await tx.insert(track_segments_table).values({
+        track_id: createdTrack.id,
+        segment_index: 1, 
+        segment: `LINESTRINGZ(${points.map(p => `${Number(p.lng.toFixed(8))} ${Number(p.lat.toFixed(8))} ${Number(p.alt.toFixed(8))}`).join(',')})`,
+      }).returning())[0]
+
+      return createdRace
+    });
   }
 
   async updateRace(raceId: number, user: JWTUser, updateRaceDto: UpdateRaceDto) {
