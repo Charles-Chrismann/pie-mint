@@ -110,7 +110,7 @@ jobs:
             docker compose -f docker-compose.vps.yml pull mint-api
             docker compose -f docker-compose.vps.yml pull mint-administration
 
-            docker exec mint-vps-api ./scripts/is.sh
+            docker exec mint-vps-api ./scripts/i.sh
 
             echo "Relancement des services..."
             docker compose -f docker-compose.vps.yml up -d mint-api mint-administration
