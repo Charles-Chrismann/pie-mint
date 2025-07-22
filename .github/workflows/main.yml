@@ -77,10 +77,12 @@ jobs:
   deploy:
     name: SSH Deploy on Server
     needs: [build-api, build-front]
-    if: needs.build-api.result == 'success' || needs.build-front.result == 'success'
     runs-on: ubuntu-latest
+    if: always()
     steps:
-      - name: SSH and Deploy
+      - name: Deploy if a build succeeded
+        if: |
+          needs.build-api.result == 'success' || needs.build-front.result == 'success'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -101,3 +103,8 @@ jobs:
 
             echo "Relancement des services..."
             docker compose -f docker-compose.vps.yml up -d mint-api mint-administration
+
+      - name: Skip deploy (no build succeeded)
+        if: |
+          needs.build-api.result != 'success' && needs.build-front.result != 'success'
+        run: echo "Aucun build exécuté ou réussi. Le déploiement est ignoré."
