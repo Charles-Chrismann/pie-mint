@@ -18,6 +18,15 @@ export class CreateRaceDto {
   readonly start_date: Date;
 
   @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  @ApiProperty({
+    example: "2025-07-05T09:00:00.000Z",
+    nullable: true,
+  })
+  readonly end_date?: Date;
+
+  @IsOptional()
   @Type(() => Number)
   @ApiProperty({
     required: false,
