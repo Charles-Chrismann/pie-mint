@@ -33,13 +33,13 @@ export class CreateUserDto {
 export class LoginDto {
 
   @ApiProperty({
-    example: "john.doe@example.com"
+    example: "user@example.com"
   })
   @IsEmail()
   email: string
 
   @ApiProperty({
-    example: "a-really-strong-password"
+    example: "password"
   })
   @IsString()
   password: string
