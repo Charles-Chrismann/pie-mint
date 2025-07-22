@@ -65,6 +65,7 @@ export const races_table = pgTable("races", {
 
   name: varchar("name").notNull(),
   start_date: timestamp("start_date").notNull(),
+  end_date: timestamp("end_date"),
   distance: numeric("distance", { precision: 10, scale: 3 }),
   positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 

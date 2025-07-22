@@ -59,18 +59,21 @@ async function main() {
 
   const runners = registrations.map((registration) => {
 
-    return new Runner(WS_URL, race, registration.user_profile.user.email)
+    return new Runner(
+      WS_URL,
+      race,
+      registration.user_profile.user.email,
+      Math.floor(Math.random() * .8 * race.length)
+    )
   })
 
   await Promise.all(runners.map(r => r.login()))
 
   console.log(`Emulation started with ${registrations.length} runners, seending events to: ${WS_URL}`)
 
-  runners.forEach((r, i) => setTimeout(() => r.startRace(), i * 2000))
-
-  // for (let r of runners) {
-  //   setTimeout(() => r.startRace(), Math.random() * 5000)
-  // }
+  for (let r of runners) {
+    setTimeout(() => r.startRace(), Math.random() * 5000)
+  }
 
 }
 

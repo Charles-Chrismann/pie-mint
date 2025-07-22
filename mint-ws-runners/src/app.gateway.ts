@@ -1,3 +1,4 @@
+import { OnModuleInit } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -6,7 +7,17 @@ import { Server, Socket } from 'socket.io';
     origin: '*',
   },
 })
-export class AppGateway {
+export class AppGateway implements OnModuleInit {
+
+  lastSecondEvents: any[] = []
+  emitTimeout: NodeJS.Timeout
+
+  onModuleInit() {
+    this.emitTimeout = setInterval(() => {
+      this.server.to('spec').emit('positions', this.lastSecondEvents)
+      this.lastSecondEvents = []
+    }, 1000)
+  }
 
   positions: any[] = []
 
@@ -29,7 +40,8 @@ export class AppGateway {
 
   @SubscribeMessage('position')
   handlePosition(client: any, payload: any) {
-    this.server.to('spec').emit('position', payload);
+    this.lastSecondEvents.push(payload)
+    // this.server.to('spec').emit('position', payload);
   }
 
   @SubscribeMessage('spec')

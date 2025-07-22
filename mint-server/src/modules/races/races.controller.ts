@@ -86,7 +86,7 @@ export class RacesController {
     type: NestedRegistrations,
     isArray: true
   })
-  getRaceRunner(
+  getRaceRunners(
     @Param('raceId') raceId: string
   ) {
     return this.racesService.getRaceRunners(+raceId)
