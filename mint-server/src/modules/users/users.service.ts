@@ -92,6 +92,23 @@ export class UsersService {
       id: user_profiles_table.id,
       firstname: user_profiles_table.firstname,
       lastname: user_profiles_table.lastname,
-    }).from(user_profiles_table)
+      email: users_table.email
+    })
+    .from(user_profiles_table)
+    .leftJoin(users_table, eq(users_table.id, user_profiles_table.user_id))
+  }
+
+  async getUserById(userId: number) {
+    return (await this.drizzle.client.select({
+      id: user_profiles_table.id,
+      firstname: user_profiles_table.firstname,
+      lastname: user_profiles_table.lastname,
+      email: users_table.email
+    })
+    .from(user_profiles_table)
+    .leftJoin(users_table, eq(users_table.id, user_profiles_table.user_id))
+    .where(
+      eq(user_profiles_table.id, userId)
+    ))[0]
   }
 }

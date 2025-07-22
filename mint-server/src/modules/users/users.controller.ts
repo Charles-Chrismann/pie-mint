@@ -22,6 +22,13 @@ export class UsersController {
     return req.user;
   }
 
+  @Get(':userId')
+  getUserById(
+    @Param('userId') userId: string
+  ) {
+    return this.usersService.getUserById(+userId);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('me/visitors')
   async getSelfVisitors(@Request() req) {

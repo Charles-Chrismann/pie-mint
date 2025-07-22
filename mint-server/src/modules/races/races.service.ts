@@ -44,6 +44,7 @@ export class RacesService {
         id: races_table.id,
         name: races_table.name,
         start_date: races_table.start_date,
+        end_date: races_table.end_date,
         distance: races_table.distance,
         standard_distance: {
           id: standard_distances_table.id,
