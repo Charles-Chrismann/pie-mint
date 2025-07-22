@@ -1,4 +1,4 @@
 #!/bin/sh
 
-sleep 4
-npm run db:init
+npm run db:push
+npm run db:i
