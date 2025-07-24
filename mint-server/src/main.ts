@@ -41,6 +41,14 @@ async function bootstrap() {
         bearerFormat: 'JWT',
       },
       'access-token'
+    )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'refresh-token'
     );
 
   const apiUrl = process.env.NODE_ENV === 'development'

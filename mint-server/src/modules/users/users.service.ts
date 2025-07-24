@@ -15,7 +15,10 @@ export class UsersService {
   async findTechnicalOne(email: string) {
     return (
       await this.drizzle.client
-        .select()
+        .select({
+          user: users_table,
+          user_profile: user_profiles_table
+        })
         .from(users_table)
         .leftJoin(
           user_profiles_table,
@@ -29,7 +32,10 @@ export class UsersService {
   async findTechnicalOneById(id: number) {
     return (
       await this.drizzle.client
-        .select()
+        .select({
+          user: users_table,
+          user_profile: user_profiles_table
+        })
         .from(users_table)
         .innerJoin(
           user_profiles_table,

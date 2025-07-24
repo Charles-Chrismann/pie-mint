@@ -126,9 +126,8 @@ export default function LeafletMap({ track, lastUpdatedRunners, mapStyle }: { tr
         iconSize: [24, 24],
         iconAnchor: [12, 12],
       });
-
+      
       let marker;
-
       if (existingIndex !== -1) {
         marker = updatedRunners[existingIndex].marker;
       } else {

@@ -107,71 +107,12 @@ export class RacesService {
     )[0]
   }
 
-  async createRace(user: JWTUser, createRaceDto: CreateRaceDto, file: Express.Multer.File) {
+  async createRace(contentType: string, user: JWTUser, createRaceDto: CreateRaceDto, file: Express.Multer.File) {
 
     // // TODO: Check authorizations
 
-    // const createdTrack = (await this.drizzle.client
-    //   .insert(tracks_table)
-    //   .values({
-    //     name: file.filename
-    //   })
-    //   .returning())[0]
+    console.log(contentType)
 
-    // const fileAsString = file.buffer.toString()
-    // const parser = new XMLParser({ ignoreAttributes: false })
-    // const gpxData = parser.parse(fileAsString)
-    // const points = getPointsFromGpx(gpxData)
-
-    // const chunks = chunkify(points, 512)
-
-    // const createdPoints = (await Promise.all(
-    //   chunks.map((chunk, chunkI) =>
-    //     this.drizzle.client.insert(track_points_table).values(
-    //       chunk.map((p, i) => ({
-    //         location: sql`ST_SetSRID(ST_MakePoint(${p.lng}, ${p.lat}, ${p.alt}), 4326)`,
-    //         is_first_point: i === 0 && chunkI === 0,
-    //         is_last_point: i === chunk.length - 1 && chunkI === chunks.length - 1,
-    //         track_id: createdTrack.id,
-    //       }))
-    //     ).returning()
-    //   )
-    // ))
-
-    // const createdSegments = await Promise.all(
-    //   createdPoints.map((chunk, chunkI) => this.drizzle.client.insert(track_segments_table).values(
-    //     chunk.map((point, pointI) => {
-    //       let end_position_id: undefined | number
-    //       // si c'est le dernier point du dernier chunk
-    //       if (chunkI === createdPoints.length - 1 && pointI === chunk.length - 1) end_position_id = undefined
-    //       else {
-    //         // Si y a un point derrière
-    //         if (pointI !== chunk.length - 1) end_position_id = chunk[pointI + 1].id
-    //         else end_position_id = createdPoints[chunkI + 1][0].id
-    //       }
-    //       return ({
-    //         track_id: point.track_id,
-    //         start_position_id: point.id,
-    //         end_position_id
-    //       })
-    //     })).returning())
-    // )
-
-    // const createdRace = (await this.drizzle.client
-    //   .insert(races_table)
-    //   .values({
-    //     event_id: createRaceDto.event_id,
-    //     name: createRaceDto.name,
-    //     distance: createRaceDto.distance,
-    //     start_date: new Date(createRaceDto.start_date),
-    //     positive_elevation: createRaceDto.positive_elevation,
-    //     standard_distance_id: createRaceDto.standard_distance_id,
-    //     track_id: createdTrack.id
-    //   })
-    //   .returning()
-    // )[0]
-
-    // return createdRace
     console.log(createRaceDto)
 
     const values: any = { ...createRaceDto }
@@ -190,15 +131,20 @@ export class RacesService {
 
     return await this.drizzle.client.transaction(async (tx) => {
       const createdTrack = (await tx.insert(tracks_table).values({ name: file.originalname }).returning())[0]
-      const createdRace = (await tx.insert(races_table).values({
-        ...values,
-        track_id: createdTrack.id
-      }).returning())[0]
-      const createdsegment = (await tx.insert(track_segments_table).values({
-        track_id: createdTrack.id,
-        segment_index: 1, 
-        segment: `LINESTRINGZ(${points.map(p => `${Number(p.lng.toFixed(8))} ${Number(p.lat.toFixed(8))} ${Number(p.alt.toFixed(8))}`).join(',')})`,
-      }).returning())[0]
+
+      const [createdRaceList, createdsegmentList] = await Promise.all([
+        tx.insert(races_table).values({
+          ...values,
+          track_id: createdTrack.id
+        }).returning(),
+        tx.insert(track_segments_table).values({
+          track_id: createdTrack.id,
+          segment_index: 1,
+          segment: `LINESTRINGZ(${points.map(p => `${Number(p.lng.toFixed(8))} ${Number(p.lat.toFixed(8))} ${Number(p.alt.toFixed(8))}`).join(',')})`,
+        }).returning()
+      ])
+      const createdRace = createdRaceList[0]
+      const createdsegment = createdsegmentList[0]
 
       return createdRace
     });

@@ -9,7 +9,7 @@ import {
   UserLoginResponse,
   UserRegisterResponse
 } from './entities/auth.entity';
-import { ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -32,24 +32,23 @@ export class AuthController {
   @ApiOperation({ summary: 'Create an email/password account' })
   @ApiResponse({
     status: 201,
-    description: 'Create an email/password account',
     type: UserRegisterResponse
   })
   @HttpCode(201)
   @Post('register')
   async register(
     @Body() createUserDto: CreateUserDto
-  ): Promise<UserRegisterResponse> {
+  ) {
     return this.authService.register(createUserDto);
   }
 
   @ApiOperation({ summary: 'Login with email/password' })
+  @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
     description: 'Login with email/password',
     type: UserLoginResponse
   })
-  @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('login')
@@ -65,15 +64,19 @@ export class AuthController {
     return req.logout();
   }
 
-  @ApiOperation({ summary: 'Protected route requiring Authorization header' })
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'Use the refresh_token sent on login as a bearer',
-    required: true,
-    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  @ApiOperation({
+    summary: 'Protected route requiring Authorization header',
+    description: 'use this route with the Authorization header, example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."',
   })
-  @UseGuards(JwtRefreshAuthGuard)
+  @ApiBearerAuth('refresh-token')
+  @ApiResponse({
+    status: 200,
+    description: 'Login with email/password',
+    type: UserLoginResponse
+  })
   @Post('refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(200)
   async refresh(
     @CurrentUser() user: any
   ) {

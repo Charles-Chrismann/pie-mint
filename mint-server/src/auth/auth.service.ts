@@ -15,11 +15,11 @@ export class AuthService {
     private jwtService: JwtService,
     private drizzle: DrizzleService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findTechnicalOne(email);
-    if (user && await compare(pass, user.users.password!)) {
+    if (user && await compare(pass, user.user.password!)) {
       return user;
     }
     return null;
@@ -31,36 +31,62 @@ export class AuthService {
   }
 
   async register(user: CreateUserDto) {
-    const hashedPassword = await hash(user.password, 8)
-    
-    // TODO: Put the following in a transaction
-    const createdUser = (await this.drizzle.client.insert(users_table).values({
-      email: user.email,
-      password: hashedPassword
-    }).returning())[0]
 
-    const createdUserProfile = (await this.drizzle.client.insert(user_profiles_table).values({
-      user_id: createdUser.id,
-      firstname: user.firstname,
-      lastname: user.lastname,
-    }).returning())[0]
+    // TODO: customiza error if already exist
 
-    const { password, refresh_token, ...safeUser } = createdUser;
-    const payload = { email: createdUser.email, sub: createdUserProfile.id, technicalId: createdUser.id };
-    return {
-      user: safeUser,
-      profile: createdUserProfile,
-      access_token: this.jwtService.sign(payload),
-      // TODO: add refresh token
-    };
+    return this.drizzle.client.transaction(async tx => {
+
+      const hashedPassword = await hash(user.password, 8)
+
+      const createdUser = (await tx.insert(users_table).values({
+        email: user.email,
+        password: hashedPassword
+      }).returning())[0]
+
+      const createdUserProfile = (await tx.insert(user_profiles_table).values({
+        user_id: createdUser.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+      }).returning())[0]
+
+      const { password, refresh_token, ...safeUser } = createdUser;
+      const payload = { email: createdUser.email, sub: createdUserProfile.id, technicalId: createdUser.id };
+
+      const expiresRefreshToken = new Date();
+      expiresRefreshToken.setMilliseconds(
+        expiresRefreshToken.getTime() +
+        parseInt(
+          this.configService.getOrThrow<string>(
+            "JWT_REFRESH_TOKEN_EXPIRATION_MS"
+          )
+        )
+      )
+      const refresh_token_to_return = this.jwtService.sign(payload, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS
+      })
+      await tx.update(users_table).set({ refresh_token: await hash(refresh_token_to_return, 8) }).where(eq(users_table.id, createdUser.id))
+
+      return {
+        user: safeUser,
+        profile: {
+          id: createdUserProfile.id,
+          firstname: createdUserProfile.firstname,
+          lastname: createdUserProfile.lastname,
+        },
+        access_token: this.jwtService.sign(payload),
+        refresh_token: refresh_token_to_return
+      };
+    })
   }
 
   async login(user: any) {
-    const payload = { email: user.users.email, sub: user.user_profiles.id, technicalId: user.users.id };
+    console.log(user)
+    const payload = { email: user.user.email, sub: user.user_profile.id, technicalId: user.user.id };
 
     const expiresRefreshToken = new Date();
     expiresRefreshToken.setMilliseconds(
-      expiresRefreshToken.getTime() + 
+      expiresRefreshToken.getTime() +
       parseInt(
         this.configService.getOrThrow<string>(
           "JWT_REFRESH_TOKEN_EXPIRATION_MS"
@@ -71,14 +97,18 @@ export class AuthService {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
       expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS
     })
-    await this.drizzle.client.update(users_table).set({refresh_token: await hash(refresh_token, 8)}).where(eq(users_table.id, user.users.id))
+    await this.drizzle.client.update(users_table).set({ refresh_token: await hash(refresh_token, 8) }).where(eq(users_table.id, user.user.id))
 
     return {
       technicalUser: {
-        id: user.users.id,
-        email: user.users.email,
+        id: user.user.id,
+        email: user.user.email,
       },
-      userProfile: user.user_profiles,
+      userProfile: {
+        id: user.user_profile.id,
+        firstname: user.user_profile.firstname,
+        lastname: user.user_profile.lastname,
+      },
       access_token: this.jwtService.sign(payload),
       refresh_token
     };
@@ -89,16 +119,16 @@ export class AuthService {
       const user = await this.usersService.findTechnicalOneById(userId);
       const authenticated = await compare(
         refreshToken,
-        user.users.refresh_token!
+        user.user.refresh_token!
       )
 
-      if(!authenticated) {
+      if (!authenticated) {
         throw new UnauthorizedException();
       }
 
       return user
     } catch (error: unknown) {
-      throw new UnauthorizedException('Refresh token is nnot valid.');
+      throw new UnauthorizedException('Refresh token is not valid.');
     }
   }
 }
