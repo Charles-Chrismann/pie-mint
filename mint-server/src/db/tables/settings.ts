@@ -12,7 +12,7 @@ export const setting_categories_table = pgTable("setting_categories", {
   name_key: varchar("name_key"),
   description_key: varchar("description_key"),
 
-  action_level_id: integer("action_level_id").notNull().references(() :AnyPgColumn => action_levels_table.id),
+  action_level_id: integer("action_level_id").notNull().references((): AnyPgColumn => action_levels_table.id),
 });
 
 export const setting_types_table = pgTable("setting_types", {
@@ -26,14 +26,14 @@ export const setting_multiple_options_table = pgTable("setting_multiple_options"
   value_key: varchar("value_key"),
   selected_by_default: boolean("selected_by_default"),
 
-  setting_key_id: integer("setting_key_id").notNull().references(() :AnyPgColumn => setting_keys_table.id),
+  setting_key_id: integer("setting_key_id").notNull().references((): AnyPgColumn => setting_keys_table.id),
 });
 
 export const setting_selected_options_table = pgTable("setting_selected_options", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
-  setting_multiple_option_id: integer("setting_multiple_option_id").notNull().references(() :AnyPgColumn => setting_multiple_options_table.id),
-  user_setting_id: integer("setting_key_id").notNull().references(() :AnyPgColumn => user_profiles_table.id),
+  setting_multiple_option_id: integer("setting_multiple_option_id").notNull().references((): AnyPgColumn => setting_multiple_options_table.id),
+  user_setting_id: integer("setting_key_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
 });
 
 export const setting_keys_table = pgTable("setting_keys", {
@@ -43,8 +43,8 @@ export const setting_keys_table = pgTable("setting_keys", {
   description_key: varchar("description_key"),
   default_value: varchar("default_value"),
 
-  setting_category_id: integer("setting_category_id").notNull().references(() :AnyPgColumn => setting_categories_table.id),
-  setting_type_id: integer("setting_type_id").notNull().references(() :AnyPgColumn => setting_types_table.id),
+  setting_category_id: integer("setting_category_id").notNull().references((): AnyPgColumn => setting_categories_table.id),
+  setting_type_id: integer("setting_type_id").notNull().references((): AnyPgColumn => setting_types_table.id),
 });
 
 export const custom_settings_table = pgTable("custom_settings", {
@@ -52,9 +52,9 @@ export const custom_settings_table = pgTable("custom_settings", {
 
   value: varchar("value"),
 
-  user_profile_id: integer("user_profile_id").notNull().references(() :AnyPgColumn => user_profiles_table.id),
-  sponsor_id: integer("sponsor_id").notNull().references(() :AnyPgColumn => sponsors_table.id),
-  organization_id: integer("organization_id").notNull().references(() :AnyPgColumn => organizations_table.id),
-  event_id: integer("event_id").notNull().references(() :AnyPgColumn => events_table.id),
-  race_id: integer("race_id").notNull().references(() :AnyPgColumn => races_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  sponsor_id: integer("sponsor_id").notNull().references((): AnyPgColumn => sponsors_table.id),
+  organization_id: integer("organization_id").notNull().references((): AnyPgColumn => organizations_table.id),
+  event_id: integer("event_id").notNull().references((): AnyPgColumn => events_table.id),
+  race_id: integer("race_id").notNull().references((): AnyPgColumn => races_table.id),
 });

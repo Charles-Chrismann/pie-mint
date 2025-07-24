@@ -55,7 +55,7 @@ async function main() {
   // }
 
   const segments: { coordinates: position3D[] } = await(await fetch(`${API_BASE_URL}/races/1/track`)).json()
-  const race: position3D[] = segments.coordinates.slice(1000)
+  const race: position3D[] = segments.coordinates.slice(500)
 
   const runners = registrations.map((registration) => {
 
@@ -63,7 +63,10 @@ async function main() {
       WS_URL,
       race,
       registration.user_profile.user.email,
-      Math.floor(Math.random() * .8 * race.length)
+      (
+        registration.user_profile.firstname === "Charles" &&
+        registration.user_profile.lastname === "Chrismann"
+      ) ? Math.floor(.90 * race.length) : Math.floor(Math.random() * .85 * race.length)
     )
   })
 

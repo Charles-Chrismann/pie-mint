@@ -48,13 +48,17 @@ export class Runner {
   }
 
   startRace() {
-    setTimeout(() => {
-      this.positionIntervalId = setInterval(() => this.updatePosition(), 1000)
-    }, Math.random() * 300)
+    this.positionIntervalId = setInterval(() => this.updatePosition(), 1000)
+  }
+
+  stopRace() {
+    if(this.positionIntervalId) clearInterval(this.positionIntervalId)
   }
 
   updatePosition() {
     this.currentPointsIndex++
+
+    if(!this.points[this.currentPointsIndex]) return this.stopRace()
 
     const p = {
       lat: this.points[this.currentPointsIndex][1] + this.getImprecision(),

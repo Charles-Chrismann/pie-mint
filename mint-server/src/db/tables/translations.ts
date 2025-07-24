@@ -17,7 +17,7 @@ export const languages_table = pgTable("languages", {
   self_translation: varchar("self_translation"),
   bcp47: varchar("bcp47"),
 
-  country_id: integer("country_id").notNull().references(() :AnyPgColumn => countries_table.id),
+  country_id: integer("country_id").notNull().references((): AnyPgColumn => countries_table.id),
 });
 
 export const translations_table = pgTable("translations", {
@@ -26,5 +26,5 @@ export const translations_table = pgTable("translations", {
   key: varchar("key"),
   value: varchar("value"),
 
-  language_id: integer("language_id").notNull().references(() :AnyPgColumn => languages_table.id),
+  language_id: integer("language_id").notNull().references((): AnyPgColumn => languages_table.id),
 });

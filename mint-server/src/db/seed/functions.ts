@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "./seedDB";
-import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table } from "../schema";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table, countries_table, medias_table } from "../schema";
 import { organizations } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
@@ -9,12 +9,45 @@ import { chunkify, getPointsFromGpx } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
 import { eq, sql } from "drizzle-orm";
 
+async function getPPUrls(url: string, count = 1) {
+
+  const now = Date.now()
+
+  if(count === 1) {
+    const completeUrl = url.replace('REPLACE_TIME', String(now))
+    const res = await fetch(url)
+    const data: { src: string } = await res.json()
+    return [`https://this-person-does-not-exist.com${data.src}`]
+  }
+
+  const ress = await Promise.all(Array.from({ length: count }).map((_, i) => fetch(url.replace('REPLACE_TIME', String(now - 60000 * i)))))
+
+  const datas: string[] = (await Promise.all(ress.map(r => r.json()))).map(i => `https://this-person-does-not-exist.com${i.src}`)
+
+  return datas
+}
+
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
   const passwordHash = hashSync('password', 8)
 
   const user = (await db.insert(users_table).values({ email: "user@example.com", password: passwordHash }).returning())[0]
-  await db.insert(user_profiles_table).values({ user_id: user.id, firstname: "user", lastname: "user" })
+  const [mpps, fpps] = await Promise.all([
+    getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=male&age=26-35&etnic=all`, 10),
+    getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=female&age=26-35&etnic=all`, 10),
+  ])
+  const createdUserProfileAvatarMedia = (await db.insert(medias_table).values({url: 'https://avatars.githubusercontent.com/u/78157563?v=4', is_system: false}).returning())[0]
+  const createdUserProfileBannerMedia = (await db.insert(medias_table).values({url: 'https://raw.githubusercontent.com/Charles-Chrismann/Charles-Chrismann/main/assets/mint/caroussel.png', is_system: false}).returning())[0]
+  await db.insert(user_profiles_table).values({ 
+    user_id: user.id,
+    firstname: "Charles",
+    lastname: "Chrismann",
+    avatar_media_id: createdUserProfileAvatarMedia.id,
+    banner_media_id: createdUserProfileBannerMedia.id,
+    country_id: 1
+  })
+
+  const countries = await db.select({ id: countries_table.id }).from(countries_table)
 
   const fakeUsers = Array.from({ length: count - 1 }).map(
     (_, i) => {
@@ -40,12 +73,19 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
     fakeUsers.map(({ email, password }) => db.insert(users_table).values({ email, password }).returning())
   )).flat(1)
 
+  const createdUserProfileAvatarMedias = await Promise.all(
+    generatedUsers.map(gup => {
+      const ppsList = (Math.random() < .5 ? mpps : fpps)
+      return db.insert(medias_table).values({url: ppsList[Math.floor(Math.random()*ppsList.length)], is_system: false}).returning()
+    })
+  )
+
   const generatedUserProfiles = await Promise.all(
     generatedUsers.map(
-      ({ id, email }) => {
+      ({ id, email }, i) => {
         const { firstname, lastname } = fakeUsers.find(u => u.email === email)!
 
-        return db.insert(user_profiles_table).values({ user_id: id, firstname, lastname })
+        return db.insert(user_profiles_table).values({ user_id: id, firstname, lastname, avatar_media_id: createdUserProfileAvatarMedias[i][0].id, country_id: countries[Math.floor(Math.random()*countries.length)].id })
       }
     )
   )

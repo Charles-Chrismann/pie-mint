@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LastUpdatedRunner, LineString, Runner } from './declarations';
+import type { LastUpdatedRunner, LineString, RaceRegistrationRunners, Registration, Runner } from './declarations';
 
 function animateMarker(
   marker: L.Marker,
@@ -28,7 +28,19 @@ function animateMarker(
   requestAnimationFrame(animate);
 }
 
-export default function LeafletMap({ track, lastUpdatedRunners, mapStyle }: { track?: LineString[]; lastUpdatedRunners?: LastUpdatedRunner[], mapStyle: L.TileLayer }) {
+export default function LeafletMap({
+  track,
+  lastUpdatedRunners,
+  mapStyle,
+  raceRunners,
+  setSelectedRunner,
+}: {
+  track?: LineString[],
+  lastUpdatedRunners?: LastUpdatedRunner[],
+  mapStyle: L.TileLayer,
+  raceRunners: Registration[],
+  setSelectedRunner: React.Dispatch<React.SetStateAction<Registration | undefined>>,
+}) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
   const [_markers, _setMarkers] = useState<L.Marker[]>([])
@@ -118,15 +130,18 @@ export default function LeafletMap({ track, lastUpdatedRunners, mapStyle }: { tr
     lastUpdatedRunners.forEach(lastUpdatedRunner => {
       const existingIndex = updatedRunners.findIndex(r => r.runner_id === lastUpdatedRunner.runner_id);
 
+      const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.runner_id)!
+
       const htmlIcon = L.divIcon({
         className: 'custom-marker',
-        html: `<div class="rounded-full border bg-white w-6 aspect-square grid place-items-center border-black">
+        html: `<div class="rounded-full border bg-white w-8 aspect-square overflow-hidden border-black">
+                <img class="w-full h-full object-cover" src="${rr.user_profile.avatar_url}" alt="${rr.user_profile.firstname} ${rr.user_profile.lastname}'s profile picture" />
                ${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}
              </div>`,
         iconSize: [24, 24],
         iconAnchor: [12, 12],
       });
-      
+
       let marker;
       if (existingIndex !== -1) {
         marker = updatedRunners[existingIndex].marker;
@@ -134,7 +149,9 @@ export default function LeafletMap({ track, lastUpdatedRunners, mapStyle }: { tr
         marker = L.marker(
           [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
           { icon: htmlIcon }
-        ).addTo(map);
+        ).on('click', (e) => {
+          setSelectedRunner(rr)
+        }).addTo(map);
 
         updatedRunners.push({ ...lastUpdatedRunner, marker });
       }
