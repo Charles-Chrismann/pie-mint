@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { first } from 'rxjs';
 import {
+  medias_table,
   user_profiles_table,
   users_table,
   visitors_table,
@@ -109,10 +110,12 @@ export class UsersService {
       id: user_profiles_table.id,
       firstname: user_profiles_table.firstname,
       lastname: user_profiles_table.lastname,
-      email: users_table.email
+      email: users_table.email,
+      avatar_url: medias_table.url
     })
     .from(user_profiles_table)
     .leftJoin(users_table, eq(users_table.id, user_profiles_table.user_id))
+    .leftJoin(medias_table, eq(medias_table.id, user_profiles_table.avatar_media_id))
     .where(
       eq(user_profiles_table.id, userId)
     ))[0]

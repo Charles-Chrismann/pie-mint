@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { and, asc, eq, sql } from 'drizzle-orm';
-import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table, standard_distances_table, race_disciplines_table, race_discipline_categories_table, organizations_table, race_start_waves_table } from 'src/db/schema';
+import { events_table, registrations_table, races_table, track_segments_table, tracks_table, user_profiles_table, standard_distances_table, race_disciplines_table, race_discipline_categories_table, organizations_table, race_start_waves_table, medias_table, countries_table } from 'src/db/schema';
 import { DrizzleService } from 'src/drizzle/drizzle.service';
 import {
   AddRunnerToRaceDto,
@@ -200,6 +200,7 @@ export class RacesService {
   async getRaceRunners(
     raceId: number
   ) {
+    const banner_medias_table = alias(medias_table, "banner_medias_table");
     return this.drizzle.client
       .select({
         id: registrations_table.id,
@@ -208,11 +209,15 @@ export class RacesService {
         user_profile: JoinedUser,
         race: JoinedRace,
         start_wave: JoinedStartWave,
+        flag_emoji: countries_table.flag_emoji
       })
       .from(registrations_table)
       .leftJoin(user_profiles_table, eq(user_profiles_table.id, registrations_table.user_profile_id))
       .leftJoin(races_table, eq(races_table.id, registrations_table.race_id))
       .leftJoin(race_start_waves_table, eq(race_start_waves_table.id, registrations_table.race_start_wave_id))
+      .leftJoin(medias_table, eq(medias_table.id, user_profiles_table.avatar_media_id))
+      .leftJoin(banner_medias_table, eq(banner_medias_table.id, user_profiles_table.banner_media_id))
+      .leftJoin(countries_table, eq(countries_table.id, user_profiles_table.country_id))
       .where(eq(registrations_table.race_id, raceId))
       .orderBy(asc(registrations_table.bib_number))
   }

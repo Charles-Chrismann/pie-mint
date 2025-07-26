@@ -52,12 +52,12 @@ const geometry = customType<{
 export const track_segments_table = pgTable("track_segments", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
-  track_id: integer("track_id").references(() :AnyPgColumn => tracks_table.id),
+  track_id: integer("track_id").references((): AnyPgColumn => tracks_table.id),
   // segment: geometry('pointz', {type: "pointz", srid: 4326})
   segment: geometry('segment').notNull(),
   segment_index: integer('segment_index').notNull(),
-  // start_position_id: integer("start_position_id").references(() :AnyPgColumn => track_points_table.id),
-  // end_position_id: integer("end_position_id").references(() :AnyPgColumn => track_points_table.id),
+  // start_position_id: integer("start_position_id").references((): AnyPgColumn => track_points_table.id),
+  // end_position_id: integer("end_position_id").references((): AnyPgColumn => track_points_table.id),
 })
 
 export const races_table = pgTable("races", {
@@ -69,17 +69,17 @@ export const races_table = pgTable("races", {
   distance: numeric("distance", { precision: 10, scale: 3 }),
   positive_elevation: numeric("positive_elevation", { precision: 10, scale: 3 }),
 
-  standard_distance_id: integer("standard_distance_id").references(() :AnyPgColumn => standard_distances_table.id),
-  track_id: integer("track_id").references(() :AnyPgColumn => tracks_table.id),
-  race_discipline_id: integer("race_discipline_id").references(() :AnyPgColumn => race_disciplines_table.id),
+  standard_distance_id: integer("standard_distance_id").references((): AnyPgColumn => standard_distances_table.id),
+  track_id: integer("track_id").references((): AnyPgColumn => tracks_table.id),
+  race_discipline_id: integer("race_discipline_id").references((): AnyPgColumn => race_disciplines_table.id),
 
   //If a race is in an event, in wich case the property organization_id should be defined
-  event_id: integer("event_id").references(() :AnyPgColumn => events_table.id),
-  organization_id: integer("organization_id").references(() :AnyPgColumn => organizations_table.id),
+  event_id: integer("event_id").references((): AnyPgColumn => events_table.id),
+  organization_id: integer("organization_id").references((): AnyPgColumn => organizations_table.id),
 
   // If a race is owned by a user, event_id && organization_id should be null
-  created_by_id: integer("created_by_id").notNull().references(() :AnyPgColumn => user_profiles_table.id),
-  owner_id: integer("owner_id").references(() :AnyPgColumn => user_profiles_table.id),
+  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  owner_id: integer("owner_id").references((): AnyPgColumn => user_profiles_table.id),
 },
   (table) => [
     check("event_requires_org", sql`
@@ -103,8 +103,8 @@ export const race_positions_table = pgTable("race_positions", {
   lng: doublePrecision("lng"),
   alt: doublePrecision("alt"),
 
-  user_profile_id: integer("user_profile_id").notNull().references(() :AnyPgColumn => user_profiles_table.id),
-  registration_id: integer("race_id").references(() :AnyPgColumn => registrations_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  registration_id: integer("race_id").references((): AnyPgColumn => registrations_table.id),
 });
 
 export const race_start_waves_table = pgTable("race_start_waves", {
@@ -115,7 +115,7 @@ export const race_start_waves_table = pgTable("race_start_waves", {
   wave_index: integer("wave_index").notNull(),
   is_elite: boolean("is_elite").notNull(),
 
-  race_id: integer("race_id").notNull().references(() :AnyPgColumn => races_table.id),
+  race_id: integer("race_id").notNull().references((): AnyPgColumn => races_table.id),
 });
 
 export const registrations_table = pgTable("registrations", {
@@ -126,9 +126,9 @@ export const registrations_table = pgTable("registrations", {
   bib_number: integer("bib_number"),
   bib_alias: varchar("bib_alias"),
 
-  user_profile_id: integer("user_profile_id").notNull().references(() :AnyPgColumn => user_profiles_table.id),
-  race_id: integer("race_id").notNull().references(() :AnyPgColumn => races_table.id),
-  race_start_wave_id: integer("race_start_wave_id").references(() :AnyPgColumn => race_start_waves_table.id)
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  race_id: integer("race_id").notNull().references((): AnyPgColumn => races_table.id),
+  race_start_wave_id: integer("race_start_wave_id").references((): AnyPgColumn => race_start_waves_table.id)
 });
 
 export const time_barriers_table = pgTable("time_barriers", {
@@ -137,7 +137,7 @@ export const time_barriers_table = pgTable("time_barriers", {
   name: varchar("name").notNull(),
   is_end: boolean("is_end"),
 
-  race_id: integer("race_id").references(() :AnyPgColumn => races_table.id),
+  race_id: integer("race_id").references((): AnyPgColumn => races_table.id),
 
   track_id: integer("position_id").notNull(),
   position_id: integer("position_id").notNull(),
