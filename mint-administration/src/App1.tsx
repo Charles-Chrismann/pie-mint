@@ -89,7 +89,8 @@ function App() {
         position: {
           lat: data.position.lat,
           lng: data.position.lng,
-        }
+        },
+        rank: data.rank
       })
     }
 
