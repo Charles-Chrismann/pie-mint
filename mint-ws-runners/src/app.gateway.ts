@@ -15,12 +15,8 @@ export class AppGateway implements OnModuleInit {
 
   onModuleInit() {
     this.emitTimeout = setInterval(() => {
-      console.log([...this.lastSecondEvents].sort((ra, rb) => rb.rank - ra.rank).map((r, i)=> ({ ...r, rank: i + 1 })))
       this.server.to('spec')
       .emit('positions', [...this.lastSecondEvents].sort((ra, rb) => rb.rank - ra.rank).map((r, i)=> ({ ...r, rank: i + 1 })))
-      
-      this.server.to('spec')
-      .emit('positions', [...this.lastSecondEvents].sort((ra, rb) => rb.rank - ra.rank).map((r, i)=> ({ ...r, rank: i + 1 })).length)
       this.lastSecondEvents = []
     }, 1000)
   }
