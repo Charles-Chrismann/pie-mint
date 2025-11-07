@@ -1,36 +1,75 @@
 import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "./seedDB";
-import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table } from "../schema";
-import { organizations } from "./constants";
+import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table, countries_table, medias_table, sponsors_table, sponsors__user_profiles_table } from "../schema";
+import { organizations, sponsors } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
-import { chunkify, getPointsFromGpx } from "../../utils";
+import { chunkify, getPointsFromGpx, shuffleArray } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
 import { eq, sql } from "drizzle-orm";
+
+async function getPPUrls(url: string, count = 1) {
+
+  // return ['https://example.com/avatar.png']
+
+  const now = Date.now()
+
+  if (count === 1) {
+    const completeUrl = url.replace('REPLACE_TIME', String(now))
+    const res = await fetch(url)
+    const data: { src: string } = await res.json()
+    return [`https://this-person-does-not-exist.com${data.src}`]
+  }
+
+  const ress = await Promise.all(Array.from({ length: count }).map((_, i) => fetch(url.replace('REPLACE_TIME', String(now - 60000 * i)))))
+
+  const datas: string[] = (await Promise.all(ress.map(r => r.json()))).map(i => `https://this-person-does-not-exist.com${i.src}`)
+
+  return datas
+}
 
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
   const passwordHash = hashSync('password', 8)
 
   const user = (await db.insert(users_table).values({ email: "user@example.com", password: passwordHash }).returning())[0]
-  await db.insert(user_profiles_table).values({ user_id: user.id, firstname: "user", lastname: "user" })
+  const [mpps, fpps] = await Promise.all([
+    getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=male&age=26-35&etnic=all`, 10),
+    getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=female&age=26-35&etnic=all`, 10),
+  ])
+  const createdUserProfileAvatarMedia = (await db.insert(medias_table).values({ url: 'https://avatars.githubusercontent.com/u/78157563?v=4', is_system: false }).returning())[0]
+  const createdUserProfileBannerMedia = (await db.insert(medias_table).values({ url: 'https://raw.githubusercontent.com/Charles-Chrismann/Charles-Chrismann/main/assets/mint/caroussel.png', is_system: false }).returning())[0]
+  await db.insert(user_profiles_table).values({
+    user_id: user.id,
+    username: 'therunningcharles',
+    firstname: "Charles",
+    lastname: "Chrismann",
+    avatar_media_id: createdUserProfileAvatarMedia.id,
+    banner_media_id: createdUserProfileBannerMedia.id,
+    country_id: 1,
+    subscription_tier_id: 3
+  })
+
+  const countries = await db.select({ id: countries_table.id }).from(countries_table)
 
   const fakeUsers = Array.from({ length: count - 1 }).map(
     (_, i) => {
 
-      const FakerFirstName = faker.person.firstName()
-      const FakerLastName = faker.person.lastName()
+      const fakerFirstName = faker.person.firstName()
+      const fakerLastName = faker.person.lastName()
+      const fakerUsername = faker.internet.username(Math.random() > .3 ? { firstName: fakerFirstName, lastName: fakerLastName } : undefined)
 
-      const FakerEmail = faker.internet.email({
-        firstName: FakerFirstName,
-        lastName: FakerLastName
+      const fakerEmail = faker.internet.email({
+        firstName: fakerFirstName,
+        lastName: fakerLastName
       })
 
       return ({
-        firstname: FakerFirstName,
-        lastname: FakerLastName,
-        email: FakerEmail,
+        username: fakerUsername,
+        firstname: fakerFirstName,
+        lastname: fakerLastName,
+        email: fakerEmail,
         password: passwordHash
       })
     }
@@ -40,12 +79,37 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
     fakeUsers.map(({ email, password }) => db.insert(users_table).values({ email, password }).returning())
   )).flat(1)
 
+  const createdUserProfileAvatarMedias = await Promise.all(
+    generatedUsers.map(gup => {
+      const ppsList = (Math.random() < .5 ? mpps : fpps)
+      return db.insert(medias_table).values({ url: ppsList[Math.floor(Math.random() * ppsList.length)], is_system: false }).returning()
+    })
+  )
+
   const generatedUserProfiles = await Promise.all(
     generatedUsers.map(
-      ({ id, email }) => {
-        const { firstname, lastname } = fakeUsers.find(u => u.email === email)!
+      ({ id, email }, i) => {
+        const {
+          firstname,
+          lastname,
+          username
+        } = fakeUsers.find(u => u.email === email)!
 
-        return db.insert(user_profiles_table).values({ user_id: id, firstname, lastname })
+        let subscription_tier_id: number
+        const rdm = Math.random()
+        if (rdm > .95) subscription_tier_id = 3
+        else if (rdm > .8) subscription_tier_id = 2
+        else subscription_tier_id = 1
+
+        return db.insert(user_profiles_table).values({
+          user_id: id,
+          username,
+          firstname,
+          lastname,
+          avatar_media_id: createdUserProfileAvatarMedias[i][0].id,
+          country_id: countries[Math.floor(Math.random() * countries.length)].id,
+          subscription_tier_id
+        })
       }
     )
   )
@@ -235,17 +299,59 @@ async function seedRegistrations() {
   const lut2025 = (await db.select().from(races_table).where(eq(races_table.name, 'Lyon Urban Trail 2025')).limit(1))[0]!
 
   const createdRegistrations = await db
-  .insert(registrations_table)
-  .values(users.map(u => ({
-    race_id: 1,
-    user_profile_id: u.id,
-    bib_alias: u.firstname,
-    bib_number: u.id
-  })))
+    .insert(registrations_table)
+    .values(users.map(u => ({
+      race_id: 1,
+      user_profile_id: u.id,
+      bib_alias: u.firstname,
+      bib_number: u.id
+    })))
+}
+
+async function seedSponsors() {
+  return db.insert(sponsors_table)
+    .values(sponsors)
+    .returning()
+}
+
+async function seedSponsorsUserProfiles() {
+
+  const [users, sponsors] = await Promise.all([
+    db.select().from(user_profiles_table).offset(1),
+    db.select().from(sponsors_table),
+  ])
+
+  const values = [
+    { user_profile_id: 1, sponsor_id: 1 },
+    { user_profile_id: 1, sponsor_id: 2 },
+  ]
+
+  for (let user of users) {
+    const userHasSponsors = Math.random() > .9
+    if (!userHasSponsors) continue
+
+    const sponsorCount = Math.floor(Math.random() * 3) + 1
+
+    const shuffledSponsors = [...sponsors]
+    shuffleArray(shuffledSponsors)
+
+    values.push(...shuffledSponsors.slice(0, sponsorCount).map(s => ({ sponsor_id: s.id, user_profile_id: user.id })))
+  }
+
+  const chunks = chunkify(values, 512)
+  return Promise.all(
+    chunks.map(c =>
+      db.insert(sponsors__user_profiles_table)
+        .values(c)
+        .returning()
+      )
+  )
 }
 
 export {
   seedUsersAndUserProfiles,
   seedOriganizations,
   seedRegistrations,
+  seedSponsors,
+  seedSponsorsUserProfiles,
 }

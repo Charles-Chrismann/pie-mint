@@ -20,7 +20,7 @@ export const race_disciplines_table = pgTable(
 
     race_discipline_category_id: integer("race_discipline_category_id")
       .notNull()
-      .references(() :AnyPgColumn => race_discipline_categories_table.id),
+      .references((): AnyPgColumn => race_discipline_categories_table.id),
   },
   (table) => ({
     uniqueNameCategory: unique().on(table.name, table.race_discipline_category_id),

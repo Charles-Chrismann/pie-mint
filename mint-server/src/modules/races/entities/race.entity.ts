@@ -11,57 +11,58 @@ export class Race {
   id: number;
 
   @ApiProperty({
+    description: 'The name of the Race',
     example: "LUT 2025 - 37km",
-    description: 'The name of the Race'
   })
   name: string;
 
   @ApiProperty({
+    description: 'The date of the start of the race',
     example: "2025-07-05T09:00:00.000Z",
   })
   start_date: Date;
+  @ApiProperty({
+    description: 'The date of the end of the race',
+    example: "2025-07-05T09:00:00.000Z",
+  })
+  end_date: Date;
 
   @ApiProperty({
-    example: 37000,
+    example: "37000.000",
     description: 'The distance of the race, could be null if standard_distance_id is defined',
     type: String,
     nullable: true
   })
-  distance: string | null;
+  distance: string;
 
   @ApiProperty({
-    example: 10000,
+    example: "100.000",
     description: 'The positive elevation of the race',
     type: String,
     nullable: true
   })
-  positive_elevation: string | null;
-}
-
-export class RaceWithRelationships extends Race {
-  @ApiProperty({
-    example: 1,
-    description: 'The event id of that contains this race',
-    type: Number,
-    nullable: true
-  })
-  event_id: number;
+  positive_elevation: string;
 
   @ApiProperty({
+    description: 'The standard distance id if the race follow a standard distance such as marathon, half, 10k..., should be null if `distance` is defined',
     example: 1,
-    description: 'The id of the standard distance such as marathon, Half, 10k',
-    type: Number,
     nullable: true
   })
   standard_distance_id: number;
 
   @ApiProperty({
+    description: 'The id of the track created at the same time as the race',
     example: 1,
-    description: 'The id of the track',
-    type: Number,
     nullable: true
   })
   track_id: number;
+
+  @ApiProperty({
+    description: 'The id of the race discipline associated with the race, such as Road, Trail, Obstacle',
+    example: 1,
+    nullable: true
+  })
+  race_discipline_id: number;
 }
 
 export class StartWave {

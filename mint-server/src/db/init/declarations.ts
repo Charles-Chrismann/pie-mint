@@ -1,6 +1,12 @@
 import { ExtractTablesWithRelations } from "drizzle-orm"
 import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres"
 import { PgTransaction } from "drizzle-orm/pg-core"
+import { db } from ".."
+
+interface DBInitActionLevel {
+  id: number
+  name: string
+}
 
 interface DBInitMediaFormat {
   name: string
@@ -76,11 +82,42 @@ interface DBInitRaceDisciplineCategory {
   name: string
 }
 
-// type TransactionType = PgTransaction<NodePgQueryResultHKT, Record<string, never>, ExtractTablesWithRelations<Record<string, never>>>
+type TransactionType = Parameters<typeof db.transaction>[0] extends (tx: infer T) => any ? T : never;
 
-type TransactionType = any
+// type TransactionType = any
+
+interface DBInitSubscription {
+  id: number
+  name: string
+
+  action_level_id: number
+}
+
+interface DBInitSubscriptionTier {
+  id: number
+  name: string
+
+  subscription_id: number
+}
+
+interface DBInitSubscriptionTierFeature {
+  id: number
+  index: number
+  name: string
+  description: string
+
+  subscription_id: number
+}
+
+interface DBInitSubscriptionTierSubscriptionTierFeature {
+  is_included: boolean
+
+  subscription_tier_id: number
+  subscription_tier_feature_id: number
+}
 
 export {
+  DBInitActionLevel,
   DBInitMediaFormat,
   DBInitMediaType,
   DBInitMediaContext,
@@ -94,4 +131,8 @@ export {
   DBInitRaceDiscipline,
   DBInitRaceDisciplineCategory,
   TransactionType,
+  DBInitSubscription,
+  DBInitSubscriptionTier,
+  DBInitSubscriptionTierFeature,
+  DBInitSubscriptionTierSubscriptionTierFeature,
 }

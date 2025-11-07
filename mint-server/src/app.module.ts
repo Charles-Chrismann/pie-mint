@@ -12,6 +12,7 @@ import { MeModule } from './me/me.module';
 import { ConfigModule } from '@nestjs/config';
 import { VisitorsModule } from './modules/visitors/visitors.module';
 import { AuthorizationModule } from './authorization/authorization.module';
+import { SubscriptionsModule } from './module-enums/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthorizationModule } from './authorization/authorization.module';
     AuthModule,
     DrizzleModule,
     StandardDistancesModule,
+    SubscriptionsModule,
     MeModule,
     AuthorizationModule,
     VisitorsModule,

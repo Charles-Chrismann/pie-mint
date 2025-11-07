@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseArrayPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, ParseArrayPipe, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RacesService } from './races.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,6 +15,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { JWTUser } from 'src/declaration';
+import { Request } from 'express';
 
 @ApiTags('Races')
 @Controller('races')
@@ -24,7 +25,10 @@ export class RacesController {
 
   @ApiOperation({ summary: 'Create a race' })
   @ApiBearerAuth('access-token')
-  @ApiConsumes('multipart/form-data')
+  @ApiConsumes(
+    'multipart/form-data',
+    'application/json'
+  )
   @ApiBody({ type: CreateRaceWithFileDto })
   @ApiResponse({
     status: 201,
@@ -37,10 +41,11 @@ export class RacesController {
   async createRace(
     @CurrentUser() user: JWTUser,
     @Body() createRaceDto: CreateRaceDto,
-    @UploadedFile('file') file: Express.Multer.File
+    @UploadedFile('file') file: Express.Multer.File,
+    @Req() req: Request,
   )
     : Promise<any> {
-    return this.racesService.createRace(user, createRaceDto, file)
+    return this.racesService.createRace(req.headers['content-type']!, user, createRaceDto, file)
   }
 
   @ApiOperation({ summary: 'Update a race' })

@@ -35,6 +35,7 @@ export interface LastUpdatedRunner {
   },
   runner_id: number
   name: string,
+  rank: number
 }
 
 export interface Runner {
@@ -45,6 +46,7 @@ export interface Runner {
   runner_id: number,
   name: string,
   marker: L.Marker
+  rank: number
 }
 
 export interface Organization {
@@ -79,11 +81,13 @@ export interface Registration {
   id: number
   is_private?: boolean
   bib_number?: number
-  alias?: string
+  bib_alias?: string
   user_profile_id: number
   race_id: number
   race_start_wave_id: number
   is_accepted: boolean
+  user_profile: UserProfile
+  flag_emoji: string
 }
 
 export interface RaceRegistrationRunners {
@@ -101,6 +105,8 @@ export interface UserProfile {
   firstname: string
   lastname: string
   user_id: number
+  avatar_url: string
+  banner_url: string
 }
 
 export interface ApiResponseLogin {

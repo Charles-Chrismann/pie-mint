@@ -48,13 +48,17 @@ export class Runner {
   }
 
   startRace() {
-    setTimeout(() => {
-      this.positionIntervalId = setInterval(() => this.updatePosition(), 1000)
-    }, Math.random() * 300)
+    this.positionIntervalId = setInterval(() => this.updatePosition(), 1000)
+  }
+
+  stopRace() {
+    if(this.positionIntervalId) clearInterval(this.positionIntervalId)
   }
 
   updatePosition() {
     this.currentPointsIndex++
+
+    if(!this.points[this.currentPointsIndex]) return this.stopRace()
 
     const p = {
       lat: this.points[this.currentPointsIndex][1] + this.getImprecision(),
@@ -63,8 +67,9 @@ export class Runner {
 
     this.io.emit('position', {
       position: p,
-      runner_id: this.auth!.user_profile.user_id,
-      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`
+      runner_id: this.auth!.user_profile.id,
+      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`,
+      rank: this.currentPointsIndex
     })
   }
 

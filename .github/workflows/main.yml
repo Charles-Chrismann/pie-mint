@@ -1,4 +1,4 @@
-name: Build & Deploy Mint API + Front
+name: Build & Deploy Mint API + Front + WS Runners
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
     outputs:
       api: ${{ steps.filter.outputs.api }}
       front: ${{ steps.filter.outputs.front }}
+      ws: ${{ steps.filter.outputs.ws }}
     steps:
       - uses: actions/checkout@v4
 
@@ -24,6 +25,8 @@ jobs:
               - 'mint-server/**'
             front:
               - 'mint-administration/**'
+            ws:
+              - 'mint-ws-runners/**'
 
   build-api:
     name: Build & Push mint-api Docker image
@@ -85,15 +88,42 @@ jobs:
             -t charleschrismann/mint-administration:latest \
             --push ./mint-administration/
 
+  build-ws:
+    name: Build & Push mint-ws-runners Docker image
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ws == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push mint-ws-runners Docker image with cache
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --cache-from=type=registry,ref=charleschrismann/mint-ws-runners:buildcache \
+            --cache-to=type=registry,ref=charleschrismann/mint-ws-runners:buildcache,mode=max \
+            -t charleschrismann/mint-ws-runners:latest \
+            --push ./mint-ws-runners/
+
   deploy:
     name: SSH Deploy on Server
-    needs: [build-api, build-front]
+    needs: [build-api, build-front, build-ws]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Deploy if a build succeeded
         if: |
-          needs.build-api.result == 'success' || needs.build-front.result == 'success'
+          needs.build-api.result == 'success' || needs.build-front.result == 'success' || needs.build-ws.result == 'success'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -109,13 +139,14 @@ jobs:
             echo "Pull des dernières images..."
             docker compose -f docker-compose.vps.yml pull mint-api
             docker compose -f docker-compose.vps.yml pull mint-administration
+            docker compose -f docker-compose.vps.yml pull mint-ws-runners
 
             docker exec mint-vps-api ./scripts/i.sh
 
             echo "Relancement des services..."
-            docker compose -f docker-compose.vps.yml up -d mint-api mint-administration
+            docker compose -f docker-compose.vps.yml up -d mint-api mint-administration mint-ws-runners
 
       - name: Skip deploy (no build succeeded)
         if: |
-          needs.build-api.result != 'success' && needs.build-front.result != 'success'
+          needs.build-api.result != 'success' && needs.build-front.result != 'success' && needs.build-ws.result != 'success'
         run: echo "Aucun build exécuté ou réussi. Le déploiement est ignoré."

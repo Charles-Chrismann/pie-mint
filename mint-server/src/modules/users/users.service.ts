@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { first } from 'rxjs';
 import {
+  medias_table,
+  subscription_tiers_table,
   user_profiles_table,
   users_table,
   visitors_table,
@@ -15,7 +17,10 @@ export class UsersService {
   async findTechnicalOne(email: string) {
     return (
       await this.drizzle.client
-        .select()
+        .select({
+          user: users_table,
+          user_profile: user_profiles_table
+        })
         .from(users_table)
         .leftJoin(
           user_profiles_table,
@@ -29,7 +34,10 @@ export class UsersService {
   async findTechnicalOneById(id: number) {
     return (
       await this.drizzle.client
-        .select()
+        .select({
+          user: users_table,
+          user_profile: user_profiles_table
+        })
         .from(users_table)
         .innerJoin(
           user_profiles_table,
@@ -99,16 +107,23 @@ export class UsersService {
   }
 
   async getUserById(userId: number) {
-    return (await this.drizzle.client.select({
-      id: user_profiles_table.id,
-      firstname: user_profiles_table.firstname,
-      lastname: user_profiles_table.lastname,
-      email: users_table.email
-    })
-    .from(user_profiles_table)
-    .leftJoin(users_table, eq(users_table.id, user_profiles_table.user_id))
-    .where(
-      eq(user_profiles_table.id, userId)
-    ))[0]
+    return this.drizzle.getUserProfileById(userId)
+    // return (await this.drizzle.client.select({
+    //   id: user_profiles_table.id,
+    //   username: user_profiles_table.username,
+    //   firstname: user_profiles_table.firstname,
+    //   lastname: user_profiles_table.lastname,
+    //   avatar_url: medias_table.url,
+    //   subscription: {
+    //     id: subscription_tiers_table.id,
+    //     name: subscription_tiers_table.name,
+    //   }
+    // })
+    // .from(user_profiles_table)
+    // .leftJoin(subscription_tiers_table, eq(subscription_tiers_table.id, user_profiles_table.subscription_tier_id))
+    // .leftJoin(medias_table, eq(medias_table.id, user_profiles_table.avatar_media_id))
+    // .where(
+    //   eq(user_profiles_table.id, userId)
+    // ))[0]
   }
 }
