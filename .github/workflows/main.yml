@@ -57,7 +57,7 @@ jobs:
 
   build-front:
     name: Build & Push mint-administration Docker image
-    needs: detect-chchanges
+    needs: detect-changes
     if: needs.detect-changes.outputs.front == 'true'
     runs-on: ubuntu-latest
     steps:
