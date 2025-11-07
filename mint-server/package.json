@@ -8,6 +8,7 @@
   "scripts": {
     "db:init": "npx drizzle-kit generate && npx drizzle-kit migrate && ts-node src/db/init/init.ts",
     "db:push": "drizzle-kit push",
+    "db:push:force": "drizzle-kit push --force",
     "db:i": "ts-node src/db/init/init.ts",
     "db:di": "docker compose down -v && docker compose up -d && sleep 4 && npm run db:init",
     "db:is": "npm run db:init && npm run db:seed",

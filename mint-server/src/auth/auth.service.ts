@@ -45,6 +45,7 @@ export class AuthService {
 
       const createdUserProfile = (await tx.insert(user_profiles_table).values({
         user_id: createdUser.id,
+        username: user.username,
         firstname: user.firstname,
         lastname: user.lastname,
       }).returning())[0]

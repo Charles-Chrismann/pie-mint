@@ -1,7 +1,8 @@
 #!/bin/sh
 
 sleep 4
-npm run db:init
+npm run db:push
+npm run db:i
 
 if [ $? -eq 0 ]; then
   npm run db:seed

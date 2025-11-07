@@ -1,4 +1,4 @@
-import { seedOriganizations, seedRegistrations, seedUsersAndUserProfiles } from "./functions"
+import { seedOriganizations, seedRegistrations, seedSponsors, seedSponsorsUserProfiles, seedUsersAndUserProfiles } from "./functions"
 
 async function main() {
   const now = performance.now()
@@ -12,7 +12,11 @@ async function main() {
 
   await seedUsersAndUserProfiles({count: options.counts.users})
   await seedOriganizations({count: options.counts.users})
-  await seedRegistrations()
+  await Promise.all([
+    seedRegistrations(),
+    seedSponsors(),
+  ])
+  await seedSponsorsUserProfiles()
 
   console.log(`Database seeded in: ${performance.now() - now} ms`)
 }

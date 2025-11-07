@@ -35,6 +35,7 @@ export interface LastUpdatedRunner {
   },
   runner_id: number
   name: string,
+  rank: number
 }
 
 export interface Runner {
@@ -45,6 +46,7 @@ export interface Runner {
   runner_id: number,
   name: string,
   marker: L.Marker
+  rank: number
 }
 
 export interface Organization {

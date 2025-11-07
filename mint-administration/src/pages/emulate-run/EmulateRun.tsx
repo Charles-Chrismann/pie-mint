@@ -59,13 +59,15 @@ export default function EmulateRunPage() {
     }
 
     function onPosition(data: Runner[]) {
+      console.log(data)
       setLastUpdatedRunners(data.map(r => ({
         runner_id: r.runner_id,
         name: r.name,
         position: {
           lat: r.position.lat,
           lng: r.position.lng,
-        }
+        },
+        rank: r.rank
       })))
     }
 
@@ -159,7 +161,10 @@ export default function EmulateRunPage() {
             className="font-bold text-center"
           >{selectedRunner.user_profile.firstname} {selectedRunner.user_profile.lastname}</h2>
 
-          <p>Position: <span className="font-bold">1</span></p>
+          {
+            lastUpdatedRunners && lastUpdatedRunners.length && 
+            <p>Position: <span className="font-bold">{ lastUpdatedRunners.find(r => r.runner_id === selectedRunner.bib_number)?.rank }</span></p>
+          }
 
           <p>Dossard: </p>
 

@@ -8,10 +8,10 @@ export const sponsors_table = pgTable("sponsors", {
 
   name: varchar("name"),
   
-  media_avatar_id: integer("media_avatar_id").notNull().references((): AnyPgColumn => medias_table.id),
-  media_banner_id: integer("media_banner_id").notNull().references((): AnyPgColumn => medias_table.id),
-  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
-  owner_id: integer("owner_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  media_avatar_id: integer("media_avatar_id").references((): AnyPgColumn => medias_table.id),
+  media_banner_id: integer("media_banner_id").references((): AnyPgColumn => medias_table.id),
+  created_by_id: integer("created_by_id").references((): AnyPgColumn => user_profiles_table.id),
+  owner_id: integer("owner_id").references((): AnyPgColumn => user_profiles_table.id),
 });
 
 export const sponsors__user_profiles_table = pgTable("sponsors__user_profiles", {

@@ -11,6 +11,7 @@ import {
   social_platforms_table,
   standard_distances_table
 } from "../schema";
+import { subscription_tiers_table, subscriptions_table, subscription_tier_features_table, subscription_tiers__subscription_tier_features_table } from "../tables/subscriptions";
 import { buildConflictSet } from "../utils";
 import {
   action_levels,
@@ -22,6 +23,10 @@ import {
   DBInitRaceDisciplineCategories,
   DBInitRaceDisciplines,
   DBInitSettingTypes,
+  DBInitSubscriptions,
+  DBInitSubscriptionTierFeatures,
+  DBInitSubscriptionTiers,
+  DBInitSubscriptionTierSubscriptionTierFeatures,
   social_platforms,
   standard_distances
 } from "./constants";
@@ -40,16 +45,14 @@ async function insertStandardDistances(tx: TransactionType) {
 }
 
 async function insertActionLevels(tx: TransactionType) {
-  const values = action_levels.map(
-    i => ({ name: i })
-  )
 
-  await tx.insert(action_levels_table)
-    .values(values)
+  return tx.insert(action_levels_table)
+    .values(action_levels)
     .onConflictDoUpdate({
       target: action_levels_table.name,
-      set: buildConflictSet(values[0])
+      set: buildConflictSet(action_levels[0])
     })
+    .returning()
 }
 
 async function insertSocialPlatforms(tx: TransactionType) {
@@ -151,13 +154,62 @@ async function insertRaceDisciplineCategories(tx: TransactionType) {
     })
 }
 
-async function insertRaceDiscipline(tx: TransactionType) {
+async function insertRaceDisciplines(tx: TransactionType) {
   await tx.insert(race_disciplines_table)
     .values(DBInitRaceDisciplines)
     .onConflictDoUpdate({
-    target: [race_disciplines_table.name, race_disciplines_table.race_discipline_category_id],
+      target: [race_disciplines_table.name, race_disciplines_table.race_discipline_category_id],
       set: buildConflictSet(DBInitRaceDisciplines[0])
     })
+}
+
+async function insertSubscriptions(tx: TransactionType) {
+  return tx.insert(subscriptions_table)
+    .values(DBInitSubscriptions)
+    .onConflictDoUpdate({
+      target: subscriptions_table.id,
+      set: buildConflictSet(DBInitSubscriptions[0])
+    })
+    .returning()
+}
+
+async function insertSubscriptionTiers(tx: TransactionType) {
+  const table = subscription_tiers_table
+  const values = DBInitSubscriptionTiers
+
+  return tx.insert(table)
+    .values(values)
+    .onConflictDoUpdate({
+      target: table.id,
+      set: buildConflictSet(values[0])
+    })
+    .returning()
+}
+
+async function insertSubscriptionTierFeatures(tx: TransactionType) {
+  const table = subscription_tier_features_table
+  const values = DBInitSubscriptionTierFeatures
+
+  return tx.insert(table)
+    .values(values)
+    .onConflictDoUpdate({
+      target: table.id,
+      set: buildConflictSet(values[0])
+    })
+    .returning()
+}
+
+async function insertSubscriptionTierSubscriptionTierFeatures(tx: TransactionType) {
+  const table = subscription_tiers__subscription_tier_features_table
+  const values = DBInitSubscriptionTierSubscriptionTierFeatures
+
+  return tx.insert(table)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [table.subscription_tier_feature_id, table.subscription_tier_id],
+      set: buildConflictSet(values[0])
+    })
+    .returning()
 }
 
 export {
@@ -171,5 +223,9 @@ export {
   insertLanguages,
   insertSettingTypes,
   insertRaceDisciplineCategories,
-  insertRaceDiscipline,
+  insertRaceDisciplines,
+  insertSubscriptions,
+  insertSubscriptionTiers,
+  insertSubscriptionTierFeatures,
+  insertSubscriptionTierSubscriptionTierFeatures,
 }

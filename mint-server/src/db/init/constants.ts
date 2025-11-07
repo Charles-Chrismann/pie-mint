@@ -9,6 +9,11 @@ import {
   DBInitPermission,
   DBInitRaceDiscipline,
   DBInitRaceDisciplineCategory,
+  DBInitSubscription,
+  DBInitActionLevel,
+  DBInitSubscriptionTier,
+  DBInitSubscriptionTierFeature,
+  DBInitSubscriptionTierSubscriptionTierFeature,
 } from "./declarations"
 
 const standard_distances: [string, string][] = [
@@ -17,13 +22,13 @@ const standard_distances: [string, string][] = [
   ["Marathon", "42195"],
 ]
 
-const action_levels = [
-  "system",
-  "user",
-  "organization",
-  "event",
-  "race",
-  "registration",
+const action_levels: DBInitActionLevel[] = [
+  { id: 1, name: 'system' },
+  { id: 2, name: 'user' },
+  { id: 3, name: 'organization' },
+  { id: 4, name: 'event' },
+  { id: 5, name: 'race' },
+  { id: 6, name: 'registration' },
 ]
 
 const permissions: DBInitPermission[] = [
@@ -408,6 +413,46 @@ const DBInitRaceDisciplines: DBInitRaceDiscipline[] = [
   { id: 5, race_discipline_category_id: 2, name: 'Road' },
 ]
 
+const DBInitSubscriptions: DBInitSubscription[] = [
+  {
+    id: 1,
+    name: 'Runners',
+    action_level_id: 2
+  }
+]
+
+const DBInitSubscriptionTiers: DBInitSubscriptionTier[] = [
+  { id: 1, name: 'Basic', subscription_id: 1 },
+  { id: 2, name: 'Premium', subscription_id: 1 },
+  { id: 3, name: 'Pro', subscription_id: 1 },
+]
+
+const DBInitSubscriptionTierFeatures: DBInitSubscriptionTierFeature[] = [
+  { id: 1, index: 1, name: 'Feature 1', description: 'description de la feature 1', subscription_id: 1 },
+  { id: 2, index: 2, name: 'Feature 2', description: 'description de la feature 2', subscription_id: 1 },
+  { id: 3, index: 3, name: 'Feature 3', description: 'description de la feature 3', subscription_id: 1 },
+  { id: 4, index: 4, name: 'Feature 4', description: 'description de la feature 4', subscription_id: 1 },
+  { id: 5, index: 5, name: 'Feature 5', description: 'description de la feature 5', subscription_id: 1 },
+]
+
+const DBInitSubscriptionTierSubscriptionTierFeatures: DBInitSubscriptionTierSubscriptionTierFeature[] = [
+  { subscription_tier_feature_id: 1, subscription_tier_id: 1, is_included: true },
+  { subscription_tier_feature_id: 1, subscription_tier_id: 2, is_included: true },
+  { subscription_tier_feature_id: 1, subscription_tier_id: 3, is_included: true },
+  { subscription_tier_feature_id: 2, subscription_tier_id: 1, is_included: true },
+  { subscription_tier_feature_id: 2, subscription_tier_id: 2, is_included: true },
+  { subscription_tier_feature_id: 2, subscription_tier_id: 3, is_included: true },
+  { subscription_tier_feature_id: 3, subscription_tier_id: 1, is_included: false },
+  { subscription_tier_feature_id: 3, subscription_tier_id: 2, is_included: true },
+  { subscription_tier_feature_id: 3, subscription_tier_id: 3, is_included: true },
+  { subscription_tier_feature_id: 4, subscription_tier_id: 1, is_included: false },
+  { subscription_tier_feature_id: 4, subscription_tier_id: 2, is_included: false },
+  { subscription_tier_feature_id: 4, subscription_tier_id: 3, is_included: true },
+  { subscription_tier_feature_id: 5, subscription_tier_id: 1, is_included: false },
+  { subscription_tier_feature_id: 5, subscription_tier_id: 2, is_included: false },
+  { subscription_tier_feature_id: 5, subscription_tier_id: 3, is_included: true },
+]
+
 export {
   standard_distances,
   action_levels,
@@ -420,4 +465,8 @@ export {
   DBInitSettingTypes,
   DBInitRaceDisciplineCategories,
   DBInitRaceDisciplines,
+  DBInitSubscriptions,
+  DBInitSubscriptionTiers,
+  DBInitSubscriptionTierFeatures,
+  DBInitSubscriptionTierSubscriptionTierFeatures,
 }

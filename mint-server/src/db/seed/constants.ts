@@ -1,4 +1,4 @@
-import { Organization } from "./declarations"
+import { Organization, Sponsor } from "./declarations"
 
 const organizations: Organization[] = [
   {
@@ -265,6 +265,26 @@ const organizations: Organization[] = [
   },
 ]
 
+const sponsors: Sponsor[] = [
+  {
+    id: 1,
+    name: 'Salomon',
+  },
+  {
+    id: 2,
+    name: 'Hoka',
+  },
+  {
+    id: 3,
+    name: 'Nike',
+  },
+  {
+    id: 4,
+    name: 'Saucony',
+  },
+]
+
 export {
-  organizations
+  organizations,
+  sponsors,
 }

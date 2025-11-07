@@ -68,7 +68,8 @@ export class Runner {
     this.io.emit('position', {
       position: p,
       runner_id: this.auth!.user_profile.id,
-      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`
+      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`,
+      rank: this.currentPointsIndex
     })
   }
 

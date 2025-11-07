@@ -50,3 +50,12 @@ export interface SeedEventQueryResult {
   start_date: Date | null;
   end_date: Date | null;
 }[]
+
+export interface Sponsor {
+  id: number
+  name: string
+  media_avatar_id?: number
+  media_banner_id?: number
+  created_by_id?: number
+  owner_id?: number
+}

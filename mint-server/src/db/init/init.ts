@@ -6,11 +6,15 @@ import {
   insertMediaContexts,
   insertMediaFormats,
   insertMediaTypes,
-  insertRaceDiscipline,
+  insertRaceDisciplines,
   insertRaceDisciplineCategories,
   insertSettingTypes,
   insertSocialPlatforms,
-  insertStandardDistances
+  insertStandardDistances,
+  insertSubscriptions,
+  insertSubscriptionTiers,
+  insertSubscriptionTierFeatures,
+  insertSubscriptionTierSubscriptionTierFeatures
 } from "./functions"
 
 async function main() {
@@ -36,7 +40,19 @@ async function main() {
     await Promise.all([
       insertMediaTypes(tx),
       insertLanguages(tx),
-      insertRaceDiscipline(tx),
+      insertRaceDisciplines(tx),
+      insertSubscriptions(tx),
+    ])
+
+    // Inserting tables with second level relationships
+    await Promise.all([
+      insertSubscriptionTiers(tx),
+      insertSubscriptionTierFeatures(tx),
+    ])
+
+    // // Inserting tables with third level relationships
+    await Promise.all([
+      insertSubscriptionTierSubscriptionTierFeatures(tx),
     ])
   })
 
