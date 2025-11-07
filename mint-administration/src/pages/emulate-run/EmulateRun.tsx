@@ -11,7 +11,6 @@ import type {
   MapStyleKey,
   Runner,
   Race,
-  RaceRegistrationRunners,
   LineString,
   Registration
 } from "@/declarations"

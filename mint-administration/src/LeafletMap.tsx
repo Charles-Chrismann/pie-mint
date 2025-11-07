@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { LastUpdatedRunner, LineString, RaceRegistrationRunners, Registration, Runner } from './declarations';
+import type { LastUpdatedRunner, LineString, Registration, Runner } from './declarations';
 
 function animateMarker(
   marker: L.Marker,
@@ -149,7 +149,7 @@ export default function LeafletMap({
         marker = L.marker(
           [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
           { icon: htmlIcon }
-        ).on('click', (e) => {
+        ).on('click', () => {
           setSelectedRunner(rr)
         }).addTo(map);
 
