@@ -42,7 +42,7 @@ services:
 
   mint-ws-runners:
     image: charleschrismann/mint-ws-runners
-    container_name: mint-vps-administration
+    container_name: mint-vps-ws-runners
     ports:
       - ${WS_PORT}:3000
     env_file:
