@@ -36,11 +36,12 @@ export class AppGateway implements OnModuleInit {
   }
 
   handleConnection(socket: Socket): void {
-    console.log('elo')
+    // console.log('elo')
   }
 
   @SubscribeMessage('position')
   handlePosition(client: any, payload: any) {
+    console.log('received position:', JSON.stringify(payload))
     this.lastSecondEvents.push(payload)
     // this.server.to('spec').emit('position', payload);
   }
