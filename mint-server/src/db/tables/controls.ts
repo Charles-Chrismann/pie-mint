@@ -20,7 +20,7 @@ export const roles_table = pgTable("roles", {
   is_system: boolean("is_system"),
   created_at: timestamp("created_at"),
 
-  created_by_id: integer("created_by_id").references((): AnyPgColumn => user_profiles_table.id),
+  created_by_id: integer("created_by_id").references((): AnyPgColumn => user_profiles_table.user_id),
 });
 
 export const roles__permissions_table = pgTable("roles__permissions", {
@@ -59,5 +59,5 @@ export const groups__user_profiles_table = pgTable("groups__user_profiles", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   
   group_id: integer("group_id").references((): AnyPgColumn => groups_table.id),
-  user_profile_id: integer("user_profile_id").references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").references((): AnyPgColumn => user_profiles_table.user_id),
 });

@@ -33,7 +33,7 @@ export const setting_selected_options_table = pgTable("setting_selected_options"
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
 
   setting_multiple_option_id: integer("setting_multiple_option_id").notNull().references((): AnyPgColumn => setting_multiple_options_table.id),
-  user_setting_id: integer("setting_key_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_setting_id: integer("setting_key_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
 });
 
 export const setting_keys_table = pgTable("setting_keys", {
@@ -52,7 +52,7 @@ export const custom_settings_table = pgTable("custom_settings", {
 
   value: varchar("value"),
 
-  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
   sponsor_id: integer("sponsor_id").notNull().references((): AnyPgColumn => sponsors_table.id),
   organization_id: integer("organization_id").notNull().references((): AnyPgColumn => organizations_table.id),
   event_id: integer("event_id").notNull().references((): AnyPgColumn => events_table.id),

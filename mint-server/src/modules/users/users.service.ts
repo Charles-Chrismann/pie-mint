@@ -97,7 +97,7 @@ export class UsersService {
 
   getUsers() {
     return this.drizzle.client.select({
-      id: user_profiles_table.id,
+      id: user_profiles_table.user_id,
       firstname: user_profiles_table.firstname,
       lastname: user_profiles_table.lastname,
       email: users_table.email
@@ -109,7 +109,7 @@ export class UsersService {
   async getUserById(userId: number) {
     return this.drizzle.getUserProfileById(userId)
     // return (await this.drizzle.client.select({
-    //   id: user_profiles_table.id,
+    //   id: user_profiles_table.user_id,
     //   username: user_profiles_table.username,
     //   firstname: user_profiles_table.firstname,
     //   lastname: user_profiles_table.lastname,
@@ -123,7 +123,7 @@ export class UsersService {
     // .leftJoin(subscription_tiers_table, eq(subscription_tiers_table.id, user_profiles_table.subscription_tier_id))
     // .leftJoin(medias_table, eq(medias_table.id, user_profiles_table.avatar_media_id))
     // .where(
-    //   eq(user_profiles_table.id, userId)
+    //   eq(user_profiles_table.user_id, userId)
     // ))[0]
   }
 }

@@ -28,6 +28,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.927.0",
     "@faker-js/faker": "^9.8.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
@@ -43,7 +44,7 @@
     "class-validator": "^0.14.2",
     "compression": "^1.8.0",
     "dotenv": "^16.5.0",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "^0.44.7",
     "fast-xml-parser": "^5.2.3",
     "helmet": "^8.1.0",
     "passport": "^0.7.0",
@@ -51,7 +52,8 @@
     "passport-local": "^1.0.0",
     "pg": "^8.15.6",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

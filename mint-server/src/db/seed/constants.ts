@@ -1,4 +1,10 @@
-import { Organization, Sponsor } from "./declarations"
+import {
+  Organization,
+  Sponsor,
+  DBSeedUser,
+  DBSeedUserProfile,
+  DBSeedMedia,
+} from "./declarations"
 
 const organizations: Organization[] = [
   {
@@ -284,7 +290,292 @@ const sponsors: Sponsor[] = [
   },
 ]
 
+const DBSeedUsers: DBSeedUser[] = [
+  {
+    id: 2,
+    email: "caroline.chaverot@example.com",
+  },
+  {
+    id: 3,
+    email: "christophe.jaquerod@example.com",
+  },
+  {
+    id: 4,
+    email: "colette.borcard@example.com",
+  },
+  {
+    id: 5,
+    email: "courtney.dawalter@example.com",
+  },
+  {
+    id: 6,
+    email: "dawa.sherpa@example.com",
+  },
+  {
+    id: 7,
+    email: "francesca.canepa@example.com",
+  },
+  {
+    id: 8,
+    email: "francois.dhaene@example.com",
+  },
+  {
+    id: 9,
+    email: "jez.bragg@example.com",
+  },
+  {
+    id: 10,
+    email: "jim.walmsley@example.com",
+  },
+  {
+    id: 11,
+    email: "karine.henrry@example.com",
+  },
+  {
+    id: 12,
+    email: "katie.shide@example.com",
+  },
+  {
+    id: 13,
+    email: "kilian.jornetburgada@example.com",
+  },
+  {
+    id: 14,
+    email: "krissy.moehl@example.com",
+  },
+  {
+    id: 15,
+    email: "nathalie.mauclair@example.com",
+  },
+  {
+    id: 16,
+    email: "nikki.kimball@example.com",
+  },
+  {
+    id: 17,
+    email: "nuria.picas@example.com",
+  },
+  {
+    id: 18,
+    email: "pau.capell@example.com",
+  },
+  {
+    id: 19,
+    email: "rory.bosio@example.com",
+  },
+  {
+    id: 20,
+    email: "vincent.delebarre@example.com",
+  },
+  {
+    id: 21,
+    email: "xavier.thevenard@example.com",
+  },
+  {
+    id: 22,
+    email: "marco.olmo@example.com",
+  },
+  {
+    id: 23,
+    email: "elizabeth.hawker@example.com",
+  },
+]
+
+const DBSeedUserProfiles: DBSeedUserProfile[] = [
+  {
+    user_id: 2,
+    firstname: "Caroline",
+    lastname: "Chaverot",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 3,
+    firstname: "Christophe",
+    lastname: "Jaquerod",
+    country_id: 214,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 4,
+    firstname: "Colette",
+    lastname: "Borcard",
+    country_id: 214,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 5,
+    firstname: "Courtney",
+    lastname: "Dawalter",
+    country_id: 233,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 6,
+    firstname: "Dawa",
+    lastname: "Sherpa",
+    country_id: 154,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 7,
+    firstname: "Francesca",
+    lastname: "Canepa",
+    country_id: 107,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 8,
+    firstname: "François",
+    lastname: "D'Haene",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 9,
+    firstname: "Jez",
+    lastname: "Bragg",
+    country_id: 232,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 10,
+    firstname: "Jim",
+    lastname: "Walmsley",
+    country_id: 233,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 11,
+    firstname: "Karine",
+    lastname: "Henrry",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 12,
+    firstname: "Katie",
+    lastname: "Shide",
+    country_id: 233,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 13,
+    firstname: "Kilian",
+    lastname: "Jornet Burgada",
+    country_id: 207,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 14,
+    firstname: "Krissy",
+    lastname: "Moehl",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 15,
+    firstname: "Nathalie",
+    lastname: "Mauclair",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 16,
+    firstname: "Nikki",
+    lastname: "Kimball",
+    country_id: 233,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 17,
+    firstname: "Núria",
+    lastname: "Picas",
+    country_id: 207,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 18,
+    firstname: "Pau",
+    lastname: "Capell",
+    country_id: 207,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 19,
+    firstname: "Rory",
+    lastname: "Bosio",
+    country_id: 233,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 20,
+    firstname: "Vincent",
+    lastname: "Delebarre",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 21,
+    firstname: "Xavier",
+    lastname: "Thevenard",
+    country_id: 75,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 22,
+    firstname: "Marco",
+    lastname: "Olmo",
+    country_id: 107,
+    subscription_tier_id: 1
+  },
+  {
+    user_id: 23,
+    firstname: "Elizabeth",
+    lastname: "Hawker",
+    country_id: 232,
+    subscription_tier_id: 1
+  },
+]
+
+const DBSeedUserProfilesSponsors = [
+  { sponsor_id: 2, user_profile_id: 10 },
+  { sponsor_id: 5, user_profile_id: 12 },
+  { sponsor_id: 4, user_profile_id: 13 },
+  { sponsor_id: 6, user_profile_id: 5 },
+  { sponsor_id: 8, user_profile_id: 18 },
+]
+
+const DBSeedUserProfilePictureUrls: string[] = [
+  "caroline_chaverot.png",
+  "christophe_jaquerod.avif",
+  "colette_borcard.avif",
+  "courtney_dawalter.avif",
+  "dawa_sherpa.avif",
+  "francesca_canepa.avif",
+  "francois_dhaene.avif",
+  "jez_bragg.avif",
+  "jim_walmsley.avif",
+  "karine_herry.avif",
+  "katie_shide.avif",
+  "kilian_jornetburgada.avif",
+  "krissy_moehl.avif",
+  "nathalie_mauclair.webp",
+  "nikki_kimball.avif",
+  "nuria_picas.avif",
+  "pau_capell.avif",
+  "rory_bosio.avif",
+  "vincent_delebarre.avif",
+  "xavier_thevenard.avif",
+  "marco_olmo.avif",
+  "elizabeth_hawker.avif",
+]
+
 export {
   organizations,
   sponsors,
+  DBSeedUsers,
+  DBSeedUserProfiles,
+  DBSeedUserProfilePictureUrls,
+  DBSeedUserProfilesSponsors,
 }

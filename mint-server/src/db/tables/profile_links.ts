@@ -15,7 +15,7 @@ export const profile_links_table = pgTable("profile_links", {
   url: varchar("url"),
   
   social_platform_id: integer("social_platform_id").references((): AnyPgColumn => social_platforms_table.id),
-  user_profile_id: integer("user_profile_id").references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").references((): AnyPgColumn => user_profiles_table.user_id),
   organization_id: integer("organization_id").references((): AnyPgColumn =>organizations_table.id),
   event_id: integer("event_id").references((): AnyPgColumn => events_table.id),
   race_id: integer("race_id").references((): AnyPgColumn => races_table.id),

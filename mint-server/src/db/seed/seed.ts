@@ -1,4 +1,11 @@
-import { seedOriganizations, seedRegistrations, seedSponsors, seedSponsorsUserProfiles, seedUsersAndUserProfiles } from "./functions"
+import {
+  seedOriganizations,
+  seedProUsers,
+  seedRegistrations,
+  seedSponsorsUserProfiles,
+  seedUsersAndUserProfiles,
+  seedMe,
+} from "./functions"
 
 async function main() {
   const now = performance.now()
@@ -9,12 +16,13 @@ async function main() {
       users: +process.env.SEED_USER_COUNT! as number || 10_000
     }
   }
-
+  
+  await seedMe()
+  await seedProUsers()
   await seedUsersAndUserProfiles({count: options.counts.users})
   await seedOriganizations({count: options.counts.users})
   await Promise.all([
     seedRegistrations(),
-    seedSponsors(),
   ])
   await seedSponsorsUserProfiles()
 

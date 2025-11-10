@@ -2,12 +2,16 @@ import { faker } from "@faker-js/faker";
 import { hashSync } from 'bcrypt'
 import { db } from "./seedDB";
 import { event_campaigns_table, events_table, organizations_table, standard_distances_table, race_start_waves_table, races_table, track_segments_table, tracks_table, user_profiles_table, users_table, registrations_table, countries_table, medias_table, sponsors_table, sponsors__user_profiles_table } from "../schema";
-import { organizations, sponsors } from "./constants";
+import { DBSeedUserProfilePictureUrls, DBSeedUserProfiles, DBSeedUserProfilesSponsors, DBSeedUsers, organizations, sponsors } from "./constants";
 import { XMLParser } from "fast-xml-parser";
 import * as fs from 'fs/promises'
 import { chunkify, getPointsFromGpx, shuffleArray } from "../../utils";
 import { SeedEventQueryResult } from "./declarations";
 import { eq, sql } from "drizzle-orm";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { readFile } from "fs/promises";
+import s3 from "../../s3/s3";
+import * as sharp from "sharp";
 
 async function getPPUrls(url: string, count = 1) {
 
@@ -29,27 +33,52 @@ async function getPPUrls(url: string, count = 1) {
   return datas
 }
 
+const passwordHash = hashSync('password', 8)
+
+async function seedMe() {
+  const user = (await db.insert(users_table).values({ id: 1, email: "charles.chrismann@example.com", password: passwordHash }).returning())[0]
+  const createdUserProfileAvatarMedia = (await db.insert(medias_table).values({
+    url: 'https://avatars.githubusercontent.com/u/78157563?v=4',
+    media_type_id: 12,
+    media_context: "avatar",
+    is_system: false,
+    // created_by_id: user.id
+  }).returning())[0]
+  const createdUserProfileBannerMedia = (await db.insert(medias_table).values({
+    url: 'https://raw.githubusercontent.com/Charles-Chrismann/Charles-Chrismann/main/assets/mint/caroussel.png',
+    media_type_id: 12,
+    media_context: "banner",
+    is_system: false,
+    // created_by_id: user.id
+  }).returning())[0]
+  const createdUserProfile = (await db.insert(user_profiles_table).values({
+    user_id: user.id,
+    firstname: "Charles",
+    lastname: "Chrismann",
+    avatar_media_id: createdUserProfileAvatarMedia.id,
+    avatar_url: createdUserProfileAvatarMedia.url,
+    banner_media_id: createdUserProfileBannerMedia.id,
+    banner_url: createdUserProfileBannerMedia.url,
+    country_id: 75,
+    subscription_tier_id: 3
+  }).returning())[0]
+
+  await Promise.all([
+    db.update(medias_table).set({
+      created_by_id: createdUserProfile.user_id
+    }).where(eq(medias_table.id, createdUserProfileAvatarMedia.id)),
+    db.update(medias_table).set({
+      created_by_id: createdUserProfile.user_id
+    }).where(eq(medias_table.id, createdUserProfileBannerMedia.id))
+  ])
+}
+
 async function seedUsersAndUserProfiles({ count }: { count: number }) {
-
-  const passwordHash = hashSync('password', 8)
-
-  const user = (await db.insert(users_table).values({ email: "user@example.com", password: passwordHash }).returning())[0]
+  
   const [mpps, fpps] = await Promise.all([
     getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=male&age=26-35&etnic=all`, 10),
     getPPUrls(`https://this-person-does-not-exist.com/new?time=REPLACE_TIME&gender=female&age=26-35&etnic=all`, 10),
   ])
-  const createdUserProfileAvatarMedia = (await db.insert(medias_table).values({ url: 'https://avatars.githubusercontent.com/u/78157563?v=4', is_system: false }).returning())[0]
-  const createdUserProfileBannerMedia = (await db.insert(medias_table).values({ url: 'https://raw.githubusercontent.com/Charles-Chrismann/Charles-Chrismann/main/assets/mint/caroussel.png', is_system: false }).returning())[0]
-  await db.insert(user_profiles_table).values({
-    user_id: user.id,
-    username: 'therunningcharles',
-    firstname: "Charles",
-    lastname: "Chrismann",
-    avatar_media_id: createdUserProfileAvatarMedia.id,
-    banner_media_id: createdUserProfileBannerMedia.id,
-    country_id: 1,
-    subscription_tier_id: 3
-  })
 
   const countries = await db.select({ id: countries_table.id }).from(countries_table)
 
@@ -58,7 +87,6 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
       const fakerFirstName = faker.person.firstName()
       const fakerLastName = faker.person.lastName()
-      const fakerUsername = faker.internet.username(Math.random() > .3 ? { firstName: fakerFirstName, lastName: fakerLastName } : undefined)
 
       const fakerEmail = faker.internet.email({
         firstName: fakerFirstName,
@@ -66,7 +94,6 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
       })
 
       return ({
-        username: fakerUsername,
         firstname: fakerFirstName,
         lastname: fakerLastName,
         email: fakerEmail,
@@ -82,17 +109,21 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
   const createdUserProfileAvatarMedias = await Promise.all(
     generatedUsers.map(gup => {
       const ppsList = (Math.random() < .5 ? mpps : fpps)
-      return db.insert(medias_table).values({ url: ppsList[Math.floor(Math.random() * ppsList.length)], is_system: false }).returning()
+      return db.insert(medias_table).values({
+        url: ppsList[Math.floor(Math.random() * ppsList.length)],
+        is_system: false,
+        media_type_id: 12,
+        media_context: "avatar"
+      }).returning()
     })
   )
 
-  const generatedUserProfiles = await Promise.all(
+  const generatedUserProfiles = (await Promise.all(
     generatedUsers.map(
       ({ id, email }, i) => {
         const {
           firstname,
           lastname,
-          username
         } = fakeUsers.find(u => u.email === email)!
 
         let subscription_tier_id: number
@@ -103,15 +134,34 @@ async function seedUsersAndUserProfiles({ count }: { count: number }) {
 
         return db.insert(user_profiles_table).values({
           user_id: id,
-          username,
           firstname,
           lastname,
           avatar_media_id: createdUserProfileAvatarMedias[i][0].id,
+          avatar_url: createdUserProfileAvatarMedias[i][0].url,
           country_id: countries[Math.floor(Math.random() * countries.length)].id,
           subscription_tier_id
-        })
+        }).returning()
       }
     )
+  )).flat(1)
+
+  await Promise.all(
+    [
+      ...generatedUserProfiles.map(up => 
+        db.update(medias_table)
+        .set({
+          created_by_id: up.user_id
+        })
+        .where(eq(medias_table.id, up.avatar_media_id!))
+      ),
+      ...generatedUserProfiles.map(up => 
+        db.update(medias_table)
+        .set({
+          created_by_id: up.user_id
+        })
+        .where(eq(medias_table.id, up.banner_media_id!))
+      ),
+    ]
   )
 }
 
@@ -302,16 +352,10 @@ async function seedRegistrations() {
     .insert(registrations_table)
     .values(users.map(u => ({
       race_id: 1,
-      user_profile_id: u.id,
+      user_profile_id: u.user_id,
       bib_alias: u.firstname,
-      bib_number: u.id
+      bib_number: u.user_id
     })))
-}
-
-async function seedSponsors() {
-  return db.insert(sponsors_table)
-    .values(sponsors)
-    .returning()
 }
 
 async function seedSponsorsUserProfiles() {
@@ -335,7 +379,7 @@ async function seedSponsorsUserProfiles() {
     const shuffledSponsors = [...sponsors]
     shuffleArray(shuffledSponsors)
 
-    values.push(...shuffledSponsors.slice(0, sponsorCount).map(s => ({ sponsor_id: s.id, user_profile_id: user.id })))
+    values.push(...shuffledSponsors.slice(0, sponsorCount).map(s => ({ sponsor_id: s.id, user_profile_id: user.user_id })))
   }
 
   const chunks = chunkify(values, 512)
@@ -348,10 +392,77 @@ async function seedSponsorsUserProfiles() {
   )
 }
 
+async function seedProUsers() {
+
+  const createdProUsers = await db
+    .insert(users_table)
+    .values(DBSeedUsers.map((u, i) => ({
+      ...u,
+      password: passwordHash
+    })))
+
+  const createdProUserProfiles = await db
+    .insert(user_profiles_table)
+    .values(DBSeedUserProfiles.map(up => ({
+      ...up,
+      avatar_url: `${process.env.S3_HOST}/${process.env.S3_BUCKET_NAME}/profile_pictures/${up.user_id}.webp`
+    })))
+    .returning()
+
+  await Promise.all(DBSeedUserProfilePictureUrls.map(async (u, i) => {
+    const fileContent = await readFile(`./src/db/seed/runners/${u}`);
+
+    const webpBuffer = await sharp(fileContent)
+      .resize(256, 256)
+      .webp({ quality: 80 })
+      .toBuffer();
+
+    const command = new PutObjectCommand({
+      Bucket: "mint-dev",
+      Key: `profile_pictures/${i + 2}.webp`,
+      Body: webpBuffer
+    });
+  
+    const res = await s3.send(command);
+  }))
+
+  const createdMedias = await db.insert(medias_table)
+  .values(DBSeedUserProfilePictureUrls.map((_, i) => ({
+    url: `${process.env.S3_HOST}/${process.env.S3_BUCKET_NAME}/profile_pictures/${i + 2}.webp`,
+    is_system: false,
+    media_type_id: 12,
+    created_by_id: createdProUserProfiles[i].user_id,
+    media_context: "avatar" as any
+  }))).returning()
+
+  await Promise.all(
+    [
+      ...createdMedias.map(media => 
+        db.update(user_profiles_table)
+        .set({
+          avatar_media_id: media.id
+        })
+        .where(eq(user_profiles_table.user_id, media.created_by_id!))
+      ),
+      db.insert(sponsors__user_profiles_table)
+      .values(DBSeedUserProfilesSponsors)
+    ]
+  )
+
+  await db.execute(sql`
+    SELECT setval(
+      pg_get_serial_sequence('users', 'id'),
+      (SELECT COALESCE(MAX(id), 0) + 1 FROM users),
+      false
+    );
+  `);
+} 
+
 export {
   seedUsersAndUserProfiles,
   seedOriganizations,
   seedRegistrations,
-  seedSponsors,
   seedSponsorsUserProfiles,
+  seedProUsers,
+  seedMe,
 }

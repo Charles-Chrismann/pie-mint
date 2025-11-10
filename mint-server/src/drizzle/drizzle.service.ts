@@ -8,8 +8,7 @@ export class DrizzleService {
   async getUserProfileById(id: number) {
     const result = await this.client.query.user_profiles_table.findFirst({
       columns: {
-        id: true,
-        username: true,
+        user_id: true,
         firstname: true,
         lastname: true,
       },

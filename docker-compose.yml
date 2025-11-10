@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: mint-db
     image: postgis/postgis
     restart: always
     ports:
@@ -8,7 +9,32 @@ services:
     environment:
       POSTGRES_PASSWORD: example
 
+  s3:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: mint-s3
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ROOTNAME
+      MINIO_ROOT_PASSWORD: CHANGEME123
+    command: server /data --console-address ":9001"
+
+  s3-setup:
+    image: minio/mc
+    depends_on:
+      - s3
+    entrypoint: >
+      /bin/sh -c "
+      echo '⏳ Waiting for MinIO...';
+      until (mc alias set mint http://s3:9000 ROOTNAME CHANGEME123) do sleep 2; done;
+      mc mb mint/mint-dev || true;
+      mc anonymous set download mint/mint-dev;
+      echo '✅ Bucket public prêt !';
+      "
+
   adminer:
+    container_name: mint-adminer
     image: adminer
     restart: always
     ports:
@@ -35,6 +61,7 @@ services:
     restart: always
 
   mint-ws-runners:
+    container_name: mint-ws-runners
     env_file:
       - .env.ws
     build: ./mint-ws-runners
@@ -45,6 +72,7 @@ services:
     restart: always
 
   mint-administration:
+    container_name: mint-administration
     build:
       context: ./mint-administration
       target: dev

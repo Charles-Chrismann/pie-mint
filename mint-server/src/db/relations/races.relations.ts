@@ -16,7 +16,7 @@ export const registrationsRelations = relations(registrations_table, ({ one }) =
 
   user_profile: one(user_profiles_table, {
     fields: [registrations_table.user_profile_id],
-    references: [user_profiles_table.id]
+    references: [user_profiles_table.user_id]
   }),
 
   race: one(races_table, {

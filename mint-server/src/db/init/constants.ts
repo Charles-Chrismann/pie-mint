@@ -1,11 +1,8 @@
+import { DBInitCountries } from "./countries.constant"
 import {
-  DBInitMediaFormat,
   DBInitMediaType,
-  DBInitMediaContext,
-  DBInitCountry,
   DBInitLanguage,
   DBInitSettingType,
-  DBGroupUtility,
   DBInitPermission,
   DBInitRaceDiscipline,
   DBInitRaceDisciplineCategory,
@@ -14,6 +11,7 @@ import {
   DBInitSubscriptionTier,
   DBInitSubscriptionTierFeature,
   DBInitSubscriptionTierSubscriptionTierFeature,
+  DBInitSponsor,
 } from "./declarations"
 
 const standard_distances: [string, string][] = [
@@ -53,263 +51,109 @@ const social_platforms: [string][] = [
   ["Deezer"],
 ]
 
-const DBInitMediaFormats: DBInitMediaFormat[] = [
-  {
-    name: 'audio'
-  },
-  {
-    name: 'application'
-  },
-  {
-    name: 'image'
-  },
-  {
-    name: 'video'
-  },
-  {
-    name: 'text'
-  },
-  {
-    name: 'font'
-  },
-]
-
 const DBInitMediaTypes: DBInitMediaType[] = [
   {
+    id: 1,
     name: 'aac',
     MIMEType: 'audio/aac',
     mediaFormatName: 'audio'
   },
   {
+    id: 2,
     name: 'mp3',
     MIMEType: 'audio/mpeg',
     mediaFormatName: 'audio'
   },
   {
+    id: 3,
     name: 'oga',
     MIMEType: 'audio/ogg',
     mediaFormatName: 'audio'
   },
   {
+    id: 4,
     name: 'opus',
     MIMEType: 'audio/ogg',
     mediaFormatName: 'audio'
   },
   {
+    id: 5,
     name: 'wav',
     MIMEType: 'audio/wav',
     mediaFormatName: 'audio'
   },
   {
+    id: 6,
     name: 'weba',
     MIMEType: 'audio/webm',
     mediaFormatName: 'audio'
   },
   {
+    id: 7,
     name: 'avif',
     MIMEType: 'image/avif',
     mediaFormatName: 'image'
   },
   {
+    id: 8,
     name: 'gif',
     MIMEType: 'image/gif',
     mediaFormatName: 'image'
   },
   {
+    id: 9,
     name: 'jpg',
     MIMEType: 'image/jpeg',
     mediaFormatName: 'image'
   },
   {
+    id: 10,
     name: 'jpeg',
     MIMEType: 'image/jpeg',
     mediaFormatName: 'image'
   },
   {
+    id: 11,
     name: 'png',
     MIMEType: 'image/png',
     mediaFormatName: 'image'
   },
   {
+    id: 12,
     name: 'webp',
     MIMEType: 'image/webp',
     mediaFormatName: 'image'
   },
   {
+    id: 13,
     name: 'avi',
     MIMEType: 'video/x-msvideo',
     mediaFormatName: 'video'
   },
   {
+    id: 14,
     name: 'mp4',
     MIMEType: 'video/mp4',
     mediaFormatName: 'video'
   },
   {
+    id: 15,
     name: 'mpeg',
     MIMEType: 'video/mpeg',
     mediaFormatName: 'video'
   },
   {
+    id: 16,
     name: 'ogv',
     MIMEType: 'video/ogg',
     mediaFormatName: 'video'
   },
   {
+    id: 17,
     name: 'webm',
     MIMEType: 'video/webm',
     mediaFormatName: 'video'
   },
-]
-
-const DBInitMediaContexts: DBInitMediaContext[] = [
-  {
-    name: 'avatar'
-  },
-  {
-    name: 'banner'
-  },
-  {
-    name: 'mosaic'
-  },
-  {
-    name: 'post'
-  },
-  {
-    name: 'system/badge'
-  },
-  {
-    name: 'system/social_platform'
-  },
-]
-
-const DBInitCountries: DBInitCountry[] = [
-  {
-    "french_translation": "France",
-    "english_translation": "France",
-    "self_translation": "France",
-    "flag_emoji": "🇫🇷"
-  },
-  {
-    "french_translation": "États-Unis",
-    "english_translation": "United States",
-    "self_translation": "United States",
-    "flag_emoji": "🇺🇸"
-  },
-  {
-    "french_translation": "Royaume-Uni",
-    "english_translation": "United Kingdom",
-    "self_translation": "United Kingdom",
-    "flag_emoji": "🇬🇧"
-  },
-  {
-    "french_translation": "Canada",
-    "english_translation": "Canada",
-    "self_translation": "Canada",
-    "flag_emoji": "🇨🇦"
-  },
-  {
-    "french_translation": "Australie",
-    "english_translation": "Australia",
-    "self_translation": "Australia",
-    "flag_emoji": "🇦🇺"
-  },
-  {
-    "french_translation": "Nouvelle-Zélande",
-    "english_translation": "New Zealand",
-    "self_translation": "New Zealand",
-    "flag_emoji": "🇳🇿"
-  },
-  {
-    "french_translation": "Belgique",
-    "english_translation": "Belgium",
-    "self_translation": "België",
-    "flag_emoji": "🇧🇪"
-  },
-  {
-    "french_translation": "Suisse",
-    "english_translation": "Switzerland",
-    "self_translation": "Schweiz / Suisse / Svizzera",
-    "flag_emoji": "🇨🇭"
-  },
-  {
-    "french_translation": "Espagne",
-    "english_translation": "Spain",
-    "self_translation": "España",
-    "flag_emoji": "🇪🇸"
-  },
-  {
-    "french_translation": "Mexique",
-    "english_translation": "Mexico",
-    "self_translation": "México",
-    "flag_emoji": "🇲🇽"
-  },
-  {
-    "french_translation": "Argentine",
-    "english_translation": "Argentina",
-    "self_translation": "Argentina",
-    "flag_emoji": "🇦🇷"
-  },
-  {
-    "french_translation": "Chili",
-    "english_translation": "Chile",
-    "self_translation": "Chile",
-    "flag_emoji": "🇨🇱"
-  },
-  {
-    "french_translation": "Allemagne",
-    "english_translation": "Germany",
-    "self_translation": "Deutschland",
-    "flag_emoji": "🇩🇪"
-  },
-  {
-    "french_translation": "Autriche",
-    "english_translation": "Austria",
-    "self_translation": "Österreich",
-    "flag_emoji": "🇦🇹"
-  },
-  {
-    "french_translation": "Italie",
-    "english_translation": "Italy",
-    "self_translation": "Italia",
-    "flag_emoji": "🇮🇹"
-  },
-  {
-    "french_translation": "Japon",
-    "english_translation": "Japan",
-    "self_translation": "日本",
-    "flag_emoji": "🇯🇵"
-  },
-  {
-    "french_translation": "Chine",
-    "english_translation": "China",
-    "self_translation": "中国",
-    "flag_emoji": "🇨🇳"
-  },
-  {
-    "french_translation": "Brésil",
-    "english_translation": "Brazil",
-    "self_translation": "Brasil",
-    "flag_emoji": "🇧🇷"
-  },
-  {
-    "french_translation": "Portugal",
-    "english_translation": "Portugal",
-    "self_translation": "Portugal",
-    "flag_emoji": "🇵🇹"
-  },
-  {
-    "french_translation": "Pays-Bas",
-    "english_translation": "Netherlands",
-    "self_translation": "Nederland",
-    "flag_emoji": "🇳🇱"
-  },
-  {
-    "french_translation": "Thaïlande",
-    "english_translation": "Thailand",
-    "self_translation": "ประเทศไทย",
-    "flag_emoji": "🇹🇭"
-  }
 ]
 
 const DBInitLanguages: DBInitLanguage[] = [
@@ -453,13 +297,54 @@ const DBInitSubscriptionTierSubscriptionTierFeatures: DBInitSubscriptionTierSubs
   { subscription_tier_feature_id: 5, subscription_tier_id: 3, is_included: true },
 ]
 
+const DBInitSponsors: DBInitSponsor[] = [
+  {
+    id: 1,
+    name: "Dacia",
+    fileName: "dacia.webp",
+  },
+  {
+    id: 2,
+    name: "Hoka",
+    fileName: "hoka.webp",
+  },
+  {
+    id: 3,
+    name: "Naak",
+    fileName: "naak.webp",
+  },
+  {
+    id: 4,
+    name: "Nnormal",
+    fileName: "nnormal.webp",
+  },
+  {
+    id: 5,
+    name: "On",
+    fileName: "on.svg",
+  },
+  {
+    id: 6,
+    name: "Salomon",
+    fileName: "salomon.png",
+  },
+  {
+    id: 7,
+    name: "Suunto",
+    fileName: "suunto.webp",
+  },
+  {
+    id: 8,
+    name: "The Noth Face",
+    fileName: "the_north_face.png",
+  },
+]
+
 export {
   standard_distances,
   action_levels,
   social_platforms,
-  DBInitMediaFormats,
   DBInitMediaTypes,
-  DBInitMediaContexts,
   DBInitCountries,
   DBInitLanguages,
   DBInitSettingTypes,
@@ -469,4 +354,5 @@ export {
   DBInitSubscriptionTiers,
   DBInitSubscriptionTierFeatures,
   DBInitSubscriptionTierSubscriptionTierFeatures,
+  DBInitSponsors,
 }

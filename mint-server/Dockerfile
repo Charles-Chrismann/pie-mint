@@ -1,30 +1,15 @@
-# FROM node:alpine
-
-# WORKDIR /app
-
-# RUN npm install -g @nestjs/cli
-
-# RUN apk add --no-cache docker-cli curl \
-#  && mkdir -p /usr/local/lib/docker/cli-plugins \
-#  && curl -SL https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose \
-#  && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-# COPY package.json ./
-
-# RUN npm install --production=false
-
-# COPY . .
-
-# CMD ["npm", "run", "dev"]
-
 # ---------- Base ----------
-FROM node:alpine AS base
+FROM node:22-slim AS base
 WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # ---------- Dependencies ----------
 FROM base AS deps
-RUN npm install
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libvips-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN npm ci --include=optional
 
 # ---------- Development ----------
 FROM base AS development

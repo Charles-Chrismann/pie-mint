@@ -9,7 +9,7 @@ export const sponsorsRelations = relations(sponsors_table, ({ many }) => ({
 export const sponsorsUsersProfilesRelations = relations(sponsors__user_profiles_table, ({ one }) => ({
   user_profiles: one(user_profiles_table, {
     fields: [sponsors__user_profiles_table.user_profile_id],
-    references: [user_profiles_table.id]
+    references: [user_profiles_table.user_id]
   }),
   sponsor: one(sponsors_table, {
     fields: [sponsors__user_profiles_table.sponsor_id],

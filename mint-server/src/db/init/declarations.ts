@@ -8,19 +8,12 @@ interface DBInitActionLevel {
   name: string
 }
 
-interface DBInitMediaFormat {
-  name: string
-}
-
 interface DBInitMediaType {
+  id: number
   name: string
   MIMEType: string
 
   mediaFormatName: string
-}
-
-interface DBInitMediaContext {
-  name: string
 }
 
 interface DBInitMedia {
@@ -33,6 +26,7 @@ interface DBInitMedia {
 }
 
 interface DBInitCountry {
+  id: number
   french_translation: string
   english_translation: string
   self_translation: string
@@ -116,11 +110,15 @@ interface DBInitSubscriptionTierSubscriptionTierFeature {
   subscription_tier_feature_id: number
 }
 
+interface DBInitSponsor {
+  id: number
+  name: string
+  fileName: string
+}
+
 export {
   DBInitActionLevel,
-  DBInitMediaFormat,
   DBInitMediaType,
-  DBInitMediaContext,
   DBInitMedia,
   DBInitCountry,
   DBInitLanguage,
@@ -135,4 +133,5 @@ export {
   DBInitSubscriptionTier,
   DBInitSubscriptionTierFeature,
   DBInitSubscriptionTierSubscriptionTierFeature,
+  DBInitSponsor,
 }

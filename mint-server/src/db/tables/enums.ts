@@ -1,4 +1,23 @@
-import { AnyPgColumn, integer, numeric, pgTable, unique, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { AnyPgColumn, integer, numeric, pgEnum, pgTable, unique, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+
+export const media_context_enum = pgEnum('media_context', [
+  'avatar',
+  'banner',
+  'race',
+  'post',
+  'system/badge',
+  'system/social_platform',
+  'system/sponsor',
+]);
+
+export const media_type_enum = pgEnum('media_type', [
+  'audio',
+  'application',
+  'image',
+  'video',
+  'text',
+  'font',
+]);
 
 // Those tables are not supposed to be changed by any user
 

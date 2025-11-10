@@ -8,6 +8,6 @@ export const timestamps = {
 }
 
 export const userRelated = {
-  createdById: integer('created_by_id').references((): AnyPgColumn => user_profiles_table.id),
-  ownerId: integer('owner_id').references((): AnyPgColumn => user_profiles_table.id),
+  createdById: integer('created_by_id').references((): AnyPgColumn => user_profiles_table.user_id),
+  ownerId: integer('owner_id').references((): AnyPgColumn => user_profiles_table.user_id),
 }

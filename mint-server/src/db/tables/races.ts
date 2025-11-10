@@ -78,8 +78,8 @@ export const races_table = pgTable("races", {
   organization_id: integer("organization_id").references((): AnyPgColumn => organizations_table.id),
 
   // If a race is owned by a user, event_id && organization_id should be null
-  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
-  owner_id: integer("owner_id").references((): AnyPgColumn => user_profiles_table.id),
+  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
+  owner_id: integer("owner_id").references((): AnyPgColumn => user_profiles_table.user_id),
 },
   (table) => [
     check("event_requires_org", sql`
@@ -103,7 +103,7 @@ export const race_positions_table = pgTable("race_positions", {
   lng: doublePrecision("lng"),
   alt: doublePrecision("alt"),
 
-  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
   registration_id: integer("race_id").references((): AnyPgColumn => registrations_table.id),
 });
 
@@ -126,7 +126,7 @@ export const registrations_table = pgTable("registrations", {
   bib_number: integer("bib_number"),
   bib_alias: varchar("bib_alias"),
 
-  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
   race_id: integer("race_id").notNull().references((): AnyPgColumn => races_table.id),
   race_start_wave_id: integer("race_start_wave_id").references((): AnyPgColumn => race_start_waves_table.id)
 });

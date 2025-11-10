@@ -59,3 +59,32 @@ export interface Sponsor {
   created_by_id?: number
   owner_id?: number
 }
+
+export interface DBSeedUser {
+  id: number
+  email: string
+  password?: string
+  refresh_token?: string
+}
+
+export interface DBSeedUserProfile {
+  user_id: number
+  firstname: string
+  lastname: string
+  country_id?: number
+  avatar_media_id?: number
+  avatar_url?: string
+  banner_media_id?: number
+  banner_url?: string
+  subscription_tier_id: number
+}
+
+export interface DBSeedMedia {
+  url: string
+  is_system: string
+
+  created_by_id: string | null | undefined
+  organization_id: string | null | undefined
+  event_id: string | null | undefined
+  race_id: string | null | undefined
+}

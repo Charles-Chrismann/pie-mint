@@ -4,9 +4,11 @@
   "description": "> [!NOTE] > For the french version see [here](./project/FR/README.md)",
   "main": "index.js",
   "scripts": {
-    "db:d": "docker compose down -v && docker compose up --build --force-recreate",
-    "db:init": "docker exec mint-api ./scripts/i.sh",
-    "db:is": "docker exec mint-api ./scripts/is.sh"
+    "db:d": "docker compose down -v db s3 s3-setup && docker compose up -d db s3 s3-setup",
+    "db:i": "docker exec mint-api ./scripts/i.sh",
+    "db:s": "docker exec mint-api npm run db:seed",
+    "db:is": "docker exec mint-api ./scripts/is.sh",
+    "db:dis": "npm run db:d && npm run db:is"
   },
   "repository": {
     "type": "git",

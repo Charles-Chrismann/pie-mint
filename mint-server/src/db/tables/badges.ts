@@ -11,7 +11,7 @@ export const badges_table = pgTable("badges", {
   is_leveled: boolean("is_leveled"),
 
   media_id: integer("media_id").notNull().references((): AnyPgColumn => medias_table.id),
-  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("user_profile_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
   organization_id: integer("organization_id").notNull().references((): AnyPgColumn => organizations_table.id),
 });
 
@@ -34,5 +34,5 @@ export const badge_progressions_table = pgTable("badge_progressions", {
 
   badge_id: integer("badge_id").notNull().references((): AnyPgColumn => badges_table.id),
   badge_level_id: integer("badge_id").references((): AnyPgColumn => badge_levels_table.id),
-  user_profile_id: integer("badge_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  user_profile_id: integer("badge_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
 });

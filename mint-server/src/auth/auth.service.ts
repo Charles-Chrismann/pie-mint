@@ -45,13 +45,12 @@ export class AuthService {
 
       const createdUserProfile = (await tx.insert(user_profiles_table).values({
         user_id: createdUser.id,
-        username: user.username,
         firstname: user.firstname,
         lastname: user.lastname,
       }).returning())[0]
 
       const { password, refresh_token, ...safeUser } = createdUser;
-      const payload = { email: createdUser.email, sub: createdUserProfile.id, technicalId: createdUser.id };
+      const payload = { email: createdUser.email, sub: createdUserProfile.user_id, technicalId: createdUser.id };
 
       const expiresRefreshToken = new Date();
       expiresRefreshToken.setMilliseconds(
@@ -71,7 +70,7 @@ export class AuthService {
       return {
         user: safeUser,
         profile: {
-          id: createdUserProfile.id,
+          id: createdUserProfile.user_id,
           firstname: createdUserProfile.firstname,
           lastname: createdUserProfile.lastname,
         },

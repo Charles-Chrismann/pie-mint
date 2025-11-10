@@ -83,12 +83,12 @@ export class RacesService {
           owner_id: organizations_table.owner_id,
         },
         created_by: {
-          id: user_profiles_table.id,
+          id: user_profiles_table.user_id,
           firstname: user_profiles_table.firstname,
           lastname: user_profiles_table.lastname,
         },
         owner: {
-          id: ownerAlias.id,
+          id: ownerAlias.user_id,
           firstname: ownerAlias.firstname,
           lastname: ownerAlias.lastname,
         }
@@ -100,8 +100,8 @@ export class RacesService {
       .leftJoin(race_discipline_categories_table, eq(race_discipline_categories_table.id, race_disciplines_table.race_discipline_category_id))
       .leftJoin(events_table, eq(events_table.id, races_table.event_id))
       .leftJoin(organizations_table, eq(organizations_table.id, races_table.organization_id))
-      .leftJoin(user_profiles_table, eq(user_profiles_table.id, races_table.created_by_id))
-      .leftJoin(ownerAlias, eq(ownerAlias.id, races_table.owner_id))
+      .leftJoin(user_profiles_table, eq(user_profiles_table.user_id, races_table.created_by_id))
+      .leftJoin(ownerAlias, eq(ownerAlias.user_id, races_table.owner_id))
       .where(eq(races_table.id, raceId))
       .limit(1)
     )[0]
@@ -212,7 +212,7 @@ export class RacesService {
         flag_emoji: countries_table.flag_emoji
       })
       .from(registrations_table)
-      .leftJoin(user_profiles_table, eq(user_profiles_table.id, registrations_table.user_profile_id))
+      .leftJoin(user_profiles_table, eq(user_profiles_table.user_id, registrations_table.user_profile_id))
       .leftJoin(races_table, eq(races_table.id, registrations_table.race_id))
       .leftJoin(race_start_waves_table, eq(race_start_waves_table.id, registrations_table.race_start_wave_id))
       .leftJoin(medias_table, eq(medias_table.id, user_profiles_table.avatar_media_id))

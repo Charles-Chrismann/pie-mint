@@ -1,14 +1,16 @@
+import s3 from "../../s3/s3";
 import {
   action_levels_table,
   countries_table,
   languages_table,
   media_contexts_table,
-  media_formats_table,
   media_types_table,
+  medias_table,
   race_discipline_categories_table,
   race_disciplines_table,
   setting_types_table,
   social_platforms_table,
+  sponsors_table,
   standard_distances_table
 } from "../schema";
 import { subscription_tiers_table, subscriptions_table, subscription_tier_features_table, subscription_tiers__subscription_tier_features_table } from "../tables/subscriptions";
@@ -17,12 +19,11 @@ import {
   action_levels,
   DBInitCountries,
   DBInitLanguages,
-  DBInitMediaContexts,
-  DBInitMediaFormats,
   DBInitMediaTypes,
   DBInitRaceDisciplineCategories,
   DBInitRaceDisciplines,
   DBInitSettingTypes,
+  DBInitSponsors,
   DBInitSubscriptions,
   DBInitSubscriptionTierFeatures,
   DBInitSubscriptionTiers,
@@ -31,6 +32,9 @@ import {
   standard_distances
 } from "./constants";
 import { TransactionType } from "./declarations";
+import { readFile } from "fs/promises";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import * as sharp from "sharp";
 
 async function insertStandardDistances(tx: TransactionType) {
   const values = standard_distances.map(
@@ -68,24 +72,14 @@ async function insertSocialPlatforms(tx: TransactionType) {
     })
 }
 
-async function insertMediaFormats(tx: TransactionType) {
-  await
-    tx.insert(media_formats_table)
-      .values(DBInitMediaFormats)
-      .onConflictDoUpdate({
-        target: media_formats_table.name,
-        set: buildConflictSet(DBInitMediaFormats[0])
-      })
-}
-
 async function insertMediaTypes(tx: TransactionType) {
-  const mediaFormats = await tx.select().from(media_formats_table)
 
   const values = DBInitMediaTypes.map(t => (
     {
+      id: t.id,
       name: t.name,
       mime_type: t.MIMEType,
-      media_format_id: mediaFormats.find(i => i.name === t.mediaFormatName)!.id
+      media_format_id: t.mediaFormatName
     }
   ))
 
@@ -94,15 +88,6 @@ async function insertMediaTypes(tx: TransactionType) {
     .onConflictDoUpdate({
       target: media_types_table.name,
       set: buildConflictSet(values[0])
-    })
-}
-
-async function insertMediaContexts(tx: TransactionType) {
-  await tx.insert(media_contexts_table)
-    .values(DBInitMediaContexts)
-    .onConflictDoUpdate({
-      target: media_contexts_table.name,
-      set: buildConflictSet(DBInitMediaContexts[0])
     })
 }
 
@@ -212,13 +197,71 @@ async function insertSubscriptionTierSubscriptionTierFeatures(tx: TransactionTyp
     .returning()
 }
 
+async function insertSponsors(tx: TransactionType) {
+  await Promise.all(DBInitSponsors.map(async s => {
+    const fileContent = await readFile(`./src/db/init/sponsors/${s.fileName}`);
+
+    const webpBuffer = await sharp(fileContent)
+      .webp({ quality: 80 })
+      .toBuffer();
+
+    const fileName = [...s.fileName.split('.')].slice(0, -1).join('.')
+
+    const command = new PutObjectCommand({
+      Bucket: "mint-dev",
+      Key: `sponsors/${fileName}.webp`,
+      Body: webpBuffer,
+      ContentType: "image/webp"
+    });
+
+    const res = await s3.send(command);
+  }))
+
+  const createdMedias = await tx.insert(medias_table)
+  .values(DBInitSponsors.map(s => ({
+    url: `${process.env.S3_HOST}/${process.env.S3_BUCKET_NAME}/sponsors/${s.id}.webp`,
+    is_system: true,
+    media_type_id: 12,
+    media_context: "system/sponsor" as any,
+  })))
+  .returning()
+
+  await tx.insert(sponsors_table)
+    .values(DBInitSponsors.map((s, i) => ({
+      id: s.id,
+      name: s.name,
+      avatar_media_id: createdMedias[i].id,
+      avatar_url: createdMedias[i].url
+    })))
+
+  // const fileContent = await readFile("./src/db/assets/init/sponsors/suunto-main.webp"); // ton fichier local
+  // const command = new PutObjectCommand({
+  //   Bucket: "mint-dev",
+  //   Key: "suunto-main.webp",
+  //   Body: fileContent, // facultatif, mais recommandé
+  //   ContentType: "image/webp",
+  // });
+
+  // const res = await s3.send(command);
+  // console.log("✅ Fichier uploadé avec succès !", res);
+
+  // const table = sponsors_table
+  // const values = DBInitSubscriptionTierSubscriptionTierFeatures
+
+  // return tx.insert(table)
+  //   .values(values)
+  //   .onConflictDoUpdate({
+  //     target: [table.subscription_tier_feature_id, table.subscription_tier_id],
+  //     set: buildConflictSet(values[0])
+  //   })
+  //   .returning()
+}
+
 export {
   insertStandardDistances,
   insertActionLevels,
   insertSocialPlatforms,
-  insertMediaFormats,
   insertMediaTypes,
-  insertMediaContexts,
   insertCountries,
   insertLanguages,
   insertSettingTypes,
@@ -228,4 +271,5 @@ export {
   insertSubscriptionTiers,
   insertSubscriptionTierFeatures,
   insertSubscriptionTierSubscriptionTierFeatures,
+  insertSponsors,
 }

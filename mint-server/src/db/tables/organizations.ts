@@ -10,8 +10,8 @@ export const organizations_table = pgTable("organizations", {
   
   media_avatar_id: integer("media_avatar_id").references((): AnyPgColumn => medias_table.id),
   media_banner_id: integer("media_banner_id").references((): AnyPgColumn => medias_table.id),
-  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
-  owner_id: integer("owner_id").notNull().references((): AnyPgColumn => user_profiles_table.id),
+  created_by_id: integer("created_by_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
+  owner_id: integer("owner_id").notNull().references((): AnyPgColumn => user_profiles_table.user_id),
 });
 
 export const organizations__groups_table = pgTable("organizations__groups", {
