@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -6,7 +5,6 @@ import compression from 'compression';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import logger from './logger';
 import helmet from 'helmet';
-import { db, user_profiles_table } from '@repo/db';
 
 const PORT = process.env.PORT ?? 3000
 
@@ -66,8 +64,6 @@ async function bootstrap() {
       operationsSorter: 'alpha',
     }
   });
-
-  console.log(await db.select().from(user_profiles_table))
 
   await app.listen(PORT);
   logger.log(`🚀 App running on: ${await app.getUrl()} 🚀`)
