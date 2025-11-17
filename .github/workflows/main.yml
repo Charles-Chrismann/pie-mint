@@ -62,13 +62,12 @@ jobs:
       - name: Docker buildx push API
         run: |
           docker buildx build \
-          --platform linux/amd64,linux/arm64 \
-          --cache-from=type=registry,ref=charleschrismann/mint-api:buildcache \
-          --cache-to=type=registry,ref=charleschrismann/mint-api:buildcache,mode=max \
-          -f apps/mint-server/Dockerfile \
-          -t charleschrismann/mint-api:latest \
-          --push .
-
+            --platform linux/amd64,linux/arm64 \
+            --cache-from=type=registry,ref=charleschrismann/mint-api:buildcache \
+            --cache-to=type=registry,ref=charleschrismann/mint-api:buildcache,mode=max \
+            --target mint-server-runtime \
+            -t charleschrismann/mint-api:latest \
+            --push .
 
   # =========================================================
   # ADMIN FRONT BUILD
@@ -83,8 +82,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -109,8 +106,9 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --cache-from=type=registry,ref=charleschrismann/mint-administration:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-administration:buildcache,mode=max \
+            --target mint-administration-runtime \
             -t charleschrismann/mint-administration:latest \
-            --push ./apps/mint-administration
+            --push .
 
   # =========================================================
   # WS RUNNERS BUILD
@@ -125,8 +123,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -151,8 +147,9 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --cache-from=type=registry,ref=charleschrismann/mint-ws-runners:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-ws-runners:buildcache,mode=max \
+            --target mint-ws-runners-runtime \
             -t charleschrismann/mint-ws-runners:latest \
-            --push ./apps/mint-ws-runners
+            --push .
 
   # =========================================================
   # DEPLOY
@@ -162,6 +159,7 @@ jobs:
     needs: [build-api, build-admin, build-ws]
     runs-on: ubuntu-latest
     if: always()
+
     steps:
       - name: Deploy if something was built
         if: |
