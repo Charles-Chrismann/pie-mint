@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
 
+    "logs": "docker compose -f docker-compose.vps.yml logs -f",
+
     "db:d": "pnpm --filter @repo/db run db:d",
     "db:p": "pnpm --filter @repo/db run db:p",
     "db:i": "pnpm --filter @repo/db run db:i",
