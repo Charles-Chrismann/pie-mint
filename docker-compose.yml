@@ -10,8 +10,8 @@ services:
       POSTGRES_PASSWORD: example
 
   s3:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     container_name: mint-s3
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -21,6 +21,7 @@ services:
     command: server /data --console-address ":9001"
 
   s3-setup:
+    container_name: mint-s3-setup
     image: minio/mc
     depends_on:
       - s3
@@ -39,53 +40,3 @@ services:
     restart: always
     ports:
       - 8080:8080
-
-  mint-server:
-    container_name: mint-api
-    env_file:
-      - .env.api
-    build: 
-      context: ./mint-server
-      target: development
-    ports:
-      - ${API_PORT}:3000
-    environment:
-      DATABASE_URL: "postgres://postgres:example@db:5432/postgres"
-    volumes:
-      - ./mint-server:/app
-      # - mint-server-node-modules:/app/node_modules
-
-    depends_on:
-      - db
-      - adminer
-    restart: always
-
-  mint-ws-runners:
-    container_name: mint-ws-runners
-    env_file:
-      - .env.ws
-    build: ./mint-ws-runners
-    ports:
-      - ${WS_PORT}:3000
-    volumes:
-      - ./mint-ws-runners:/app
-    restart: always
-
-  mint-administration:
-    container_name: mint-administration
-    build:
-      context: ./mint-administration
-      target: dev
-    ports:
-      - ${ADMINISTRATION_PORT}:5173
-    volumes:  
-      - ./mint-administration:/app
-      - mint-admin-node-modules:/app/node_modules
-    env_file:
-      - .env.administration
-    restart: always
-
-
-volumes:
-  mint-admin-node-modules:
-  mint-server-node-modules:
