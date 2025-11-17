@@ -76,6 +76,8 @@ CMD ["node", "dist/main.js"]
 FROM node:24-slim AS mint-administration-runtime
 WORKDIR /app
 COPY --from=installer /repo/node_modules ./node_modules
+COPY --from=installer /repo/.pnpm ./.pnpm
+COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=mint-administration /repo/apps/mint-administration/dist ./dist
 CMD ["node", "dist/main.js"]
 
