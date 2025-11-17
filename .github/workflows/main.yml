@@ -48,7 +48,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies (workspace)
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build API via Turborepo
         run: pnpm turbo run build --filter=mint-server...
@@ -90,7 +90,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies (workspace)
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build Administration via Turborepo
         run: pnpm turbo run build --filter=mint-administration...
@@ -132,7 +132,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies (workspace)
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build WS-Runners via Turborepo
         run: pnpm turbo run build --filter=mint-ws-runners...
