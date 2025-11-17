@@ -62,11 +62,13 @@ jobs:
       - name: Docker buildx push API
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --cache-from=type=registry,ref=charleschrismann/mint-api:buildcache \
-            --cache-to=type=registry,ref=charleschrismann/mint-api:buildcache,mode=max \
-            -t charleschrismann/mint-api:latest \
-            --push ./apps/mint-server
+          --platform linux/amd64,linux/arm64 \
+          --cache-from=type=registry,ref=charleschrismann/mint-api:buildcache \
+          --cache-to=type=registry,ref=charleschrismann/mint-api:buildcache,mode=max \
+          -f apps/mint-server/Dockerfile \
+          -t charleschrismann/mint-api:latest \
+          --push .
+
 
   # =========================================================
   # ADMIN FRONT BUILD
