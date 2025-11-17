@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pnpm install --frozen-lockfile --include=optional
+RUN pnpm install --include=optional --filter=mint-server...
 
 # ---------- Development ----------
 FROM base AS development
