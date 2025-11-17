@@ -65,7 +65,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --cache-from=type=registry,ref=charleschrismann/mint-api:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-api:buildcache,mode=max \
-            --target mint-server \
+            --target mint-server-runtime \
             -t charleschrismann/mint-api:latest \
             --push .
 
@@ -106,7 +106,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --cache-from=type=registry,ref=charleschrismann/mint-administration:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-administration:buildcache,mode=max \
-            --target mint-administration \
+            --target mint-administration-runtime \
             -t charleschrismann/mint-administration:latest \
             --push .
 
@@ -147,7 +147,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --cache-from=type=registry,ref=charleschrismann/mint-ws-runners:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-ws-runners:buildcache,mode=max \
-            --target mint-ws-runners \
+            --target mint-ws-runners-runtime \
             -t charleschrismann/mint-ws-runners:latest \
             --push .
 
