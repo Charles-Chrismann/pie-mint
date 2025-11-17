@@ -1,0 +1,57 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "description": "Shared database module for NestJS (CJS) and Next.js (ESM)",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "db:init": "npx drizzle-kit generate && npx drizzle-kit migrate && ts-node src/db/init/init.ts",
+    "db:push": "drizzle-kit push",
+    "db:push:force": "drizzle-kit push --force",
+    
+    "db:d": "docker compose down db s3 s3-setup -v && docker compose up db s3 s3-setup -d",
+    "db:p": "drizzle-kit push",
+    "db:i": "ts-node src/init/init.ts",
+    "db:s": "ts-node src/seed/seed.ts",
+    "db:dpis": "pnpm db:d && sleep 4 && pnpm db:p && pnpm db:i && pnpm db:s",
+
+    "db:di": "docker compose down -v && docker compose up -d && sleep 4 && npm run db:init",
+    "db:is": "npm run db:init && npm run db:seed",
+    "db:dis": "npm run db:di && ts-node src/db/seed/seed.ts",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
+    "build:esm": "tsc --module ESNext --outDir dist/esm",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationDir dist/types",
+    "dev": "tsc --watch --module ESNext --outDir dist/esm"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.927.0",
+    "@faker-js/faker": "^9.8.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "fast-xml-parser": "^5.2.3",
+    "pg": "^8.16.3",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/dotenv": "^8.2.3",
+    "@types/node": "^20.11.0",
+    "@types/pg": "^8.15.6",
+    "drizzle-kit": "^0.31.6",
+    "tsx": "^4.20.6",
+    "typescript": "latest"
+  }
+}

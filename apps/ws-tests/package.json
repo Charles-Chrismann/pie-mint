@@ -1,0 +1,24 @@
+{
+  "name": "ws-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/emulate-race.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.44.7",
+    "fast-xml-parser": "^5.2.3",
+    "pg": "^8.15.6",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^22.15.29",
+    "ts-node": "^10.9.2"
+  }
+}
