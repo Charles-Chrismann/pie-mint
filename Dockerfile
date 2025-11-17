@@ -66,6 +66,8 @@ RUN pnpm run build
 FROM node:24-slim AS mint-server-runtime
 WORKDIR /app
 COPY --from=installer /repo/node_modules ./node_modules
+COPY --from=installer /repo/.pnpm ./.pnpm
+COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=mint-server /repo/apps/mint-server/dist ./dist
 CMD ["node", "dist/main.js"]
 
@@ -75,9 +77,6 @@ CMD ["node", "dist/main.js"]
 ########################
 FROM node:24-slim AS mint-administration-runtime
 WORKDIR /app
-COPY --from=installer /repo/node_modules ./node_modules
-COPY --from=installer /repo/.pnpm ./.pnpm
-COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=mint-administration /repo/apps/mint-administration/dist ./dist
 CMD ["node", "dist/main.js"]
 
@@ -88,5 +87,7 @@ CMD ["node", "dist/main.js"]
 FROM node:24-slim AS mint-ws-runners-runtime
 WORKDIR /app
 COPY --from=installer /repo/node_modules ./node_modules
+COPY --from=installer /repo/.pnpm ./.pnpm
+COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=mint-ws-runners /repo/apps/mint-ws-runners/dist ./dist
 CMD ["node", "dist/main.js"]
