@@ -120,10 +120,11 @@ CMD ["node", "dist/main.js"]
 #######################################################################
 # RUNTIME MINT-ADMIN
 #######################################################################
-FROM node:24-slim AS mint-admin-runtime
-WORKDIR /app
-COPY --from=deploy-mint-admin /app/deploy/mint-admin ./
-CMD ["node", "dist/main.js"]
+FROM nginx:alpine AS mint-admin-runtime
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=deploy-mint-admin /app/deploy/mint-admin/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
 
 
