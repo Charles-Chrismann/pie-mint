@@ -420,7 +420,8 @@ async function seedProUsers() {
     const command = new PutObjectCommand({
       Bucket: "mint-dev",
       Key: `profile_pictures/${i + 2}.webp`,
-      Body: webpBuffer
+      Body: webpBuffer,
+      ContentType: "image/webp"
     });
   
     const res = await s3.send(command);
