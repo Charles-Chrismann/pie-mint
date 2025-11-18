@@ -23,7 +23,7 @@ RUN pnpm fetch
 
 
 ########################
-# Install offline
+# Install offline (all deps for build)
 ########################
 FROM base AS installer
 
@@ -40,7 +40,7 @@ FROM installer AS builder
 
 RUN pnpm --filter mint-api run build
 RUN pnpm --filter mint-admin run build
-RUN pnpm --filter mint-ws-runners run build
+RUN pnpm --filter mint-ws run build
 
 
 ########################
@@ -48,10 +48,7 @@ RUN pnpm --filter mint-ws-runners run build
 ########################
 FROM builder AS deploy-mint-api
 
-# 1. Deploy sans build
 RUN pnpm deploy --filter=mint-api --prod /repo/deploy/mint-api
-
-# 2. Copier le dist manuellement depuis l’app
 RUN cp -r /repo/apps/mint-api/dist /repo/deploy/mint-api/dist
 
 
@@ -65,12 +62,12 @@ RUN cp -r /repo/apps/mint-admin/dist /repo/deploy/mint-admin/dist
 
 
 ########################
-# Deploy: mint-ws-runners
+# Deploy: mint-ws
 ########################
-FROM builder AS deploy-mint-ws-runners
+FROM builder AS deploy-mint-ws
 
-RUN pnpm deploy --filter=mint-ws-runners --prod /repo/deploy/mint-ws-runners
-RUN cp -r /repo/apps/mint-ws-runners/dist /repo/deploy/mint-ws-runners/dist
+RUN pnpm deploy --filter=mint-ws --prod /repo/deploy/mint-ws
+RUN cp -r /repo/apps/mint-ws/dist /repo/deploy/mint-ws/dist
 
 
 ########################
@@ -85,16 +82,17 @@ CMD ["node", "dist/main.js"]
 ########################
 # Runtime: mint-admin
 ########################
-FROM node:24-slim AS mint-admin-runtime
-WORKDIR /app
-COPY --from=deploy-mint-admin /repo/deploy/mint-admin ./
-CMD ["node", "dist/main.js"]
+FROM nginx:alpine AS mint-admin-runtime
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=deploy-mint-admin /repo/deploy/mint-admin/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
 
 ########################
-# Runtime: mint-ws-runners
+# Runtime: mint-ws
 ########################
-FROM node:24-slim AS mint-ws-runners-runtime
+FROM node:24-slim AS mint-ws-runtime
 WORKDIR /app
-COPY --from=deploy-mint-ws-runners /repo/deploy/mint-ws-runners ./
+COPY --from=deploy-mint-ws /repo/deploy/mint-ws ./
 CMD ["node", "dist/main.js"]

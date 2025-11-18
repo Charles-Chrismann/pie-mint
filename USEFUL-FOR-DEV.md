@@ -13,3 +13,12 @@ The credentials are:
 email: user@example.com
 password: password
 ```
+
+docker build --target mint-api-runtime -t charleschrismann/mint-api:latest .
+docker run --env-file ./apps/mint-api/.env --name mint-api charleschrismann/mint-api:latest
+
+docker build --target mint-admin-runtime -t charleschrismann/mint-admin:latest .
+docker run -p 81:80 charleschrismann/mint-admin:latest
+
+docker build --target mint-ws-runtime -t charleschrismann/mint-ws:latest .
+docker run --env-file ./apps/mint-ws/.env --name mint-ws charleschrismann/mint-ws:latest
