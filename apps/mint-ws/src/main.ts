@@ -8,4 +8,3 @@ async function bootstrap() {
   console.log(`App running on ${await app.getUrl()}`)
 }
 bootstrap();
-
