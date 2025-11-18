@@ -21,7 +21,6 @@ import {
 import { socket } from '../../socket'
 import LeafletMap from "@/LeafletMap"
 import { MAP_STYLES } from "@/constants"
-import config from "@/config"
 
 export default function EmulateRunPage() {
   const [_isConnected, setIsConnected] = useState(socket.connected);
