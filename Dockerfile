@@ -11,7 +11,7 @@ WORKDIR /repo
 
 
 ########################
-# Fetch dependencies (cache max)
+# Fetch dependencies (max cache)
 ########################
 FROM base AS fetcher
 
@@ -34,50 +34,60 @@ RUN pnpm install --offline
 
 
 ########################
-# Build: API
+# Build all apps
 ########################
-FROM installer AS mint-server
-WORKDIR /repo/apps/mint-server
-COPY apps/mint-server /repo/apps/mint-server
-RUN pnpm run build
+FROM installer AS builder
+
+RUN pnpm --filter mint-api run build
+RUN pnpm --filter mint-admin run build
+RUN pnpm --filter mint-ws-runners run build
 
 
 ########################
-# Build: Administration
+# Deploy: mint-api
 ########################
-FROM installer AS mint-administration
-WORKDIR /repo/apps/mint-administration
-COPY apps/mint-administration /repo/apps/mint-administration
-RUN pnpm run build
+FROM builder AS deploy-mint-api
+
+# 1. Deploy sans build
+RUN pnpm deploy --filter=mint-api --prod /repo/deploy/mint-api
+
+# 2. Copier le dist manuellement depuis l’app
+RUN cp -r /repo/apps/mint-api/dist /repo/deploy/mint-api/dist
 
 
 ########################
-# Build: WS Runners
+# Deploy: mint-admin
 ########################
-FROM installer AS mint-ws-runners
-WORKDIR /repo/apps/mint-ws-runners
-COPY apps/mint-ws-runners /repo/apps/mint-ws-runners
-RUN pnpm run build
+FROM builder AS deploy-mint-admin
+
+RUN pnpm deploy --filter=mint-admin --prod /repo/deploy/mint-admin
+RUN cp -r /repo/apps/mint-admin/dist /repo/deploy/mint-admin/dist
 
 
 ########################
-# Runtime: mint-server
+# Deploy: mint-ws-runners
 ########################
-FROM node:24-slim AS mint-server-runtime
+FROM builder AS deploy-mint-ws-runners
+
+RUN pnpm deploy --filter=mint-ws-runners --prod /repo/deploy/mint-ws-runners
+RUN cp -r /repo/apps/mint-ws-runners/dist /repo/deploy/mint-ws-runners/dist
+
+
+########################
+# Runtime: mint-api
+########################
+FROM node:24-slim AS mint-api-runtime
 WORKDIR /app
-COPY --from=installer /repo/node_modules ./node_modules
-COPY --from=installer /repo/.pnpm ./.pnpm
-COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=mint-server /repo/apps/mint-server/dist ./dist
+COPY --from=deploy-mint-api /repo/deploy/mint-api ./
 CMD ["node", "dist/main.js"]
 
 
 ########################
-# Runtime: mint-administration
+# Runtime: mint-admin
 ########################
-FROM node:24-slim AS mint-administration-runtime
+FROM node:24-slim AS mint-admin-runtime
 WORKDIR /app
-COPY --from=mint-administration /repo/apps/mint-administration/dist ./dist
+COPY --from=deploy-mint-admin /repo/deploy/mint-admin ./
 CMD ["node", "dist/main.js"]
 
 
@@ -86,8 +96,5 @@ CMD ["node", "dist/main.js"]
 ########################
 FROM node:24-slim AS mint-ws-runners-runtime
 WORKDIR /app
-COPY --from=installer /repo/node_modules ./node_modules
-COPY --from=installer /repo/.pnpm ./.pnpm
-COPY --from=installer /repo/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=mint-ws-runners /repo/apps/mint-ws-runners/dist ./dist
+COPY --from=deploy-mint-ws-runners /repo/deploy/mint-ws-runners ./
 CMD ["node", "dist/main.js"]
