@@ -57,7 +57,7 @@ RUN pnpm --filter mint-api run build
 FROM installer AS builder-mint-admin
 
 WORKDIR /app
-RUN pnpm install --filter=mint-admin... --frozen-lockfile
+RUN pnpm install --filter=mint-admin --prod --frozen-lockfile
 
 # Build uniquement mint-admin (Vite)
 RUN pnpm --filter mint-admin run build

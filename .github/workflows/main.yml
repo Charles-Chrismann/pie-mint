@@ -103,7 +103,7 @@ jobs:
       - name: Docker buildx push Admin
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm64 \
+            --platform linux/amd64 \
             --cache-from=type=registry,ref=charleschrismann/mint-admin:buildcache \
             --cache-to=type=registry,ref=charleschrismann/mint-admin:buildcache,mode=max \
             --target mint-admin-runtime \
