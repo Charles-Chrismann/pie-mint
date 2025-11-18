@@ -116,14 +116,18 @@ COPY --from=deploy-mint-api /app/deploy/mint-api ./
 CMD ["node", "dist/main.js"]
 
 
-
 #######################################################################
 # RUNTIME MINT-ADMIN
 #######################################################################
 FROM nginx:alpine AS mint-admin-runtime
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=deploy-mint-admin /app/deploy/mint-admin/dist /usr/share/nginx/html
+COPY apps/mint-admin/env.template.js /usr/share/nginx/html/env.template.js
+COPY apps/mint-admin/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/mint-admin/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 EXPOSE 80
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
 
