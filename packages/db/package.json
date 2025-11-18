@@ -18,13 +18,11 @@
     "db:init": "npx drizzle-kit generate && npx drizzle-kit migrate && ts-node src/db/init/init.ts",
     "db:push": "drizzle-kit push",
     "db:push:force": "drizzle-kit push --force",
-    
     "db:d": "docker compose down db s3 s3-setup -v && docker compose up db s3 s3-setup -d",
     "db:p": "drizzle-kit push",
     "db:i": "ts-node src/init/init.ts",
     "db:s": "ts-node src/seed/seed.ts",
     "db:dpis": "pnpm db:d && sleep 4 && pnpm db:p && pnpm db:i && pnpm db:s",
-
     "db:di": "docker compose down -v && docker compose up -d && sleep 4 && npm run db:init",
     "db:is": "npm run db:init && npm run db:seed",
     "db:dis": "npm run db:di && ts-node src/db/seed/seed.ts",
@@ -43,7 +41,8 @@
     "drizzle-orm": "^0.44.7",
     "fast-xml-parser": "^5.2.3",
     "pg": "^8.16.3",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
