@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import type { LastUpdatedRunner, Runner, Track } from './declarations'
 import { socket } from './socket'
+import config from './config'
 
 function App() {
   const [_pos, _setPos] = useState("no pos")
@@ -107,7 +108,7 @@ function App() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch('http://localhost:3000/races/2/track')
+      const res = await fetch(config.API_BASE_URL + '/races/2/track')
       const data = await res.json()
       
       setTrack(data)

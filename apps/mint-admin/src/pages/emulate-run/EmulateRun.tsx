@@ -21,6 +21,7 @@ import {
 import { socket } from '../../socket'
 import LeafletMap from "@/LeafletMap"
 import { MAP_STYLES } from "@/constants"
+import config from "@/config"
 
 export default function EmulateRunPage() {
   const [_isConnected, setIsConnected] = useState(socket.connected);
@@ -91,7 +92,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch('http://localhost:3000/api/races/1/track')
+      const res = await fetch(config.API_BASE_URL + '/races/1/track')
       const data = await res.json()
       
       setTrack(data)
