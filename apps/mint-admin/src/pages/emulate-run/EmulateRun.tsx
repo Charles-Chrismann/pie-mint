@@ -92,10 +92,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      const res = await fetch(config.API_BASE_URL + '/races/1/track')
-      const data = await res.json()
-      
-      setTrack(data)
+      setTrack(await Api.getPublic<LineString[]>('/races/1/runners'))
     }
 
     loadTrack()
