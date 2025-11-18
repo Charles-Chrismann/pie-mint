@@ -181,8 +181,6 @@ jobs:
             echo "Pulling latest images..."
             docker compose -f docker-compose.vps.yml pull
 
-            docker exec mint-vps-api ./scripts/i.sh
-
             echo "Restarting services..."
             docker compose -f docker-compose.vps.yml up -d
 
