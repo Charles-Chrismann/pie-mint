@@ -63,9 +63,9 @@ services:
       - .env.admin
     restart: always
 
-  mint-ws-runners:
-    image: charleschrismann/mint-ws-runners
-    container_name: mint-vps-ws-runners
+  mint-ws:
+    image: charleschrismann/mint-ws
+    container_name: mint-vps-ws
     ports:
       - ${WS_PORT}:3000
     env_file:
