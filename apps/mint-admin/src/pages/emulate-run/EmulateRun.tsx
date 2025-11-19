@@ -27,7 +27,7 @@ export default function EmulateRunPage() {
   const [_Races, setRaces] = useState<Race[]>([])
   const [raceRunners, setRaceRunners] = useState<Registration[]>([])
   const [selectedRunner, setSelectedRunner] = useState<Registration>()
-  const [track, setTrack] = useState<LineString[]>()
+  const [track] = useState<LineString[]>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
