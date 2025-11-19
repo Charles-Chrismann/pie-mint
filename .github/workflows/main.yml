@@ -103,7 +103,7 @@ jobs:
       - name: Docker buildx push Admin
         run: |
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             --target mint-admin-runtime \
             -t charleschrismann/mint-admin:latest \
             --push .
