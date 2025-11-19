@@ -91,7 +91,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      setTrack(await Api.getPublic<LineString[]>('/races/1/track'))
+      // setTrack(await Api.getPublic<LineString[]>('/races/1/track'))
     }
 
     loadTrack()
