@@ -27,7 +27,7 @@ export default function EmulateRunPage() {
   const [_Races, setRaces] = useState<Race[]>([])
   const [raceRunners, setRaceRunners] = useState<Registration[]>([])
   const [selectedRunner, setSelectedRunner] = useState<Registration>()
-  const [track] = useState<LineString[]>()
+  const [track, setTrack] = useState<LineString[]>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
@@ -91,7 +91,7 @@ export default function EmulateRunPage() {
 
   useEffect(() => {
     async function loadTrack() {
-      // setTrack(await Api.getPublic<LineString[]>('/races/1/track'))
+      setTrack(await Api.getPublic<LineString[]>('/races/1/track'))
     }
 
     loadTrack()

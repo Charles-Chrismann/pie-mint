@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -17,7 +17,6 @@ import { SubscriptionsModule } from './module-enums/subscriptions/subscriptions.
 @Module({
   imports: [
     ConfigModule.forRoot({
-      ignoreEnvFile: true,
       isGlobal: true
     }),
     UsersModule,
