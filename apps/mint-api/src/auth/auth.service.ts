@@ -81,13 +81,15 @@ export class AuthService {
     
     await this.drizzle.client.update(users_table).set({ refresh_token: await hash(refresh_token, 8) }).where(eq(users_table.id, user.user.id))
 
+    console.log(user)
+
     return {
       technicalUser: {
         id: user.user.id,
         email: user.user.email,
       },
       userProfile: {
-        id: user.user_profile.id,
+        id: user.user_profile.user_id,
         firstname: user.user_profile.firstname,
         lastname: user.user_profile.lastname,
       },

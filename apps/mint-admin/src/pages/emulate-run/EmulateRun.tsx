@@ -58,7 +58,6 @@ export default function EmulateRunPage() {
     }
 
     function onPosition(data: Runner[]) {
-      console.log(data)
       setLastUpdatedRunners(data.map(r => ({
         runner_id: r.runner_id,
         name: r.name,

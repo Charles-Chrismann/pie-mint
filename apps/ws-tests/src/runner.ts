@@ -37,6 +37,10 @@ export class Runner {
       })
     })).json()
 
+    if(datas.statusCode === 401) {
+      console.log()
+    }
+
     this.auth = {
       technical_user: datas.technicalUser,
       user_profile: datas.userProfile,

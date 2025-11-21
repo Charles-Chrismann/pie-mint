@@ -130,22 +130,23 @@ export default function LeafletMap({
     lastUpdatedRunners.forEach(lastUpdatedRunner => {
       const existingIndex = updatedRunners.findIndex(r => r.runner_id === lastUpdatedRunner.runner_id);
 
-      const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.runner_id)!
-
-      const htmlIcon = L.divIcon({
-        className: 'custom-marker',
-        html: `<div class="rounded-full border bg-white w-8 aspect-square overflow-hidden border-black">
-                <img class="w-full h-full object-cover" src="${rr.user_profile.avatar_url}" alt="${rr.user_profile.firstname} ${rr.user_profile.lastname}'s profile picture" />
-               ${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}
-             </div>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-      });
-
       let marker;
       if (existingIndex !== -1) {
         marker = updatedRunners[existingIndex].marker;
       } else {
+        console.log(raceRunners, lastUpdatedRunner, lastUpdatedRunner.runner_id)
+        const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.runner_id)!
+
+        const htmlIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `<div class="rounded-full border bg-white w-8 aspect-square overflow-hidden border-black">
+                  <img class="w-full h-full object-cover" src="${rr.user_profile.avatar_url}" alt="${rr.user_profile.firstname} ${rr.user_profile.lastname}'s profile picture" />
+                 ${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}
+               </div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+        });
+
         marker = L.marker(
           [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
           { icon: htmlIcon }
