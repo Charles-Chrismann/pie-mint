@@ -52,15 +52,6 @@ export class AuthService {
       const { password, refresh_token, ...safeUser } = createdUser;
       const payload = { email: createdUser.email, sub: createdUserProfile.user_id, technicalId: createdUser.id };
 
-      const expiresRefreshToken = new Date();
-      expiresRefreshToken.setMilliseconds(
-        expiresRefreshToken.getTime() +
-        parseInt(
-          this.configService.getOrThrow<string>(
-            "JWT_REFRESH_TOKEN_EXPIRATION_MS"
-          )
-        )
-      )
       const refresh_token_to_return = this.jwtService.sign(payload, {
         secret: this.configService.getOrThrow("JWT_REFRESH_TOKEN_SECRET"),
         expiresIn: this.configService.getOrThrow("JWT_REFRESH_TOKEN_EXPIRATION_MS")
@@ -81,22 +72,13 @@ export class AuthService {
   }
 
   async login(user: any) {
-    console.log(user)
-    const payload = { email: user.user.email, sub: user.user_profile.id, technicalId: user.user.id };
+    const payload = { email: user.user.email, sub: user.user_profile.user_id, technicalId: user.user.id };
 
-    const expiresRefreshToken = new Date();
-    expiresRefreshToken.setMilliseconds(
-      expiresRefreshToken.getTime() +
-      parseInt(
-        this.configService.getOrThrow<string>(
-          "JWT_REFRESH_TOKEN_EXPIRATION_MS"
-        )
-      )
-    )
     const refresh_token = this.jwtService.sign(payload, {
       secret: this.configService.getOrThrow("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: this.configService.getOrThrow("JWT_REFRESH_TOKEN_EXPIRATION_MS")
     })
+    
     await this.drizzle.client.update(users_table).set({ refresh_token: await hash(refresh_token, 8) }).where(eq(users_table.id, user.user.id))
 
     return {
