@@ -62,8 +62,8 @@ export class AuthService {
         )
       )
       const refresh_token_to_return = this.jwtService.sign(payload, {
-        secret: this.configService.getOrThrow("process.env.JWT_REFRESH_TOKEN_SECRET"),
-        expiresIn: this.configService.getOrThrow("process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS")
+        secret: this.configService.getOrThrow("JWT_REFRESH_TOKEN_SECRET"),
+        expiresIn: this.configService.getOrThrow("JWT_REFRESH_TOKEN_EXPIRATION_MS")
       })
       await tx.update(users_table).set({ refresh_token: await hash(refresh_token_to_return, 8) }).where(eq(users_table.id, createdUser.id))
 
