@@ -1,54 +1,31 @@
 import { io, Socket } from "socket.io-client";
 import { position2D, position3D, RunnerAuth } from "./declarations";
-import { API_BASE_URL } from "./constants";
+import { API_BASE_URL, WS_URL } from "./constants";
+import jwt from "jsonwebtoken"
 
 export class Runner {
   io: Socket
+  runnerId: string
+  raceId: string
   points: position3D[]
   positionIntervalId!: NodeJS.Timeout
   currentPointsIndex = -1
+  auth: string
 
-  auth: RunnerAuth | null = null
-  email: string
   pcount = 0
 
   constructor(
-    wsUrl: string,
+    runnerId: string,
+    raceId: string,
     points: position3D[],
-    email: string,
     currentPointsIndex?: number,
   ) {
-    this.io = io(wsUrl)
-    this.io.on('position', () => console.log('posit', ++this.pcount))
+    this.runnerId = runnerId
+    this.raceId = raceId
     this.points = points
-    this.email = email
-    if(currentPointsIndex) this.currentPointsIndex = currentPointsIndex
-  }
-
-  async login() {
-    const datas = await (await fetch(API_BASE_URL + '/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: this.email,
-        password: 'password'
-      })
-    })).json()
-
-    if(datas.statusCode === 401) {
-      console.log()
-    }
-
-    this.auth = {
-      technical_user: datas.technicalUser,
-      user_profile: datas.userProfile,
-      access_token: datas.access_token,
-      refresh_token: datas.refresh_token,
-    }
-
-    console.log(`${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname} is connected!`)
+    this.auth = jwt.sign({ userId: this.runnerId }, process.env.JWT_SECRET!)
+    this.io = io(WS_URL, { auth: { token: this.auth } })
+    // if(currentPointsIndex) this.currentPointsIndex = currentPointsIndex
   }
 
   startRace() {
@@ -62,18 +39,24 @@ export class Runner {
   updatePosition() {
     this.currentPointsIndex++
 
-    if(!this.points[this.currentPointsIndex]) return this.stopRace()
+    // if(!this.points[this.currentPointsIndex]) return this.stopRace()
 
     const p = {
-      lat: this.points[this.currentPointsIndex][1] + this.getImprecision(),
-      lng: this.points[this.currentPointsIndex][0] + this.getImprecision()
+      lon: this.points[this.currentPointsIndex].lon + this.getImprecision(),
+      lat: this.points[this.currentPointsIndex].lat + this.getImprecision(),
+      alt: this.points[this.currentPointsIndex].alt,
     }
 
+    // this.io.emit('position', {
+    //   position: p,
+    //   runner_id: this.auth!.user_profile.id,
+    //   name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`,
+    //   rank: this.currentPointsIndex
+    // })
+
     this.io.emit('position', {
-      position: p,
-      runner_id: this.auth!.user_profile.id,
-      name: `${this.auth!.user_profile.firstname} ${this.auth!.user_profile.lastname}`,
-      rank: this.currentPointsIndex
+      raceId: this.raceId,
+      position: p
     })
   }
 

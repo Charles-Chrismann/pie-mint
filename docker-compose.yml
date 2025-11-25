@@ -34,6 +34,13 @@ services:
       echo '✅ Bucket public prêt !';
       "
 
+  redis:
+    container_name: mint-redis
+    image: redis:8.4-alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
   adminer:
     container_name: mint-adminer
     image: adminer

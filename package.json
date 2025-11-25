@@ -5,12 +5,14 @@
 
     "logs": "docker compose -f docker-compose.vps.yml logs -f",
 
-    "db:d": "pnpm --filter @repo/db run db:d",
+    "db:d": "docker compose down db s3 s3-setup redis -v && docker compose up db s3 s3-setup redis -d",
     "db:p": "pnpm --filter @repo/db run db:p",
     "db:i": "pnpm --filter @repo/db run db:i",
     "db:s": "pnpm --filter @repo/db run db:s",
     "db:dpis": "pnpm --filter @repo/db run db:dpis",
 
+    "ws:dev": "pnpm --filter mint-ws run dev",
+    "ws:seed": "docker compose down redis -v && docker compose up redis -d && sleep 1 && pnpm --filter mint-ws run db:seed",
     "emu:s": "pnpm --filter ws-tests run start",
 
     "build": "turbo run build",

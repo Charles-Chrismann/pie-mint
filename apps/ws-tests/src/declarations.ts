@@ -14,7 +14,11 @@ export interface position2D {
   lng: number
 }
 
-export type position3D = [number, number, number]
+export interface position3D {
+  lat: number
+  lon: number
+  alt: number
+}
 
 export interface RunnerAuth {
   technical_user: TechnicalUser
