@@ -1,22 +1,18 @@
-import { io, Socket } from "socket.io-client";
-import { AccelerationPhase, position2D, position3D, RunnerAuth } from "./declarations";
-import { API_BASE_URL, WS_URL } from "./constants";
-import jwt from "jsonwebtoken"
-import { getBornPoints, getDistanceBetweenPoints, getPointsTotalDistance, interpolatePoint, randomGaussian, tinynoise } from "./utils";
+import { length, lineString } from "@turf/turf";
+import { AccelerationPhase, position3D } from "./declarations";
+import {
+  getBornPoints,
+  getPointsTotalDistance,
+  interpolatePoint,
+  randomGaussian
+} from "./utils";
 
 export class Runner {
-  io: Socket
   runnerId: string
   raceId: string
-  points: position3D[]
-  positionIntervalId!: NodeJS.Timeout
-  currentPointsIndex = -1
-  auth: string
+  points: Buffer
   avgSpeedKmh: number
   avgSpeedMs: number
-  seed: number
-
-  pcount = 0
 
   constructor(
     runnerId: string,
@@ -26,9 +22,6 @@ export class Runner {
     this.runnerId = runnerId
     this.raceId = raceId
     
-    this.auth = jwt.sign({ userId: this.runnerId }, process.env.JWT_SECRET!)
-    this.io = io(WS_URL, { auth: { token: this.auth } })
-    this.seed = Math.random() * 1000000000
     this.avgSpeedKmh = randomGaussian();
     this.avgSpeedMs = this.avgSpeedKmh / 3.6;
 
@@ -36,7 +29,12 @@ export class Runner {
   }
 
   getPosition(elapsedTime: number) {
-    return this.points[elapsedTime]
+    const stride = 12;
+    const offset = elapsedTime * stride;
+    const lat = this.points.readInt32LE(offset) / 1e6;
+    const lon = this.points.readInt32LE(offset + 4) / 1e6;
+    const alt = this.points.readInt32LE(offset + 8) / 1e2;
+    return {lat, lon, alt}
   }
 
   generatePoints(points: position3D[]) {
@@ -83,15 +81,28 @@ export class Runner {
       }
     }
 
-    this.points = runnerPositions
-    console.log(`${this.runnerId}: ${this.points.length} generated (${this.avgSpeedKmh} avg speed)(${this.points.length / 3600})`)
+    const buf = Buffer.alloc(runnerPositions.length * 3 * 4);
+    let offset = 0;
+    for (const rp of runnerPositions) {
+      buf.writeInt32LE(Math.round(rp.lat * 1e6), offset);
+      offset += 4;
+
+      buf.writeInt32LE(Math.round(rp.lon * 1e6), offset);
+      offset += 4;
+
+      buf.writeInt32LE(Math.round(rp.alt * 1e2), offset); // cm si tu veux
+      offset += 4;
+    }
+
+    this.points = buf
+    // console.log(`${this.runnerId}: ${this.points.length} generated (${this.avgSpeedKmh} avg speed)(will finish race in ${this.points.length / 3600}h)`)
   }
 
-  emitPosition(elapsedTime: number) {
-    const position = this.getPosition(elapsedTime)
-    this.io.emit('position', {
-      raceId: this.raceId,
-      position: position
-    })
-  }
+  // emitPosition(elapsedTime: number) {
+  //   const position = this.getPosition(elapsedTime)
+  //   this.io.emit('position', {
+  //     raceId: this.raceId,
+  //     position: position
+  //   })
+  // }
 }

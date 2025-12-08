@@ -8,9 +8,68 @@
 </head>
 <body>
 
-	<div>
-		<ul class="running_race"></ul>
-	</div>
+	<main>
+		<section id="emu">
+			<h2>Emulate Race</h2>
+
+			<p>Cet section est utile pour émuler rapidement une course</p>
+
+			<div>
+				<strong>⚠️ Plus le nombre de coureur est élévé plus la création peut prendre de temps ⚠️</strong>
+				<br>
+				<strong>⚠️ La course crée commence 10 secondes plus tard ⚠️</strong>
+			</div>
+
+			<ul class="options">
+				<li>
+					<label for="runnerCount">Nombre de coureurs</label>
+					<input type="number" id="runnerCount" value="100">
+				</li>
+			</ul>
+	
+			<div style="display: flex; gap: 1rem;">
+				<p id="emulateUrl"></p>
+				<div>
+					<button id="emulate">Emulate</button>
+					<div class="loader hide">loading...</div>
+				</div>
+			</div>
+	
+			<div class="responseContainer hide">
+				<h4>Response:</h4>
+				<pre id="response"></pre>
+			</div>
+		</section>
+
+		<hr>
+
+		<section id="create-race">
+			<h2>Créer une course</h2>
+
+			<p>Endpoint: POST /races</p>
+			<p>Objet à envoyer: </p>
+			<pre>
+{ 
+	<span class="key">id</span>: <span class="string">"408a5def-389d-4e3a-9a53-03a8e9c1e655"</span>, <span class="comment">// L'id de la course</span>
+	<span class="key">startDate</span>: <span class="string">"2025-12-08T22:48:38.377Z"</span>, <span class="comment">// date.toISOString</span>
+	<span class="key">endDate</span>: <span class="string">"2025-12-08T22:48:38.377Z"</span>, <span class="comment">// date.toISOString</span>
+	<span class="key">runnerIds</span>: [
+		<span class="string">"7fd03524-9183-4fca-a943-9ad2166e6062"</span>,
+		<span class="string">"847b65e7-088e-4b66-a914-607e2bed446c"</span>,
+		<span class="string">"13bf4724-11c9-4967-ac8d-8ce8ec338e6d"</span>,
+		<span class="comment">// ...</span>
+	] <span class="comment">// Les ids des coureurs</span>
+	<span class="key">gpx</span>: <span class="string">"&lsaquo;?xml version="1.0" encoding="UTF-..."</span>, <span class="comment">// La string gpx de la course, une gpx dispo <a href="/gpxs/nantes_marathon.gpx">ici</a></span>
+}
+			</pre>
+		</section>
+	
+		<div>
+			<ul class="running_race"></ul>
+		</div>
+		
+	</main>
+
 
 	<script src="./main.js"></script>
 </body>

@@ -20,7 +20,7 @@ export interface PositionPayload {
   position: {
     lon: number,
     lat: number,
-    alt: number | null
+    alt: number
   }
 }
 

@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { LastUpdatedRunner, LineString, Registration, Runner } from './declarations';
+import { CanvasCustomMarker } from './CanvasCustomMarker';
+import { CanvasLayer } from './CanvasLayer';
 
 function animateMarker(
-  marker: L.Marker,
+  marker: L.CircleMarker,
   toLatLng: L.LatLngExpression,
   duration: number = 1000
 ): void {
@@ -43,15 +45,22 @@ export default function LeafletMap({
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
-  const [_markers, _setMarkers] = useState<L.Marker[]>([])
+  const [_markers, _setMarkers] = useState<L.CircleMarker[]>([])
   const [currentLayer, setCurrentLayer] = useState(mapStyle)
 
   const [runners, setRunners] = useState<Runner[]>([])
+  const canvasRef = useRef(L.canvas({ pane: "canvas" }))
 
   useEffect(() => {
     if (mapRef.current) {
       // Initialiser la carte
       const map = L.map(mapRef.current).setView([47.218371, -1.553621], 15);
+      const canvasPane = map.createPane("canvas");
+      canvasPane.style.zIndex = "1000";  // au-dessus des autres overlays
+      const canvasLayer = new CanvasLayer({
+        renderer: canvasRef.current,
+      });
+      // canvasLayer.addTo(map);
 
 
       mapStyle.addTo(map);
@@ -128,36 +137,38 @@ export default function LeafletMap({
     const updatedRunners = [...runners];
 
     lastUpdatedRunners.forEach(lastUpdatedRunner => {
-      const existingIndex = updatedRunners.findIndex(r => r.runner_id === lastUpdatedRunner.runner_id);
+      const existingIndex = updatedRunners.findIndex(r => r.userId === lastUpdatedRunner.userId);
 
-      let marker;
+      let marker: CanvasCustomMarker;
       if (existingIndex !== -1) {
         marker = updatedRunners[existingIndex].marker;
       } else {
-        console.log(raceRunners, lastUpdatedRunner, lastUpdatedRunner.runner_id)
-        const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.runner_id)!
+        console.log(raceRunners, lastUpdatedRunner, lastUpdatedRunner.userId)
+        // const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.userId)!
 
         const htmlIcon = L.divIcon({
           className: 'custom-marker',
           html: `<div class="rounded-full border bg-white w-8 aspect-square overflow-hidden border-black">
-                  <img class="w-full h-full object-cover" src="${rr.user_profile.avatar_url}" alt="${rr.user_profile.firstname} ${rr.user_profile.lastname}'s profile picture" />
-                 ${lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')}
+                  <!-- <img class="w-full h-full object-cover" src="${"rr.user_profile.avatar_url"}" alt="${"rr.user_profile.firstname"} ${"rr.user_profile.lastname"}'s profile picture" /> -->
+                 ${"lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')"}
                </div>`,
           iconSize: [24, 24],
           iconAnchor: [12, 12],
         });
 
-        marker = L.marker(
-          [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng],
-          { icon: htmlIcon }
-        ).on('click', () => {
-          setSelectedRunner(rr)
+        marker = new CanvasCustomMarker([lastUpdatedRunner.lat, lastUpdatedRunner.lon], {
+          renderer: canvasRef.current,
+          // imageSrc: `https://`
+        })
+
+        marker.on('click', () => {
+          // setSelectedRunner(rr)
         }).addTo(map);
 
         updatedRunners.push({ ...lastUpdatedRunner, marker });
       }
 
-      animateMarker(marker, [lastUpdatedRunner.position.lat, lastUpdatedRunner.position.lng], 1000);
+      animateMarker(marker, [lastUpdatedRunner.lat, lastUpdatedRunner.lon], 1000);
     });
 
     setRunners(updatedRunners);

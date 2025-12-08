@@ -2,6 +2,8 @@ services:
   db:
     container_name: mint-db
     image: postgis/postgis
+    volumes:
+      - mint-db-data:/var/lib/postgresql/data
     restart: always
     ports:
       - 5432:5432
@@ -47,3 +49,5 @@ services:
     restart: always
     ports:
       - 8080:8080
+volumes:
+  mint-db-data:

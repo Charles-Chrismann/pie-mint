@@ -58,15 +58,16 @@ export default function EmulateRunPage() {
     }
 
     function onPosition(data: Runner[]) {
-      setLastUpdatedRunners(data.map(r => ({
-        runner_id: r.runner_id,
-        name: r.name,
-        position: {
-          lat: r.position.lat,
-          lng: r.position.lng,
-        },
-        rank: r.rank
-      })))
+      // setLastUpdatedRunners(data.map(r => ({
+      //   runner_id: r.runner_id,
+      //   name: r.name,
+      //   position: {
+      //     lat: r.position.lat,
+      //     lng: r.position.lng,
+      //   },
+      //   rank: r.rank
+      // })))
+      setLastUpdatedRunners(data)
     }
 
     socket.on('connect', onConnect);
@@ -157,8 +158,8 @@ export default function EmulateRunPage() {
           >{selectedRunner.user_profile.firstname} {selectedRunner.user_profile.lastname}</h2>
 
           {
-            lastUpdatedRunners && lastUpdatedRunners.length && 
-            <p>Position: <span className="font-bold">{ lastUpdatedRunners.find(r => r.runner_id === selectedRunner.bib_number)?.rank }</span></p>
+            lastUpdatedRunners && lastUpdatedRunners.length && <></>
+            // <p>Position: <span className="font-bold">{ lastUpdatedRunners.find(r => r.runner_id === selectedRunner.bib_number)?.rank }</span></p>
           }
 
           <p>Dossard: </p>

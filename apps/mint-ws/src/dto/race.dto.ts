@@ -1,7 +1,7 @@
 
 import { IsArray, IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
-export class registerRaceDTO {
+export class RegisterRaceDTO {
 
 	@IsNotEmpty()
 	id: string
@@ -15,4 +15,7 @@ export class registerRaceDTO {
 	@IsArray()
   @IsString({ each: true })
 	runnerIds: string[]
+
+	@IsString()
+	gpx: string
 }

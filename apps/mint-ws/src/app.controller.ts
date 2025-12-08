@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Header, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SignatureGuard } from './guards/signature.gaurds';
-import { registerRaceDTO } from './dto/race.dto';
+import { RegisterRaceDTO } from './dto/race.dto';
 import Redis from './Redis';
 
 @Controller()
@@ -12,15 +12,33 @@ export class AppController {
   @Post('race')
   @UseGuards(SignatureGuard)
   async registerRace(
-    @Body() body: registerRaceDTO
+    @Body() body: RegisterRaceDTO
   ) {
-    console.log(body)
-    await Redis.registerRace(body)
+    return this.appService.registerRace(body)
   }
 
-  @Get('race/running')
+  @Get('races/emulate')
+  async generateRace(
+    @Query('runnerCount') runnerCount: string
+  ) {
+    return this.appService.emulate({ runnerCount })
+  }
+
+  @Get('races/running')
   getRunningRaces() {
     return this.appService.getRunningRaces()
+  }
+
+  @Get('races/emulating')
+  getEmulatingRaces() {
+    return this.appService.getEmulatingRaces()
+  }
+
+  @Get('race/:raceId/ranking')
+  getRaceRanking(
+    @Param('raceId') raceId: string
+  ) {
+    return this.appService.getRaceRanking(raceId)
   }
 
   @Get('race/:raceId/user/:userId')

@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { JWTPayload, PositionPayload, Race } from './declarations';
 import Redis from './Redis';
 import { encodePosition } from './seed/utils';
+import { AppService } from './app.service';
 
 @WebSocketGateway({
   cors: {
@@ -14,22 +15,39 @@ import { encodePosition } from './seed/utils';
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(AppGateway.name);
-  lastSecondEvents: any[] = []
   emitTimeout: NodeJS.Timeout | null = null
   rankingEmitTimeout: NodeJS.Timeout
 
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private appService: AppService
+  ) {}
 
   async startEventSending() {
+    this.logger.verbose(`Start emitting`)
     this.emitTimeout = setInterval(() => {
-      if(!this.lastSecondEvents.length) return
+
+      const emus = this.appService.emulatedRace
+      if(emus.length) {
+        for(const race of emus) {
+          const raceId = race.id
+          race.progress++
+          const positions = race.getPositions(race.progress)
+          for(const position of positions) {
+            this.appService.handlePositionEvent(position.userId, { raceId, position: { lat: position.lat, lon: position.lon, alt: position.alt } })
+          }
+        }
+      }
+
+      if(!this.appService.lastSecondEvents.length) return
 
       this.server.to('specs')
-      .emit('positions', [...this.lastSecondEvents].sort((ra, rb) => rb.rank - ra.rank).map((r, i)=> ({ ...r, rank: i + 1 })))
-      this.lastSecondEvents = []
+      // .emit('positions', [...this.lastSecondEvents].sort((ra, rb) => rb.rank - ra.rank).map((r, i)=> ({ ...r, rank: i + 1 })))
+      .emit('positions', [...this.appService.lastSecondEvents])
+      this.appService.lastSecondEvents = []
     }, 1000)
   }
 
@@ -39,6 +57,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   handleDisconnect(client: any) {
     if(this.server.engine.clientsCount === 0) {
+      this.logger.verbose(`Stop emitting`)
       clearInterval(this.emitTimeout!)
       this.emitTimeout = null
     }
@@ -47,7 +66,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   afterInit(server: Server) {
     server.use((socket, next) => {
       
-      socket.join('specs')
+      // socket.join('specs')
       
       const token = socket.handshake.auth.token || socket.handshake.headers.token;
       if(token) {
@@ -63,6 +82,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         }
       } else {
         this.logger.verbose('Spectator connected')
+        socket.join('specs')
         next();
       }
     });
@@ -74,40 +94,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     client: Socket,
     data: PositionPayload
   ) {
-    const raceId = data.raceId
-
-    const race = await Redis.hgetall(`race:${raceId}`);
-    if(!race) return
-
-    const startDate = new Date(race.startDate)
-    const endDate = new Date(race.endDate)
-    const currentDate = new Date()
-    if(currentDate < startDate || currentDate >= endDate) return
-
-
-    const userId = client.data.user.userId
-    const isMember = await Redis.sismember(`race:${raceId}:users`, userId);
-    if(!isMember) return
-
-    const timestamp = Date.now()
-    // TODO: remove negligeable position digits
-
-    await Redis.zadd(`race:${race.id}:user:${userId}:position:${timestamp}`,
-      timestamp,
-      encodePosition([
-        timestamp,
-        data.position.lon,
-        data.position.lat,
-        data.position.alt
-      ])
-    )
-
-    this.lastSecondEvents.push({
-      userId,
-      lon: data.position.lon,
-      lat: data.position.lat,
-      alt: data.position.alt,
-    })
+    return this.appService.handlePositionEvent(client.data.user.userId, data)
   }
 
   // positions: any[] = []

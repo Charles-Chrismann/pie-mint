@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import type { MAP_STYLES } from './constants';
+import type { CanvasCustomMarker } from './CanvasCustomMarker';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -29,24 +30,34 @@ export interface TrackPoint {
 }
 
 export interface LastUpdatedRunner {
-  position: {
-    lat: number,
-    lng: number
-  },
-  runner_id: number
-  name: string,
-  rank: number
+  // position: {
+  //   lat: number,
+  //   lng: number
+  // },
+  // runner_id: number
+  // name: string,
+  // rank: number
+
+  userId: string,
+  lon: number
+  lat: number
+  alt: number
 }
 
 export interface Runner {
-  position: {
-    lat: number,
-    lng: number
-  },
-  runner_id: number,
-  name: string,
-  marker: L.Marker
-  rank: number
+  // position: {
+  //   lat: number,
+  //   lng: number
+  // },
+  // runner_id: number,
+  // name: string,
+  marker: CanvasCustomMarker
+  // rank: number
+
+  userId: string,
+  lon: number
+  lat: number
+  alt: number
 }
 
 export interface Organization {

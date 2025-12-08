@@ -1,15 +1,15 @@
-import { position3D } from "./declarations";
+import { position3D, Position3DWithTimestamp } from "./declarations"
 
 export function getPointsFromGpx(gpxData: Record<string, any>): {
-  alt: number,
-  lat: number,
-  lon: number,
+	alt: number,
+	lat: number,
+	lon: number,
 }[] {
-  return (gpxData.gpx.trk.trkseg.trkpt as []).map(p => ({
-    alt: Number(p['ele']),
-    lat: Number(p['@_lat']),
-    lon: Number(p['@_lon']),
-  }))
+	return (gpxData.gpx.trk.trkseg.trkpt as []).map(p => ({
+		alt: Number(p['ele']),
+		lat: Number(p['@_lat']),
+		lon: Number(p['@_lon']),
+	}))
 }
 
 export function randomGaussian(min = 6, max = 21, mean = 10, stdDev = 2.97) {
@@ -25,6 +25,11 @@ export function randomGaussian(min = 6, max = 21, mean = 10, stdDev = 2.97) {
 
   // Forcer dans [min, max]
   return Math.min(max, Math.max(min, num));
+}
+
+export function getBornPoints(positions: position3D[], distance: number) {
+  const index = Math.round(distance)
+  return [positions[index - 1], positions[index]]
 }
 
 export function getDistanceBetweenPoints(p1: position3D, p2: position3D) {
@@ -130,50 +135,20 @@ export function gpxPointsToEquidistantPoints(points: position3D[], distanceBetwe
   return equidistantPoints
 }
 
-// hash déterministe basé sur x et seed
-function hash(x, seed) {
-  let h = x * 374761393 + seed * 668265263;
-  h = (h ^ (h >>> 13)) * 1274126177;
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967295; // [0,1]
+export function encodePositionBuffer(position: Position3DWithTimestamp) {
+  const buf = Buffer.alloc(8 + 4 + 4 + 4);
+  buf.writeDoubleLE(position.timestamp, 0)
+  buf.writeInt32LE(Math.round(position.lat * 1e6), 4);
+  buf.writeInt32LE(Math.round(position.lon * 1e6), 8);
+  buf.writeInt32LE(Math.round(position.alt * 1e2), 12);
+  return buf
 }
 
-export function tinynoise(x, seed) {
-  const i0 = Math.floor(x);
-  const i1 = i0 + 1;
+export function decodePositionBuffer(buf: Buffer): Position3DWithTimestamp {
+  const timestamp = buf.readDoubleLE(0);
+  const lat = buf.readInt32LE(8) / 1e6;
+  const lon = buf.readInt32LE(12) / 1e6;
+  const alt = buf.readInt32LE(16) / 1e2;
 
-  const t = x - i0;
-
-  // bruit déterministe sur [-1,1]
-  const v0 = hash(i0, seed) * 2 - 1;
-  const v1 = hash(i1, seed) * 2 - 1;
-
-  // interpolation linéaire
-  let diff = (v1 - v0) * t;
-
-  // variation max autorisée
-  const maxStep = 0.000005;
-  diff = Math.max(-maxStep, Math.min(maxStep, diff));
-
-  // amplitude entre [-0.00001, 0.00001]
-  const base = v0 * 0.00001;
-
-  return base + diff;
-}
-
-export function getBornPoints(positions: position3D[], distance: number) {
-  // let cumulate = 0
-
-  const index = Math.round(distance)
-
-  return [positions[index - 1], positions[index]]
-
-  // for(let i = 1; i < positions.length; i++) {
-  //   const prev = positions[i - 1]
-  //   const current = positions[i]
-  //   const d = getDistanceBetweenPoints(prev, current)
-  //   cumulate += d
-  //   if(cumulate === distance) return current
-  //   if(cumulate > distance) return [prev, current]
-  // }
-  // return null
+  return { timestamp, lat, lon, alt };
 }

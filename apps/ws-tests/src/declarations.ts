@@ -38,3 +38,9 @@ export interface UserProfile {
   lastname: string
   user_id: string
 }
+
+export interface AccelerationPhase {
+  intensity: number
+  duration: number
+  startedSince: number
+}

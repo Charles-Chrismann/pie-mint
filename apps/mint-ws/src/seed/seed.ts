@@ -1,9 +1,10 @@
 import "dotenv/config"
 import { XMLParser } from "fast-xml-parser";
-import { chunkify, encodePosition, getPointsFromGpx } from "./utils";
+import { chunkify, encodePosition } from "./utils";
 import * as fs from "fs/promises"
 import { CustomizedPoint } from "src/declarations";
 import Redis from "src/Redis";
+import { getPointsFromGpx } from "./utils";
 
 async function main() {
 
