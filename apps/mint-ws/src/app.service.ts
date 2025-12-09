@@ -189,4 +189,9 @@ export class AppService{
 
     return ranking
   }
+
+  async getRaces() {
+    const ids = await Redis.smembers("races");
+    return Redis.mget(ids.map(id => `race:${id}`))
+  }
 }

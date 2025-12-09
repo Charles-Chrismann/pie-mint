@@ -9,12 +9,17 @@ export class AppController {
 
   constructor(private readonly appService: AppService) {}
 
-  @Post('race')
+  @Post('races')
   @UseGuards(SignatureGuard)
   async registerRace(
     @Body() body: RegisterRaceDTO
   ) {
     return this.appService.registerRace(body)
+  }
+
+  @Get('races')
+  async getRaces() {
+    return this.appService.getRaces()
   }
 
   @Get('races/emulate')
@@ -34,14 +39,14 @@ export class AppController {
     return this.appService.getEmulatingRaces()
   }
 
-  @Get('race/:raceId/ranking')
+  @Get('races/:raceId/ranking')
   getRaceRanking(
     @Param('raceId') raceId: string
   ) {
     return this.appService.getRaceRanking(raceId)
   }
 
-  @Get('race/:raceId/user/:userId')
+  @Get('races/:raceId/user/:userId')
   @Header('Content-Type', 'application/gpx+xml')
   @Header('Content-Disposition', 'attachment; filename="race.gpx"')
   getUserIdGpx(

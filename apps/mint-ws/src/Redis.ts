@@ -10,7 +10,7 @@ class RedisInstance extends Redis {
 	}
 
 	async registerRace({ id, startDate, endDate, runnerIds }: Race) {
-		await Promise.all([
+		const res = await Promise.all([
 			this.sadd("races", id),
 			this.set(`race:${id}`, JSON.stringify({
 				id,
