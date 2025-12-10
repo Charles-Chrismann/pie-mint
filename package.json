@@ -16,7 +16,8 @@
     "emu:s": "pnpm --filter ws-tests run start",
 
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev_": "turbo run dev",
+    "dev": "pnpm --filter mint-ws run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
