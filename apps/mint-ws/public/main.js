@@ -4,6 +4,8 @@ const emulateButton = document.querySelector('#emulate')
 const responseEl = document.querySelector('#response')
 const loadingEl = document.querySelector('.loader')
 const responseContainer = document.querySelector('.responseContainer')
+const refreshRunningsBtn = document.querySelector('#runnings')
+const runningDisplayEl = document.querySelector('#runnings-display')
 
 let runnerCount = 10
 let emulateUrl
@@ -14,7 +16,14 @@ function updateEmulateUrl() {
 	emulateUrlEl.textContent = `GET ${emulateUrl}`
 }
 
+async function refreshRunnings() {
+	const res = await fetch('/races/running')
+	const data = await res.json()
+	runningDisplayEl.textContent = JSON.stringify(data, null, 2)
+}
+
 updateEmulateUrl()
+refreshRunnings()
 
 runnerCountInput.addEventListener('input', (e) => {
 	runnerCount = e.target.value
@@ -36,3 +45,5 @@ emulateButton.addEventListener('click', async () => {
 	responseEl.textContent = JSON.stringify(data, null, 2)
 	responseContainer.classList.remove('hide')
 })
+
+refreshRunningsBtn.addEventListener('click', refreshRunnings)

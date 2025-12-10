@@ -17,7 +17,7 @@ services:
       - .env.ws
     restart: always
 
-redis:
+  redis:
     container_name: mint-redis
     image: redis:8.4-alpine
     restart: always
