@@ -253,6 +253,7 @@ export class AppService{
 
   async getRaces() {
     const ids = await Redis.smembers("races");
+    if(!ids.length) return []
     return (await Redis.mget(ids.map(id => `race:${id}`))).filter(str => !!str).map((str: string) => JSON.parse(str))
   }
 
