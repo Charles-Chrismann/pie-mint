@@ -4,6 +4,7 @@
 	box-sizing: border-box;
 	color: #ffffff;
 	list-style: none;
+	font-family: sans-serif;
 }
 
 input, button {
@@ -45,15 +46,35 @@ section#emu ul.options {
 	overflow-y: hidden;
 }
 
-#create-race pre span.key {
+section.doc {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+pre {
+	font-weight: normal;
+	font-size: 1rem;
+}
+
+span.key {
 	color: #97D4F5;
 }
-#create-race pre span.string {
+span.string {
 	color: #A87865;
 }
-#create-race pre span.comment,
-#create-race pre span.comment a {
+span.comment,
+span.comment a {
 	color: #699754;
+}
+span.function {
+	color: yellow;
+}
+
+pre, code {
+	padding: 1rem;
+	border: solid 1px grey;
+	border-radius: .5rem;
 }
 
 .hide {

@@ -5,7 +5,7 @@ const responseEl = document.querySelector('#response')
 const loadingEl = document.querySelector('.loader')
 const responseContainer = document.querySelector('.responseContainer')
 
-let runnerCount = 100
+let runnerCount = 10
 let emulateUrl
 runnerCountInput.value = runnerCount
 

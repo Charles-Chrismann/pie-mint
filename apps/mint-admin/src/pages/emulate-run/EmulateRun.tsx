@@ -57,7 +57,7 @@ export default function EmulateRunPage() {
       setIsConnected(false);
     }
 
-    function onPosition(data: Runner[]) {
+    function onPosition(data: { positions: [string, number, number, number][], rankings: [string, number] }) {
       // setLastUpdatedRunners(data.map(r => ({
       //   runner_id: r.runner_id,
       //   name: r.name,
@@ -67,7 +67,9 @@ export default function EmulateRunPage() {
       //   },
       //   rank: r.rank
       // })))
-      setLastUpdatedRunners(data)
+      
+      const { positions, rankings } = data
+      setLastUpdatedRunners(positions.map(d => ({ userId: d[0], lon: d[1], lat: d[2], alt: d[3] })))
     }
 
     socket.on('connect', onConnect);

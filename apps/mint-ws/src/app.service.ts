@@ -1,9 +1,9 @@
-import { HttpException, Injectable, NotFoundException, OnModuleInit, StreamableFile } from '@nestjs/common';
+import { HttpException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, StreamableFile } from '@nestjs/common';
 import Redis from './Redis';
 import { createGPXString, decodePosition, encodePosition, getPointsFromGpx } from './seed/utils';
 import * as fs from 'fs/promises'
 import { Readable } from 'stream';
-import { PositionPayload, Race } from './declarations';
+import { PositionPayload, Race, raceId, WsSendPositions } from './declarations';
 import { EmulatedRace } from './classes/EmulatedRace';
 import { length, lineString, nearestPointOnLine, point } from '@turf/turf';
 import type { Point, Feature, GeoJsonProperties, LineString } from 'geojson';
@@ -12,12 +12,18 @@ import { XMLParser } from 'fast-xml-parser';
 import { getPointsTotalDistance, gpxPointsToEquidistantPoints } from './classes/utils';
 import { ConfigService } from '@nestjs/config';
 import { simplifyGpx } from './utils';
+import { Server } from 'socket.io';
+import { AppGateway } from './app.gateway';
 
 @Injectable()
 export class AppService{
+  public readonly logger = new Logger(AppService.name);
+
+  public gatewayWsServer: AppGateway['server']
 
   emulatedRace: EmulatedRace[] = []
-  lastSecondEvents: any[] = []
+  lastSecondEvents: Map<raceId, WsSendPositions> = new Map()
+  emitTimeout: NodeJS.Timeout | null = null
   racesMap = new Map<string, {
     race: Race,
     runnerIds: Set<string>,
@@ -25,8 +31,67 @@ export class AppService{
   }>()
 
   constructor(
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
+
+
+  
+    async startEventSending() {
+      this.logger.verbose(`Start emitting`)
+      this.emitTimeout = setInterval(async () => {
+  
+        const emus = this.emulatedRace
+        if(emus.length) {
+          for(const race of emus) {
+            const raceId = race.id
+            race.progress++
+            const positions = race.getPositions(race.progress)
+            for(const position of positions) {
+              this.handlePositionEvent(position.userId, { raceId, position: { lat: position.lat, lon: position.lon, alt: position.alt } })
+            }
+          }
+        }
+  
+        // if(!this.lastSecondEvents.length) return
+
+        const lastSecondEvents = Array.from(this.lastSecondEvents).map(([raceId, positions]) => ({ raceId, positions, ranking: [] as [string, number][] }))
+
+        if(!lastSecondEvents.length) return
+
+        const pipeline = Redis.pipeline()
+        for(const entry of lastSecondEvents) {
+          pipeline.zrevrange(`race:${entry.raceId}:ranking`, 0, -1, 'WITHSCORES')
+        }
+
+        const pipelineResults = await pipeline.exec()
+
+        if(!pipelineResults) {
+          this.logger.error(`No pipeline response`)
+        } else if(!pipelineResults[0]) {
+          this.logger.error(`Pipeline result empty`)
+        } else if (pipelineResults[0][0]) {
+          this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
+        } else {
+          for(let j = 0; j < pipelineResults.length; j++) {
+            const raw: string[] = pipelineResults[j][1] as string[]
+            const ranking: [string, number][] = []
+            for (let i = 0; i < raw.length; i += 2) {
+              ranking.push([raw[i], +Number(raw[i + 1]).toFixed(4)])
+            }
+            lastSecondEvents[j].ranking = ranking
+          }
+        }
+
+        for(const entry of lastSecondEvents) {
+          // TODO: separate specs into rooms
+          const { positions, ranking } = entry
+
+          this.gatewayWsServer.to('specs')
+          .emit('positions', { positions, ranking })
+        }
+  
+      }, 1000)
+    }
 
   async registerRace(body: RegisterRaceDTO) {
 
@@ -134,17 +199,10 @@ export class AppService{
     }
   }
 
-  async handlePositionEvent(userId: string, data: PositionPayload) {
+  async handlePositionEvent(userId: string | undefined, data: PositionPayload) {
+    if(!userId) return
+
     const raceId = data.raceId
-
-    // const raceRes = await Redis.get(`race:${raceId}`);
-    // if(!raceRes) return
-    // const race: Race = JSON.parse(raceRes)
-    // console.log(raceId, race)
-
-    
-    // const isMember = await Redis.sismember(`race:${raceId}:users`, userId);
-    // if(!isMember) return
     
     const cache = this.racesMap.get(raceId)
     if(!cache) return
@@ -159,21 +217,24 @@ export class AppService{
     if(!runnerIds.has(userId)) return
     
     const timestamp = Date.now()
-    const { lon, lat } = data.position
+    const { lon, lat, alt } = data.position
+    const cleanLon = lon
+    const cleanLat = lat
+    const cleanAlt = alt
     const p = point([lon, lat]);
     const snapped = nearestPointOnLine(line, p, { units: 'meters' });
     const progress = snapped.properties.location;
 
     Redis.storePositionAndProgress(raceId, userId, { timestamp, ...data.position }, progress)
 
-    // update classement
+    const lastSecondeRacePositions = this.lastSecondEvents.get(raceId)
+    const entry: WsSendPositions[number] = [userId, cleanLon, cleanLat, cleanAlt]
 
-    this.lastSecondEvents.push({
-      userId,
-      lon: data.position.lon,
-      lat: data.position.lat,
-      alt: data.position.alt,
-    })
+    if(!lastSecondeRacePositions) {
+      this.lastSecondEvents.set(raceId, [entry])
+    } else {
+      lastSecondeRacePositions.push(entry)
+    }
   }
 
   async getRaceRanking(raceId: string) {
