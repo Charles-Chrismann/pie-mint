@@ -1,12 +1,30 @@
 services:
-  redis:
+  mint-admin:
+    image: charleschrismann/mint-admin
+    container_name: mint-admin
+    ports:
+      - ${ADMIN_PORT}:80
+    env_file:
+      - .env.admin
+    restart: always
+
+  mint-ws:
+    image: charleschrismann/mint-ws
+    container_name: mint-ws
+    ports:
+      - ${WS_PORT}:3000
+    env_file:
+      - .env.ws
+    restart: always
+
+redis:
     container_name: mint-redis
     image: redis:8.4-alpine
     restart: always
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      -mint-redis-data:/data
+      - mint-redis-data:/data
 
 volumes:
   mint-redis-data:

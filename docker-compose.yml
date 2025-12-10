@@ -6,7 +6,7 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      -mint-redis-data:/data
+      - mint-redis-data:/data
 
 volumes:
   mint-redis-data:

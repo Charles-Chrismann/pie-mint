@@ -17,7 +17,7 @@
 
     "build": "turbo run build",
     "dev_": "turbo run dev",
-    "dev": "pnpm --filter mint-ws run dev",
+    "dev": "turbo run dev --parallel --filter=mint-ws --filter=mint-admin",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

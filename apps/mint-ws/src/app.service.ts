@@ -3,7 +3,7 @@ import Redis from './Redis';
 import { createGPXString, decodePosition, encodePosition, getPointsFromGpx } from './seed/utils';
 import * as fs from 'fs/promises'
 import { Readable } from 'stream';
-import { PositionPayload, Race, raceId, WsSendPositions } from './declarations';
+import { PositionPayload, Race, RaceId, WsSendPositions } from './declarations';
 import { EmulatedRace } from './classes/EmulatedRace';
 import { length, lineString, nearestPointOnLine, point } from '@turf/turf';
 import type { Point, Feature, GeoJsonProperties, LineString } from 'geojson';
@@ -22,7 +22,7 @@ export class AppService{
   public gatewayWsServer: AppGateway['server']
 
   emulatedRace: EmulatedRace[] = []
-  lastSecondEvents: Map<raceId, WsSendPositions> = new Map()
+  lastSecondEvents: Map<RaceId, WsSendPositions> = new Map()
   emitTimeout: NodeJS.Timeout | null = null
   racesMap = new Map<string, {
     race: Race,
@@ -253,6 +253,20 @@ export class AppService{
 
   async getRaces() {
     const ids = await Redis.smembers("races");
-    return Redis.mget(ids.map(id => `race:${id}`))
+    return (await Redis.mget(ids.map(id => `race:${id}`))).filter(str => !!str).map((str: string) => JSON.parse(str))
+  }
+
+  async getEndedRaces() {
+    const ids = await Redis.smembers("races");
+    if(!ids.length) return []
+    const races: Race[] = (await Redis.mget(ids.map(id => `race:${id}`))).filter(str => !!str).map((str: string) => JSON.parse(str))
+    const now = new Date()
+    return races.filter(r => new Date(r.endDate) < now)
+  }
+
+  async pruneRace(raceId: RaceId) {
+    if(this.emulatedRace.find(r => r.id === raceId)) this.emulatedRace = this.emulatedRace.filter(r => r.id !== raceId)
+    this.racesMap.delete(raceId)
+    await Redis.pruneRace(raceId)
   }
 }

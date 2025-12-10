@@ -39,11 +39,23 @@ export class AppController {
     return this.appService.getEmulatingRaces()
   }
 
+  @Get('races/ended')
+  getEndedRaces() {
+    return this.appService.getEndedRaces()
+  }
+
   @Get('races/:raceId/ranking')
   getRaceRanking(
     @Param('raceId') raceId: string
   ) {
     return this.appService.getRaceRanking(raceId)
+  }
+
+  @Get('races/:raceId/prune')
+  pruneRace(
+    @Param('raceId') raceId: string
+  ) {
+    return this.appService.pruneRace(raceId)
   }
 
   @Get('races/:raceId/user/:userId')

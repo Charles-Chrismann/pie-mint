@@ -40,7 +40,7 @@ export interface CustomizedPoint {
 
 export type RedisPosition = [number, number, number, number |null]
 
-export type raceId = string
+export type RaceId = string
 export type userId = string
 export type lon = number
 export type lat = number

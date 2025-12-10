@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { Race } from "./declarations";
+import { Race, RaceId } from "./declarations";
 import { Position3DWithTimestamp } from "./classes/declarations";
 import { encodePosition } from "./seed/utils";
 import { encodePositionBuffer } from "./classes/utils";
@@ -23,13 +23,28 @@ class RedisInstance extends Redis {
 
 	async storePositionAndProgress(raceId: string, userId: string, position: Position3DWithTimestamp, progress: number) {
 		const pipeline = this.pipeline()
-    pipeline.zadd(`race:${raceId}:user:${userId}:position:${position.timestamp}`,
+    pipeline.zadd(`race:${raceId}:user:${userId}:positions`,
       position.timestamp,
       encodePositionBuffer(position)
     )
 		pipeline.zadd(`race:${raceId}:ranking`, progress, userId)
 
 		return pipeline.exec()
+	}
+
+	async pruneRace(raceId: RaceId) {
+		const pipeline = this.pipeline()
+
+  	const userIds = await this.smembers(`race:${raceId}:users`);
+		for (const userId of userIds) {
+			pipeline.del(`race:${raceId}:user:${userId}:positions`);
+		}
+
+		pipeline.srem("races", raceId)
+		pipeline.del(`race:${raceId}`)
+		pipeline.del(`race:${raceId}:users`);
+		pipeline.del(`race:${raceId}:ranking`)
+		await pipeline.exec()
 	}
 }
 
