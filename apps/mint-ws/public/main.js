@@ -7,6 +7,8 @@ const responseContainer = document.querySelector('.responseContainer')
 const refreshRunningsBtn = document.querySelector('#runnings')
 const runningDisplayEl = document.querySelector('#runnings-display')
 
+const ioUrlEls = document.querySelectorAll('.io-url')
+
 let runnerCount = 10
 let emulateUrl
 runnerCountInput.value = runnerCount
@@ -24,6 +26,7 @@ async function refreshRunnings() {
 
 updateEmulateUrl()
 refreshRunnings()
+ioUrlEls.forEach(el => el.textContent = location.origin)
 
 runnerCountInput.addEventListener('input', (e) => {
 	runnerCount = e.target.value
