@@ -125,17 +125,28 @@ io.on('positions', (updateData) => {
 		<hr>
 	
 		<sections id="datas">
-			<h2>Current races status</h2>
-
-			<div>
-				<button id="runnings" class="refresh">Refresh</button>
-				<pre id="runnings-display"></pre>
+			
+			<div class="status">
+				<h2>All races Status</h2>
+				<button id="status" class="refresh">Refresh</button>
+				<ul class="status-container"></ul>
 			</div>
 
 		</sections>
 		
 	</main>
 
+	<template id="template-race-status">
+		<li>
+			<span class="id"></span>
+			<div>
+				<span class="start"></span>
+				<span>-</span>
+				<span class="end"></span>
+			</div>
+			<span class="status"></span>
+		</li>
+	</template>
 
 	<script src="./main.js"></script>
 </body>
