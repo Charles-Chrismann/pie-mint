@@ -62,6 +62,24 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     });
   }
 
+  @SubscribeMessage('join-race')
+  joinSpecRace(
+    socket: Socket,
+    raceId: string
+  ) {
+    console.log(`Someone joined rom: ${raceId}`)
+    socket.join(raceId)
+  }
+
+  @SubscribeMessage('leave-race')
+  leaveSpecRace(
+    socket: Socket,
+    raceId: string
+  ) {
+    console.log(`Someone leaves rom: ${raceId}`)
+    socket.leave(raceId)
+  }
+
   @SubscribeMessage('position')
   async storePosition(
     client: Socket,

@@ -98,7 +98,7 @@ export class AppService{
           // TODO: separate specs into rooms
           const { positions, ranking } = entry
 
-          this.gatewayWsServer.to('specs')
+          this.gatewayWsServer.to(entry.raceId)
           .emit('positions', { positions, ranking })
 
           positions.splice(0, positions.length)
@@ -292,5 +292,12 @@ export class AppService{
     if(this.emulatedRace.find(r => r.id === raceId)) this.emulatedRace = this.emulatedRace.filter(r => r.id !== raceId)
     this.racesMap.delete(raceId)
     await Redis.pruneRace(raceId)
+  }
+
+  async getRaceStats(raceId: RaceId) {
+    // vitesse moyen
+    // vitesse max
+    // vitesse min
+    // classment
   }
 }

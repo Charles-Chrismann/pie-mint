@@ -37,6 +37,10 @@ async function refreshRacesStatus() {
 	empty(raceStatusContainer)
 	for(const race of data) {
 		const clone = document.importNode(templateRaceStatus.content, true);
+		clone.querySelector('.delete').addEventListener('click', async () => {
+			await fetch(`/races/${race.id}/prune`)
+			refreshRacesStatus()
+		})
 		clone.querySelector('.id').textContent = race.id
 		const now = new Date()
 		const start = new Date(race.startDate)
@@ -104,7 +108,6 @@ emulateButton.addEventListener('click', async () => {
 refreshRacesStatusBtn.addEventListener('click', refreshRacesStatus)
 
 clearRacesBtn.addEventListener('click', async () => {
-	const res = await fetch('/')
 	const promises = []
 	for(const race of races) {
 		promises.push(fetch(`/races/${race.id}/prune`))

@@ -52,6 +52,13 @@ export class AppController {
     return this.appService.getRaceRanking(raceId)
   }
 
+  @Get('races/:raceId/stats')
+  getRaceStats(
+    @Param('raceId') raceId: string
+  ) {
+    return this.appService.getRaceStats(raceId)
+  }
+
   @Get('races/:raceId/prune')
   pruneRace(
     @Param('raceId') raceId: string
