@@ -75,23 +75,31 @@ export class AppService{
         } else if (pipelineResults[0][0]) {
           this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
         } else {
-          for(let j = 0; j < pipelineResults.length; j += 2) {
-            const rawFinishers = pipelineResults[j][1] as string[]
-            const finsherSet = new Set() // TODO: use local cache
-            const raw: string[] = pipelineResults[j + 1][1] as string[]
+          for (let i = 0; i < lastSecondEvents.length; i++) {
+            const finishersResult = pipelineResults[i * 2]
+            const rankingResult = pipelineResults[i * 2 + 1]
+          
+            const rawFinishers = finishersResult[1] as string[]
+            const rawRanking = rankingResult[1] as string[]
+          
+            const finisherSet = new Set<string>()
             const ranking: [string, number][] = []
-            for(let i = 0; i < rawFinishers.length; i += 2) {
-              const finisherId = rawFinishers[i]
-              finsherSet.add(finisherId)
+          
+            for (let j = 0; j < rawFinishers.length; j += 2) {
+              const finisherId = rawFinishers[j]
+              finisherSet.add(finisherId)
               ranking.push([finisherId, -1])
             }
-            for (let i = 0; i < raw.length; i += 2) {
-              const runnerId = raw[i]
-              if(finsherSet.has(runnerId)) continue
-              ranking.push([runnerId, +Number(raw[i + 1]).toFixed(4)])
+          
+            for (let j = 0; j < rawRanking.length; j += 2) {
+              const runnerId = rawRanking[j]
+              if (finisherSet.has(runnerId)) continue
+              ranking.push([runnerId, +Number(rawRanking[j + 1]).toFixed(4)])
             }
-            lastSecondEvents[j].ranking = ranking
+          
+            lastSecondEvents[i].ranking = ranking
           }
+          
         }
 
         for(const entry of lastSecondEvents) {
