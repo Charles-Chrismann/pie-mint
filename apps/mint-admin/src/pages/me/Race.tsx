@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type {
   FormAddRunner,
@@ -31,7 +30,7 @@ export default function RacePage() {
 
   const [raceUpdateForm, setRaceUpdateForm] = useState<FormUpdateRace>({})
   const [is_standard_distance, setIs_standard_distance] = useState(false)
-  const [standardDistances, setStandardDistances] = useState<StandardDistance[]>([])
+  const [_standardDistances, setStandardDistances] = useState<StandardDistance[]>([])
 
   const [updateForm] = formUpdator(race!, raceUpdateForm, setRaceUpdateForm)
 
@@ -42,11 +41,6 @@ export default function RacePage() {
 
     fetchRace()
   }, [])
-
-  useEffect(() => {
-    if (!race) return
-    setIs_standard_distance(!!race.standard_distance_id)
-  }, [race])
 
   useEffect(() => {
     async function fetchRaceRunners() {
@@ -147,7 +141,7 @@ export default function RacePage() {
                 <CardHeader>
                   <CardTitle>
                     <Input
-                      value={raceUpdateForm.name ?? race.name}
+                      value={raceUpdateForm.name ?? race.id}
                       onInput={(e) => updateForm("name", (e.target as HTMLInputElement).value)}
                     />
                   </CardTitle>
@@ -175,61 +169,6 @@ export default function RacePage() {
                       }}
                     />
                     <Label htmlFor="is_standard_distance">Is a standard distance</Label>
-                  </div>
-                  <div className="flex gap-6">
-                    {
-                      !is_standard_distance ?
-                        <div className="grid gap-3 w-full">
-                          <Label htmlFor="distance">Distance</Label>
-                          <Input
-                            value={raceUpdateForm.distance ?? race.distance ?? ""}
-                            id="distance"
-                            type="number"
-                            step={.001}
-                            onInput={(e) => updateForm("distance", (e.target as HTMLInputElement).value)}
-                          />
-                        </div>
-                        :
-                        <div className="grid gap-3 w-full">
-                          <Label className="opacity-0">.</Label>
-                          <Select
-                            onValueChange={e => {
-                              const clone = { ...raceUpdateForm }
-                              clone.standard_distance_id = +e
-                              delete clone.distance
-                              setRaceUpdateForm(clone)
-                            }}
-                            value={String(raceUpdateForm.standard_distance_id ?? race.standard_distance_id)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a distance" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {
-                                standardDistances.map(sd =>
-                                  <SelectItem
-                                    key={sd.id}
-                                    value={String(sd.id)}
-                                  >
-                                    {sd.name}
-                                  </SelectItem>
-                                )
-                              }
-                            </SelectContent>
-                          </Select>
-                        </div>
-                    }
-                    <div className="grid gap-3 w-full">
-                      <Label htmlFor="postive_elevation">Positive Elevation</Label>
-                      <Input
-                        value={raceUpdateForm.positive_elevation ?? race.positive_elevation ?? ""}
-                        id="postive_elevation"
-                        type="number"
-                        required
-                        step={.001}
-                        onInput={(e) => updateForm("positive_elevation", (e.target as HTMLInputElement).value)}
-                      />
-                    </div>
                   </div>
                   <div className="grid gap-3 w-full">
                     <Label htmlFor="track">Tracé</Label>

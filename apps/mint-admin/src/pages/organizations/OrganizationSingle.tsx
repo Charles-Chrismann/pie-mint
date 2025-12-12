@@ -11,7 +11,7 @@ import { Link, useParams } from "react-router-dom";
 export default function OrganizationSinglePage() {
   const [organization, setOrganization] = useState<Organization>()
   const [events, setEvents] = useState<Event[]>([])
-  const [races, setRaces] = useState<Map<number, Race[]>>(new Map())
+  const [races, _setRaces] = useState<Map<number, Race[]>>(new Map())
   const { organizationId } = useParams();
 
   useEffect(() => {
@@ -38,24 +38,6 @@ export default function OrganizationSinglePage() {
     fetchEvents()
   }, [])
 
-  useEffect(() => {
-    async function fetchRaces() {
-      if(!events.length) return
-
-      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/races/`, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
-        }
-      })))
-      const datas: Race[][] = await Promise.all(ress.map(r => r.json()))
-      const raceMap = new Map<number, Race[]>()
-      datas.forEach(d => raceMap.set(d[0].event_id, d))
-      console.log(datas)
-      setRaces(raceMap)
-    }
-    fetchRaces()
-  }, [events])
-
   return (
     <div>
       <h1>{organization?.name}</h1>
@@ -80,7 +62,7 @@ export default function OrganizationSinglePage() {
                           {
                             races.get(e.id)?.map(se => 
                               <li key={se.id}>
-                                {se.name}
+                                {se.id}
                               </li>
                             )
                           }

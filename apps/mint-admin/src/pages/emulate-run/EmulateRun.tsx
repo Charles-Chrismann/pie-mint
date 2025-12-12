@@ -9,7 +9,6 @@ import {
 import type {
   LastUpdatedRunner,
   MapStyleKey,
-  Runner,
   Race,
   LineString,
   Registration
@@ -21,19 +20,22 @@ import {
 import { socket } from '../../socket'
 import LeafletMap from "@/LeafletMap"
 import { MAP_STYLES } from "@/constants"
+import Ws from "@/Ws"
 
 export default function EmulateRunPage() {
   const [_isConnected, setIsConnected] = useState(socket.connected);
-  const [_Races, setRaces] = useState<Race[]>([])
+  const [races, setRaces] = useState<Race[]>([])
+  const [selectedRace, setSelectedRace] = useState<Race | null>(null)
   const [raceRunners, setRaceRunners] = useState<Registration[]>([])
-  const [selectedRunner, setSelectedRunner] = useState<Registration>()
+  const [selectedRunner, _setSelectedRunner] = useState<Registration>()
   const [track, setTrack] = useState<LineString[]>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
 
   useEffect(() => {
     async function fetchRaces() {
-      setRaces(await Api.getPublic('/races'))
+      const races = await Ws.getRunningRaces()
+      setRaces(races)
     }
 
     fetchRaces()
@@ -69,6 +71,7 @@ export default function EmulateRunPage() {
       // })))
       
       const { positions, rankings } = data
+      rankings
       setLastUpdatedRunners(positions.map(d => ({ userId: d[0], lon: d[1], lat: d[2], alt: d[3] })))
     }
 
@@ -89,6 +92,14 @@ export default function EmulateRunPage() {
 
   function changeMapStyle(e: MapStyleKey) {
     setMapStyle({name: e, tileLayer: MAP_STYLES[e] })
+  }
+
+  function handleRaceChange(raceId: string) {
+    if(selectedRace && selectedRace.id !== raceId) {
+      socket.emit('leave-race', selectedRace.id)
+    }
+    socket.emit('join-race', raceId)
+    setSelectedRace(races.find(r => r.id === raceId)!)
   }
 
   useEffect(() => {
@@ -116,17 +127,30 @@ export default function EmulateRunPage() {
           <span>{raceRunners.length} runner</span>
       </div> */}
       <div className="relative h-full w-full">
-        <div className="absolute right-4 top-4 z-9999 bg-white">
+        <div className="absolute right-4 top-4 z-9999 bg-transparent">
           <Select
             value={mapStyle.name}
             onValueChange={changeMapStyle}
           >
-            <SelectTrigger className="w-[360px]">
+            <SelectTrigger className="w-[360px] bg-white">
               <SelectValue placeholder="Selectionner un évènement" />
             </SelectTrigger>
             <SelectContent  className="z-[99999]">
               {
                 Object.keys(MAP_STYLES).map((key) => <SelectItem key={key} value={key}>{key}</SelectItem>)
+              }
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedRace?.id}
+            onValueChange={handleRaceChange}
+          >
+            <SelectTrigger className="w-[360px] bg-white">
+              <SelectValue placeholder="Selectionner une course" />
+            </SelectTrigger>
+            <SelectContent  className="z-[99999]">
+              {
+                races.map((race) => <SelectItem key={race.id} value={race.id}>{race.id}</SelectItem>)
               }
             </SelectContent>
           </Select>
@@ -136,7 +160,7 @@ export default function EmulateRunPage() {
           lastUpdatedRunners={lastUpdatedRunners}
           mapStyle={mapStyle.tileLayer}
           raceRunners={raceRunners}
-          setSelectedRunner={setSelectedRunner}
+          // setSelectedRunner={setSelectedRunner}
           />
       </div>
 

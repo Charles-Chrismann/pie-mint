@@ -35,7 +35,7 @@ export default function OrganizationPage() {
 
   const [organization, setOrganization] = useState<Organization>()
   const [events, setEvents] = useState<Event[]>([])
-  const [races, setRaces] = useState<Map<number, Race[]>>(new Map())
+  const [races, _setRaces] = useState<Map<number, Race[]>>(new Map())
   const [tracks, setTracks] = useState<LineString[]>([])
 
   // createEventForm
@@ -80,23 +80,6 @@ export default function OrganizationPage() {
   }, [])
 
   useEffect(() => {
-    async function fetchRaces() {
-      if (!events.length) return
-
-      const ress = await Promise.all(events.map(e => fetch(config.API_BASE_URL + `/api/events/${e.id}/races/`, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
-        }
-      })))
-      const datas: Race[][] = await Promise.all(ress.map(r => r.json()))
-      const raceMap = new Map<number, Race[]>()
-      datas.forEach(d => raceMap.set(d[0].event_id, d))
-      setRaces(raceMap)
-    }
-    fetchRaces()
-  }, [events])
-
-  useEffect(() => {
     async function fetchTracks() {
       const newTracks = await Api.getPublic<{track: {segment: LineString}}[]>(`/organizations/${organizationId}/tracks`)
       const track_points = newTracks.map(t => t.track.segment)
@@ -131,7 +114,7 @@ export default function OrganizationPage() {
                           {
                             races.get(e.id)?.map(se =>
                               <li key={se.id}>
-                                {se.name}
+                                {se.id}
                               </li>
                             )
                           }

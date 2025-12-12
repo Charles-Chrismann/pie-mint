@@ -1,4 +1,3 @@
-import * as L from 'leaflet'
 import type { MAP_STYLES } from './constants';
 import type { CanvasCustomMarker } from './CanvasCustomMarker';
 
@@ -79,13 +78,9 @@ export interface Event {
 }
 
 export interface Race {
-  id: number
-  name: string
-  distance: string | null
-  positive_elevation: string | null
-  event_id: number
-  standard_distance_id: number | null
-  track_id: number
+  id: string
+  startDate: string
+  endDate: string
 }
 
 export interface Registration {

@@ -3,7 +3,6 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { LastUpdatedRunner, LineString, Registration, Runner } from './declarations';
 import { CanvasCustomMarker } from './CanvasCustomMarker';
-import { CanvasLayer } from './CanvasLayer';
 
 function animateMarker(
   marker: L.CircleMarker,
@@ -35,13 +34,11 @@ export default function LeafletMap({
   lastUpdatedRunners,
   mapStyle,
   raceRunners,
-  setSelectedRunner,
 }: {
   track?: LineString[],
   lastUpdatedRunners?: LastUpdatedRunner[],
   mapStyle: L.TileLayer,
   raceRunners: Registration[],
-  setSelectedRunner: React.Dispatch<React.SetStateAction<Registration | undefined>>,
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map>()
@@ -57,9 +54,6 @@ export default function LeafletMap({
       const map = L.map(mapRef.current).setView([47.218371, -1.553621], 15);
       const canvasPane = map.createPane("canvas");
       canvasPane.style.zIndex = "1000";  // au-dessus des autres overlays
-      const canvasLayer = new CanvasLayer({
-        renderer: canvasRef.current,
-      });
       // canvasLayer.addTo(map);
 
 
@@ -145,16 +139,6 @@ export default function LeafletMap({
       } else {
         console.log(raceRunners, lastUpdatedRunner, lastUpdatedRunner.userId)
         // const rr = raceRunners.find(rr => rr.user_profile.id === lastUpdatedRunner.userId)!
-
-        const htmlIcon = L.divIcon({
-          className: 'custom-marker',
-          html: `<div class="rounded-full border bg-white w-8 aspect-square overflow-hidden border-black">
-                  <!-- <img class="w-full h-full object-cover" src="${"rr.user_profile.avatar_url"}" alt="${"rr.user_profile.firstname"} ${"rr.user_profile.lastname"}'s profile picture" /> -->
-                 ${"lastUpdatedRunner.name.split(' ').map(i => i.charAt(0)).join('')"}
-               </div>`,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12],
-        });
 
         marker = new CanvasCustomMarker([lastUpdatedRunner.lat, lastUpdatedRunner.lon], {
           renderer: canvasRef.current,
