@@ -27,6 +27,7 @@ export class AppService{
   racesMap = new Map<string, {
     race: Race,
     runnerIds: Set<string>,
+    finishedUserIds: Set<string>,
     line: Feature<LineString, GeoJsonProperties>
   }>()
 
@@ -43,6 +44,7 @@ export class AppService{
         const emus = this.emulatedRace
         if(emus.length) {
           for(const race of emus) {
+            if(!race.isRunning()) continue
             const raceId = race.id
             race.progress++
             const positions = race.getPositions(race.progress)
@@ -60,6 +62,7 @@ export class AppService{
 
         const pipeline = Redis.pipeline()
         for(const entry of lastSecondEvents) {
+          pipeline.zrevrange(`race:${entry.raceId}:finishers`, 0, -1, 'WITHSCORES')
           pipeline.zrevrange(`race:${entry.raceId}:ranking`, 0, -1, 'WITHSCORES')
         }
 
@@ -72,11 +75,20 @@ export class AppService{
         } else if (pipelineResults[0][0]) {
           this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
         } else {
-          for(let j = 0; j < pipelineResults.length; j++) {
-            const raw: string[] = pipelineResults[j][1] as string[]
+          for(let j = 0; j < pipelineResults.length; j += 2) {
+            const rawFinishers = pipelineResults[j][1] as string[]
+            const finsherSet = new Set() // TODO: use local cache
+            const raw: string[] = pipelineResults[j + 1][1] as string[]
             const ranking: [string, number][] = []
+            for(let i = 0; i < rawFinishers.length; i += 2) {
+              const finisherId = rawFinishers[i]
+              finsherSet.add(finisherId)
+              ranking.push([finisherId, -1])
+            }
             for (let i = 0; i < raw.length; i += 2) {
-              ranking.push([raw[i], +Number(raw[i + 1]).toFixed(4)])
+              const runnerId = raw[i]
+              if(finsherSet.has(runnerId)) continue
+              ranking.push([runnerId, +Number(raw[i + 1]).toFixed(4)])
             }
             lastSecondEvents[j].ranking = ranking
           }
@@ -88,6 +100,9 @@ export class AppService{
 
           this.gatewayWsServer.to('specs')
           .emit('positions', { positions, ranking })
+
+          positions.splice(0, positions.length)
+          ranking.splice(0, ranking.length)
         }
   
       }, 1000)
@@ -102,6 +117,7 @@ export class AppService{
     this.racesMap.set(body.id, {
       race: body,
       runnerIds: new Set(body.runnerIds),
+      finishedUserIds: new Set(),
       line: lineString(points.map(({ lat, lon }) => [lon, lat])),
     })
     return Redis.registerRace(body)
@@ -166,12 +182,12 @@ export class AppService{
     }))
   }
 
-  async emulate({ runnerCount }: { runnerCount: string }) {
+  async emulate({ runnerCount, gpxFile }: { runnerCount: string, gpxFile: string }) {
     const id = crypto.randomUUID()
     const startDate = new Date(Date.now() + 10000)
     const endDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000)
     const runnerIds = Array.from({ length: +runnerCount }).map(_ => crypto.randomUUID())
-    const gpx = simplifyGpx((await fs.readFile('./public/gpxs/nantes_marathon.gpx')).toString())
+    const gpx = simplifyGpx((await fs.readFile(`./public/gpxs/${gpxFile}`)).toString())
 
     const race = {
       id,
@@ -207,13 +223,15 @@ export class AppService{
     const cache = this.racesMap.get(raceId)
     if(!cache) return
 
-    const { race, runnerIds, line } = cache
+    const { race, runnerIds, line, finishedUserIds } = cache
+
     
     const startDate = new Date(race.startDate)
     const endDate = new Date(race.endDate)
     const currentDate = new Date()
     if(currentDate < startDate || currentDate >= endDate) return
 
+    if(finishedUserIds.has(userId)) return
     if(!runnerIds.has(userId)) return
     
     const timestamp = Date.now()
@@ -224,8 +242,13 @@ export class AppService{
     const p = point([lon, lat]);
     const snapped = nearestPointOnLine(line, p, { units: 'meters' });
     const progress = snapped.properties.location;
+    const hasFinished = snapped.properties.dist < 10 // or progress >= totalDistance
 
-    Redis.storePositionAndProgress(raceId, userId, { timestamp, ...data.position }, progress)
+    // if(hasFinished) {
+    //   finishedUserIds.add(userId)
+    // }
+
+    Redis.storePositionAndProgress(raceId, userId, { timestamp, ...data.position }, progress, hasFinished)
 
     const lastSecondeRacePositions = this.lastSecondEvents.get(raceId)
     const entry: WsSendPositions[number] = [userId, cleanLon, cleanLat, cleanAlt]

@@ -1,3 +1,4 @@
+import { LineString } from "geojson";
 import { position3D, Position3DWithTimestamp } from "./declarations"
 
 export function getPointsFromGpx(gpxData: Record<string, any>): {
@@ -151,4 +152,43 @@ export function decodePositionBuffer(buf: Buffer): Position3DWithTimestamp {
   const alt = buf.readInt32LE(16) / 1e2;
 
   return { timestamp, lat, lon, alt };
+}
+
+import { lineString, along, length, lineSegment, distance } from '@turf/turf';
+
+/**
+ * Trouve le segment de la LineString où un point à une distance donnée tombe.
+ * @param {LineString} line - La LineString Turf
+ * @param {number} targetDistance - Distance depuis le début (en km)
+ * @returns {{ start: Position, end: Position, index: number, point: Feature<Point> }}
+ */
+export function getSegmentAtDistance(line: LineString, targetDistance: number) {
+  const segments = lineSegment(line); // Retourne un FeatureCollection de segments
+  let cumulative = 0;
+
+  for (let i = 0; i < segments.features.length; i++) {
+    const segment = segments.features[i];
+    const segLen = length(segment, { units: 'kilometers' });
+
+    if (targetDistance <= cumulative + segLen) {
+      const point = along(line, targetDistance, { units: 'kilometers' });
+      return {
+        index: i,
+        start: segment.geometry.coordinates[0],
+        end: segment.geometry.coordinates[1],
+        point
+      };
+    }
+
+    cumulative += segLen;
+  }
+
+  // Si tu dépasses la ligne (bravo Usain Bolt)
+  const last = segments.features[segments.features.length - 1];
+  return {
+    index: segments.features.length - 1,
+    start: last.geometry.coordinates[0],
+    end: last.geometry.coordinates[1],
+    point: along(line, targetDistance, { units: 'kilometers' })
+  };
 }

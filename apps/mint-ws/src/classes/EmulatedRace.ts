@@ -51,10 +51,16 @@ export class EmulatedRace {
 	getPositions(elapsed: number) {
 		return this.runners.map(r => {
 			const position = r.getPosition(elapsed)
+			if(!position) return null
 			return {
 				userId: r.runnerId,
 				...position
 			}
-		})
+		}).filter(p => !!p)
+	}
+
+	isRunning() {
+		const now = new Date()
+		return now >= this.startDate && now < this.endDate
 	}
 }

@@ -24,9 +24,10 @@ export class AppController {
 
   @Get('races/emulate')
   async generateRace(
-    @Query('runnerCount') runnerCount: string
+    @Query('runnerCount') runnerCount: string,
+    @Query('gpx') gpxFile: string,
   ) {
-    return this.appService.emulate({ runnerCount })
+    return this.appService.emulate({ runnerCount, gpxFile })
   }
 
   @Get('races/running')

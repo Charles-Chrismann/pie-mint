@@ -8,10 +8,14 @@ const refreshRacesStatusBtn = document.querySelector('#status')
 const runningDisplayEl = document.querySelector('#runnings-display')
 const raceStatusContainer = document.querySelector('.status-container')
 const templateRaceStatus = document.querySelector("#template-race-status");
+const pathSelect = document.querySelector("#path");
+const clearRacesBtn = document.querySelector("#clear")
 
 const ioUrlEls = document.querySelectorAll('.io-url')
 
+let races = []
 let runnerCount = 10
+let selectedGpx = "nantes_boucle.gpx"
 let emulateUrl
 runnerCountInput.value = runnerCount
 
@@ -22,13 +26,14 @@ function empty(el) {
 }
 
 function updateEmulateUrl() {
-	emulateUrl = `${location.origin}/races/emulate?runnerCount=${runnerCount}`
+	emulateUrl = `${location.origin}/races/emulate?runnerCount=${runnerCount}&gpx=${selectedGpx}`
 	emulateUrlEl.textContent = `GET ${emulateUrl}`
 }
 
 async function refreshRacesStatus() {
 	const res = await fetch('/races')
 	const data = await res.json()
+	races = data
 	empty(raceStatusContainer)
 	for(const race of data) {
 		const clone = document.importNode(templateRaceStatus.content, true);
@@ -66,9 +71,15 @@ async function refreshRacesStatus() {
 updateEmulateUrl()
 refreshRacesStatus()
 ioUrlEls.forEach(el => el.textContent = location.origin)
+pathSelect.value = selectedGpx
 
 runnerCountInput.addEventListener('input', (e) => {
 	runnerCount = e.target.value
+	updateEmulateUrl()
+})
+
+pathSelect.addEventListener('change', (e) => {
+	selectedGpx = e.target.value
 	updateEmulateUrl()
 })
 
@@ -91,3 +102,13 @@ emulateButton.addEventListener('click', async () => {
 })
 
 refreshRacesStatusBtn.addEventListener('click', refreshRacesStatus)
+
+clearRacesBtn.addEventListener('click', async () => {
+	const res = await fetch('/')
+	const promises = []
+	for(const race of races) {
+		promises.push(fetch(`/races/${race.id}/prune`))
+	}
+	const ress = await Promise.all(promises)
+	refreshRacesStatus()
+})

@@ -1,8 +1,9 @@
-import { length, lineString } from "@turf/turf";
+import { along, length, lineString } from "@turf/turf";
 import { AccelerationPhase, position3D } from "./declarations";
 import {
   getBornPoints,
   getPointsTotalDistance,
+  getSegmentAtDistance,
   interpolatePoint,
   randomGaussian
 } from "./utils";
@@ -31,6 +32,7 @@ export class Runner {
   getPosition(elapsedTime: number) {
     const stride = 12;
     const offset = elapsedTime * stride;
+    if(this.points.byteLength <= offset) return null
     const lat = this.points.readInt32LE(offset) / 1e6;
     const lon = this.points.readInt32LE(offset + 4) / 1e6;
     const alt = this.points.readInt32LE(offset + 8) / 1e2;
@@ -43,6 +45,7 @@ export class Runner {
     let raceCumultateDistance = 0
     let runnerCumultateDistance = 0
     const runnerPositions = [points[0]]
+    const path = lineString(points.map(({lon, lat}) => [lon, lat]));
     const phase: AccelerationPhase = {
       intensity: Math.random() * 0.2 + .1,
       duration: Math.ceil(Math.random() * 480 + 120),
@@ -71,15 +74,19 @@ export class Runner {
       runnerCumultateDistance += this.avgSpeedMs * (1 + phase.intensity)
       updatePhase()
 
+      const [lon, lat] = along(path, runnerCumultateDistance, { units: "meters" }).geometry.coordinates
+      // console.log(runnerCumultateDistance)
+      // console.log(lon, lat)
+      // console.log()
 
-      const bornes = getBornPoints(points, runnerCumultateDistance)
-      if(Array.isArray(bornes)) {
-        const position = interpolatePoint(bornes[0], bornes[1], 0.5) // TODO: check this
-        runnerPositions.push(position)
-      } else if(bornes !== null) {
-        runnerPositions.push(bornes)
-      }
+      // const pointData = getSegmentAtDistance(path.geometry, runnerCumultateDistance)
+      // console.log(pointData)
+      // const alt = (points[pointData.index].alt + points[pointData.index + 1].alt) / 2
+      // const [lon, lat] = pointData.point.geometry.coordinates
+      // runnerPositions.push({ lon, lat, alt })
+      runnerPositions.push({ lon, lat, alt: 0 })
     }
+
 
     const buf = Buffer.alloc(runnerPositions.length * 3 * 4);
     let offset = 0;

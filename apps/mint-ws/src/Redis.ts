@@ -21,12 +21,24 @@ class RedisInstance extends Redis {
 		])
 	}
 
-	async storePositionAndProgress(raceId: string, userId: string, position: Position3DWithTimestamp, progress: number) {
+	async storePositionAndProgress(
+		raceId: string,
+		userId: string,
+		position: Position3DWithTimestamp,
+		progress: number,
+		hasFinished: boolean
+	) {
 		const pipeline = this.pipeline()
     pipeline.zadd(`race:${raceId}:user:${userId}:positions`,
       position.timestamp,
       encodePositionBuffer(position)
     )
+		// if(hasFinished) {
+		// 	pipeline.zadd(`race:${raceId}:finishers`, 
+		// 		position.timestamp,
+		// 		userId
+		// 	);
+		// }
 		pipeline.zadd(`race:${raceId}:ranking`, progress, userId)
 
 		return pipeline.exec()

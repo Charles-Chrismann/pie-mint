@@ -21,6 +21,16 @@
 			</div>
 
 			<ul class="options">
+				
+				<li>
+					<label for="path">Tracé de la course</label>
+					<select id="path">
+						<option value="nantes_marathon.gpx">Le marathon de Nantes (très long)</option>
+						<option value="nantes_boucle.gpx">Une boucle (moyen)</option>
+						<option value="s.gpx">Un truc très court (pour débuguer le check de fin de course)</option>
+					</select>
+				</li>
+				
 				<li>
 					<label for="runnerCount">Nombre de coureurs</label>
 					<input type="number" id="runnerCount" value="100">
@@ -48,7 +58,7 @@
 
 			<p>Endpoint: POST /races</p>
 
-			<p>⚠️ Le header `authorization` doit avoir pour valeur le SIGNATURE_SECRET (voir .env)⚠️</p>
+			<p>⚠️ Le header `authorization` doit avoir pour valeur `Bearer ${SIGNATURE_SECRET}` (voir .env)⚠️</p>
 
 			<p>Objet à envoyer: </p>
 			<pre>
@@ -130,6 +140,11 @@ io.on('positions', (updateData) => {
 				<h2>All races Status</h2>
 				<button id="status" class="refresh">Refresh</button>
 				<ul class="status-container"></ul>
+			</div>
+
+			<div class="clear">
+				<h2>Supprimer les courses</h2>
+				<button id="clear">Supprimer toutes les courses</button>
 			</div>
 
 		</sections>

@@ -40,8 +40,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.appService.gatewayWsServer = server;
 
     server.use((socket, next) => {
-      
+      console.log(`Connetion: `, socket)
       const token = socket.handshake.auth.token || socket.handshake.headers.token;
+      console.log(`Received token: ${token}`)
       if(token) {
         try {
           const payload: JWTPayload = this.jwtService.verify(token);
@@ -66,6 +67,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     client: Socket,
     data: PositionPayload
   ) {
+    console.log(data)
     return this.appService.handlePositionEvent(client.data.user.userId, data)
   }
 }
