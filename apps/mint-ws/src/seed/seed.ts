@@ -1,10 +1,11 @@
 import "dotenv/config"
 import { XMLParser } from "fast-xml-parser";
-import { chunkify, encodePosition } from "./utils";
+import { chunkify } from "./utils";
 import * as fs from "fs/promises"
 import { CustomizedPoint } from "src/declarations";
 import Redis from "src/Redis";
 import { getPointsFromGpx } from "./utils";
+import { encodePositionBuffer } from "src/classes/utils";
 
 async function main() {
 
@@ -20,7 +21,7 @@ async function main() {
 	const endDate = "2025-04-27T16:15:50Z"
 	const runnerIds = Array.from({ length: 1 }).map(() => crypto.randomUUID())
 
-	await Redis.registerRace({ id, startDate, endDate, runnerIds})
+	await Redis.registerRace({ id, startDate, endDate, runnerIds, positions: points})
 
 	console.log(points)
 
@@ -50,7 +51,7 @@ async function main() {
 
 		for(const chunk of chunks) {
 			await Promise.all(
-				chunk.map(cp => Redis.zadd(`user:${userId}:race:${id}:positions`, cp.timestamp, encodePosition([cp.timestamp, cp.lon, cp.lat, cp.alt])))
+				chunk.map(cp => Redis.zadd(`user:${userId}:race:${id}:positions`, cp.timestamp, encodePositionBuffer(cp)))
 			)
 		}
 	}

@@ -16,6 +16,8 @@ services:
     env_file:
       - .env.ws
     restart: always
+    depends_on:
+      - redis
 
   redis:
     container_name: mint-redis

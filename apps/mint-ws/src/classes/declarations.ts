@@ -1,10 +1,10 @@
-export interface position3D {
+export interface Position3D {
   lat: number
   lon: number
   alt: number
 }
 
-export type Position3DWithTimestamp = position3D & {
+export type Position3DWithTimestamp = Position3D & {
   timestamp: number
 }
 

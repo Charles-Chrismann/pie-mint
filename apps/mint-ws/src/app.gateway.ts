@@ -3,8 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JWTPayload, PositionPayload, Race } from './declarations';
-import Redis from './Redis';
-import { encodePosition } from './seed/utils';
 import { AppService } from './app.service';
 
 @WebSocketGateway({
@@ -40,7 +38,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.appService.gatewayWsServer = server;
 
     server.use((socket, next) => {
-      console.log(`Connetion: `, socket)
       const token = socket.handshake.auth.token || socket.handshake.headers.token;
       console.log(`Received token: ${token}`)
       if(token) {

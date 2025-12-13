@@ -1,24 +1,24 @@
 import Redis from "ioredis";
 import { Race, RaceId } from "./declarations";
-import { Position3DWithTimestamp } from "./classes/declarations";
-import { encodePosition } from "./seed/utils";
-import { encodePositionBuffer } from "./classes/utils";
+import { Position3D, Position3DWithTimestamp } from "./classes/declarations";
+import { encodePositionBuffer, encodeRacePositionsBuffer } from "./classes/utils";
 
 class RedisInstance extends Redis {
 	constructor() {
 		super(process.env.REDIS_URL!)
 	}
 
-	async registerRace({ id, startDate, endDate, runnerIds }: Race) {
-		const res = await Promise.all([
-			this.sadd("races", id),
-			this.set(`race:${id}`, JSON.stringify({
-				id,
-				startDate,
-				endDate,
-			})),
-			this.sadd(`race:${id}:users`, ...runnerIds),
-		])
+	async registerRace({ id, startDate, endDate, runnerIds, positions }: Race & { positions: Position3D[] }) {
+		const pipeline = await this.multi()
+		.sadd("races", id)
+		.set(`race:${id}`, JSON.stringify({
+			id,
+			startDate,
+			endDate,
+		}))
+		.set(`race:${id}:points`, encodeRacePositionsBuffer(positions))
+		.sadd(`race:${id}:users`, ...runnerIds)
+		.exec()
 	}
 
 	async storePositionAndProgress(
@@ -29,9 +29,10 @@ class RedisInstance extends Redis {
 		hasFinished: boolean
 	) {
 		const pipeline = this.pipeline()
+		console.log(position)
     pipeline.zadd(`race:${raceId}:user:${userId}:positions`,
-      position.timestamp,
-      encodePositionBuffer(position)
+			position.timestamp,
+			encodePositionBuffer(position),
     )
 		// if(hasFinished) {
 		// 	pipeline.zadd(`race:${raceId}:finishers`, 

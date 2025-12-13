@@ -1,10 +1,7 @@
-import { RedisPosition } from "src/declarations";
+import { Position3D } from "src/classes/declarations";
+import { FlatPosition } from "src/declarations";
 
-export function getPointsFromGpx(gpxData: Record<string, any>): {
-	alt: number,
-	lat: number,
-	lon: number,
-}[] {
+export function getPointsFromGpx(gpxData: Record<string, any>): Position3D[] {
 	return (gpxData.gpx.trk.trkseg.trkpt as []).map(p => ({
 		alt: Number(p['ele']),
 		lat: Number(p['@_lat']),
@@ -23,37 +20,7 @@ export function chunkify<T>(array: T[], chunkSize = 256): T[][] {
   return chunks;
 }
 
-export function encodePosition([ts, lon, lat, alt]: RedisPosition) {
-  const buf = Buffer.alloc(8 + 8 + 8 + 1 + 4);
-
-  buf.writeBigInt64BE(BigInt(ts), 0);
-  buf.writeDoubleBE(lon, 8);
-  buf.writeDoubleBE(lat, 16);
-
-  if (alt === null || alt === undefined) {
-    buf.writeUInt8(0, 24);
-  } else {
-    buf.writeUInt8(1, 24);
-    buf.writeFloatBE(alt, 25);
-  }
-
-  return buf;
-}
-
-
-export function decodePosition(buf: Buffer): RedisPosition {
-  
-  const altPresent = buf.readUInt8(24);
-
-	return [
-		Number(buf.readBigInt64BE(0)),
-    buf.readDoubleBE(8),
-    buf.readDoubleBE(16),
-    altPresent ? buf.readFloatBE(25) : null,
-	];
-}
-
-export function createGPXString(points: RedisPosition[]) {
+export function createGPXString(points: FlatPosition[]) {
 	let str = `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Mint" xmlns="http://www.topografix.com/GPX/1/1"><trk><trkseg>`
 
 	for(let point of points) {

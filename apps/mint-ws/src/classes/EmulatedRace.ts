@@ -1,7 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { Runner } from "./Runner";
 import { getPointsFromGpx, gpxPointsToEquidistantPoints } from "./utils";
-import { position3D } from "./declarations";
+import { Position3D } from "./declarations";
 
 export class EmulatedRace {
 	id: string
@@ -9,7 +9,7 @@ export class EmulatedRace {
 	endDate: Date
 	progress = 0
 	gpx: string
-	points: position3D[]
+	points: Position3D[]
 	runners: Runner[] = []
 
 	constructor(

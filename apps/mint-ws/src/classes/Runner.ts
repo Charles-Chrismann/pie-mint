@@ -1,5 +1,5 @@
 import { along, length, lineString } from "@turf/turf";
-import { AccelerationPhase, position3D } from "./declarations";
+import { AccelerationPhase, Position3D } from "./declarations";
 import {
   getBornPoints,
   getPointsTotalDistance,
@@ -18,7 +18,7 @@ export class Runner {
   constructor(
     runnerId: string,
     raceId: string,
-    points: position3D[],
+    points: Position3D[],
   ) {
     this.runnerId = runnerId
     this.raceId = raceId
@@ -39,7 +39,7 @@ export class Runner {
     return {lat, lon, alt}
   }
 
-  generatePoints(points: position3D[]) {
+  generatePoints(points: Position3D[]) {
     const totalDistance = getPointsTotalDistance(points)
     const secondsToFinishRace = Math.ceil(totalDistance / this.avgSpeedMs)
     let raceCumultateDistance = 0

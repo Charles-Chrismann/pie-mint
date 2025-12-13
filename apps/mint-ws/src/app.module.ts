@@ -45,4 +45,13 @@ import { join } from 'path';
     SignatureGuard,
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(
+    private appService: AppService
+  ) {}
+  async onModuleInit() {
+    await this.appService.restoreCache()
+  }
+
+  
+}

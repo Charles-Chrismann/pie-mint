@@ -1,5 +1,5 @@
 import { LineString } from "geojson";
-import { position3D, Position3DWithTimestamp } from "./declarations"
+import { Position3D, Position3DWithTimestamp } from "./declarations"
 
 export function getPointsFromGpx(gpxData: Record<string, any>): {
 	alt: number,
@@ -28,12 +28,12 @@ export function randomGaussian(min = 6, max = 21, mean = 10, stdDev = 2.97) {
   return Math.min(max, Math.max(min, num));
 }
 
-export function getBornPoints(positions: position3D[], distance: number) {
+export function getBornPoints(positions: Position3D[], distance: number) {
   const index = Math.round(distance)
   return [positions[index - 1], positions[index]]
 }
 
-export function getDistanceBetweenPoints(p1: position3D, p2: position3D) {
+export function getDistanceBetweenPoints(p1: Position3D, p2: Position3D) {
   const R = 6371000;
   
   const lat1 = p1.lat * Math.PI / 180;
@@ -56,7 +56,7 @@ export function getDistanceBetweenPoints(p1: position3D, p2: position3D) {
   return Math.sqrt(d2D * d2D + dz * dz);
 }
 
-export function getPointsTotalDistance(points: position3D[]) {
+export function getPointsTotalDistance(points: Position3D[]) {
   return points.reduce((prev, _, i) => {
     if(i === points.length - 1) return prev
     const currentPoint = points[i]
@@ -65,7 +65,7 @@ export function getPointsTotalDistance(points: position3D[]) {
   }, 0)
 }
 
-export function interpolatePoint(A: position3D, B: position3D, distanceFromA: number) {
+export function interpolatePoint(A: Position3D, B: Position3D, distanceFromA: number) {
   // Calcul de la distance 2D entre A et B (Haversine simplifié)
   const R = 6371000; // rayon Terre en m
   const toRad = x => x * Math.PI / 180;
@@ -101,8 +101,8 @@ export function interpolatePoint(A: position3D, B: position3D, distanceFromA: nu
   return { lat, lon, alt };
 }
 
-export function gpxPointsToEquidistantPoints(points: position3D[], distanceBetweenPoints = 1) {
-  const equidistantPoints: position3D[] = [points[0]]
+export function gpxPointsToEquidistantPoints(points: Position3D[], distanceBetweenPoints = 1) {
+  const equidistantPoints: Position3D[] = [points[0]]
   let remainingDistanceToCoverFromLast = 0
   for(let i = 0; i < points.length - 1; i++) {
     const currentPoint = points[i]
@@ -136,23 +136,56 @@ export function gpxPointsToEquidistantPoints(points: position3D[], distanceBetwe
   return equidistantPoints
 }
 
-export function encodePositionBuffer(position: Position3DWithTimestamp) {
-  const buf = Buffer.alloc(8 + 4 + 4 + 4);
-  buf.writeDoubleLE(position.timestamp, 0)
-  buf.writeInt32LE(Math.round(position.lat * 1e6), 4);
-  buf.writeInt32LE(Math.round(position.lon * 1e6), 8);
-  buf.writeInt32LE(Math.round(position.alt * 1e2), 12);
+export function encodePositionBuffer(position: Position3D) {
+  const buf = Buffer.alloc(12);
+
+  buf.writeInt32LE(Math.round(position.lat * 1e6), 0);
+  buf.writeInt32LE(Math.round(position.lon * 1e6), 4);
+  buf.writeInt32LE(Math.round(position.alt * 1e2), 8);
+
+  return buf;
+}
+
+
+export function decodePositionBuffer(buf: Buffer): Position3D {
+  return {
+    lat: buf.readInt32LE(0) / 1e6,
+    lon: buf.readInt32LE(4) / 1e6,
+    alt: buf.readInt32LE(8) / 1e2,
+  };
+}
+
+export function encodeRacePositionsBuffer(positions: Position3D[]) {
+  const { length } = positions
+  const buf = Buffer.alloc(length * 12);
+  for(let i = 0; i < length; i++) {
+    const position = positions[i]
+    const offset = i * 12
+    buf.writeInt32LE(Math.round(position.lat * 1e6), offset);
+    buf.writeInt32LE(Math.round(position.lon * 1e6), offset + 4);
+    buf.writeInt32LE(Math.round(position.alt * 1e2), offset + 8);
+  }
+
   return buf
 }
 
-export function decodePositionBuffer(buf: Buffer): Position3DWithTimestamp {
-  const timestamp = buf.readDoubleLE(0);
-  const lat = buf.readInt32LE(8) / 1e6;
-  const lon = buf.readInt32LE(12) / 1e6;
-  const alt = buf.readInt32LE(16) / 1e2;
+export function decodeRacePositionsBuffer(buf: Buffer): Position3D[] {
+  const positions: Position3D[] = [];
+  const count = buf.byteLength / 12;
 
-  return { timestamp, lat, lon, alt };
+  for (let i = 0; i < count; i++) {
+    const offset = i * 12;
+
+    positions.push({
+      lat: buf.readInt32LE(offset) / 1e6,
+      lon: buf.readInt32LE(offset + 4) / 1e6,
+      alt: buf.readInt32LE(offset + 8) / 1e2,
+    });
+  }
+
+  return positions;
 }
+
 
 import { lineString, along, length, lineSegment, distance } from '@turf/turf';
 

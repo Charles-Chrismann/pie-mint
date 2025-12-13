@@ -1,18 +1,15 @@
-import { HttpException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, StreamableFile } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import Redis from './Redis';
-import { createGPXString, decodePosition, encodePosition, getPointsFromGpx } from './seed/utils';
+import { getPointsFromGpx } from './seed/utils';
 import * as fs from 'fs/promises'
-import { Readable } from 'stream';
-import { PositionPayload, Race, RaceId, WsSendPositions } from './declarations';
+import { PositionPayload, Race, RaceId, RacesMapValues, RaceStats, WsSendPositions } from './declarations';
 import { EmulatedRace } from './classes/EmulatedRace';
 import { length, lineString, nearestPointOnLine, point } from '@turf/turf';
-import type { Point, Feature, GeoJsonProperties, LineString } from 'geojson';
 import { RegisterRaceDTO } from './dto/race.dto';
 import { XMLParser } from 'fast-xml-parser';
-import { getPointsTotalDistance, gpxPointsToEquidistantPoints } from './classes/utils';
+import { decodePositionBuffer, decodeRacePositionsBuffer } from './classes/utils';
 import { ConfigService } from '@nestjs/config';
 import { simplifyGpx } from './utils';
-import { Server } from 'socket.io';
 import { AppGateway } from './app.gateway';
 
 @Injectable()
@@ -24,18 +21,42 @@ export class AppService{
   emulatedRace: EmulatedRace[] = []
   lastSecondEvents: Map<RaceId, WsSendPositions> = new Map()
   emitTimeout: NodeJS.Timeout | null = null
-  racesMap = new Map<string, {
-    race: Race,
-    runnerIds: Set<string>,
-    finishedUserIds: Set<string>,
-    line: Feature<LineString, GeoJsonProperties>
-  }>()
+  racesMap = new Map<string, RacesMapValues>()
 
   constructor(
     private config: ConfigService,
   ) {}
 
+  async restoreCache() {
+    const raceIds: string[] = await Redis.smembers("races")
+    const pipeline = Redis.pipeline()
+    for(const raceId of raceIds) {
+      pipeline.get(`race:${raceId}`)
+      pipeline.getBuffer(`race:${raceId}:points`)
+      pipeline.smembers(`race:${raceId}:users`)
+      pipeline.zrange(`race:${raceId}:finishers`, 0, -1)
+    }
+    const res = await pipeline.exec()
 
+    if(!res) throw new Error()
+
+    for(let i = 0; i < res.length; i += 4) {
+      const race: Race = JSON.parse(res[i][1] as string)
+      const points = decodeRacePositionsBuffer(res[i + 1][1] as Buffer)
+      const line = lineString(points.map(({ lon, lat }) => [lon, lat]))
+      const totalDistanceInMeters = length(line, { units: "meters" })
+      const runnerIds = new Set(res[i + 2][1] as string[])
+      const finishedUserIds = new Set(res[i + 3][1] as string[])
+
+      this.racesMap.set(race.id, {
+        race,
+        finishedUserIds,
+        runnerIds,
+        line,
+        totalDistanceInMeters
+      })
+    }
+  }
   
     async startEventSending() {
       this.logger.verbose(`Start emitting`)
@@ -121,14 +142,16 @@ export class AppService{
     const xmlParser = new XMLParser({ ignoreAttributes: false })
     const gpxData = xmlParser.parse(body.gpx)
     const points = getPointsFromGpx(gpxData)
+    const line = lineString(points.map(({ lat, lon }) => [lon, lat]))
 
     this.racesMap.set(body.id, {
       race: body,
+      totalDistanceInMeters: length(line, { units: "meters" }),
       runnerIds: new Set(body.runnerIds),
       finishedUserIds: new Set(),
-      line: lineString(points.map(({ lat, lon }) => [lon, lat])),
+      line,
     })
-    return Redis.registerRace(body)
+    return Redis.registerRace({ ...body, positions: points })
   }
 
   exportRaceGPXs() {
@@ -136,14 +159,14 @@ export class AppService{
   }
 
   async exportRaceUserGPX(userId: string, raceId: string) {
-    console.log(await Redis.keys('*'))
-    const start = performance.now()
-    const positions = (await Redis.zrangeBuffer(`user:${userId}:race:${raceId}:positions`, 0, -1)).map(p => decodePosition(p))
-    console.log(performance.now() - start)
-    console.log(positions)
+    // console.log(await Redis.keys('*'))
+    // const start = performance.now()
+    // const positions = (await Redis.zrangeBuffer(`user:${userId}:race:${raceId}:positions`, 0, -1)).map(p => decodePosition(p))
+    // console.log(performance.now() - start)
+    // console.log(positions)
 
-    const stream = Readable.from([createGPXString(positions)]);
-    return new StreamableFile(stream);
+    // const stream = Readable.from([createGPXString(positions)]);
+    // return new StreamableFile(stream);
   }
 
   async getRunningRaces() {
@@ -302,10 +325,44 @@ export class AppService{
     await Redis.pruneRace(raceId)
   }
 
-  async getRaceStats(raceId: RaceId) {
-    // vitesse moyen
-    // vitesse max
-    // vitesse min
-    // classment
+  async getRaceStats(raceId: RaceId): Promise<RaceStats> {
+    const race = this.racesMap.get(raceId)
+    if(!race) throw new NotFoundException()
+    const raceStartDate = new Date(race.race.startDate)
+    const runnerIds = await Redis.smembers(`race:${raceId}:users`);
+    const p = Redis.pipeline()
+    for(const runnerId of runnerIds) {
+      p.zrangeBuffer(`race:${raceId}:user:${runnerId}:positions`, 0, -1, 'WITHSCORES')
+    }
+    const runnerPositionsBufferResults = await p.exec()
+
+    if(!runnerPositionsBufferResults) throw new Error()
+
+    const finalRanking: RaceStats['finalRanking'] = []
+
+    for(let i = 0; i < runnerPositionsBufferResults.length; i++) {
+      const positions: RaceStats['finalRanking'][number]['positions'] = []
+      const positionBufferAndTimestampBuffers = runnerPositionsBufferResults[i][1] as Buffer[]
+      const userId = runnerIds[i]
+      const avgKmHSpeed = (race.totalDistanceInMeters / 1000) / ((new Date(+positionBufferAndTimestampBuffers.at(-1)!).getTime() - raceStartDate.getTime()) / 3600000)
+      console.log(avgKmHSpeed)
+      for(let j = 0; j < positionBufferAndTimestampBuffers.length; j += 2) {
+        const { lon, lat, alt } = decodePositionBuffer(positionBufferAndTimestampBuffers[j])
+        const timsetamp = +positionBufferAndTimestampBuffers[j + 1]
+        positions.push([timsetamp, lon, lat, alt])
+      }
+      finalRanking.push({
+        userId,
+        avgKmHSpeed,
+        maxKmHSpeed: 1,
+        positions,
+      })
+    }
+    
+    return {
+      avgKmHSpeed: 0,
+      maxKmHSpeed: 0,
+      finalRanking: finalRanking.sort((a, b) => b.avgKmHSpeed - a.avgKmHSpeed)
+    }
   }
 }
