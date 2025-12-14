@@ -1,6 +1,6 @@
 import * as L from "leaflet";
 
-export interface CanvasCustomMarkerOptions extends L.CircleMarkerOptions {
+export interface CanvasCustomMarkerOptions extends Omit<L.CircleMarkerOptions, "radius"> {
   imageSrc?: string;
   size?: number;
 }
@@ -13,7 +13,10 @@ export class CanvasCustomMarker extends L.CircleMarker {
   private _size: number;
 
   constructor(latlng: L.LatLngExpression, options: CanvasCustomMarkerOptions) {
-    super(latlng, options);
+    super(latlng, {
+			...options,
+			radius: (options.size ?? 32) / 2,
+		});
 
     this._size = options.size ?? 32;
 

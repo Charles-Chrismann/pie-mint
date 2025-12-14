@@ -51,6 +51,7 @@ export interface Runner {
   // runner_id: number,
   // name: string,
   marker: CanvasCustomMarker
+  color: string
   // rank: number
 
   userId: string,
@@ -77,10 +78,26 @@ export interface Event {
   organization_id: number
 }
 
+export interface ApiRace {
+  id: string
+  startDate: string
+  endDate: string
+}
+
 export interface Race {
   id: string
   startDate: string
   endDate: string
+  geometry: LineString
+}
+
+export interface MergedRace {
+  id: string
+  startDate: string
+  endDate: string
+
+  _api?: ApiRace
+  _ws?: Race
 }
 
 export interface Registration {
@@ -172,7 +189,7 @@ export type GeoJsonTypes = GeoJSON["type"];
 
 export type BBox = [number, number, number, number] | [number, number, number, number, number, number];
 
-export type Position = number[];
+export type Position = [number, number];
 
 export interface GeoJsonObject {
   type: GeoJsonTypes;

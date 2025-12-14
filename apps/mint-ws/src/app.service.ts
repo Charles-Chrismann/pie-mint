@@ -83,7 +83,7 @@ export class AppService{
 
         const pipeline = Redis.pipeline()
         for(const entry of lastSecondEvents) {
-          pipeline.zrevrange(`race:${entry.raceId}:finishers`, 0, -1, 'WITHSCORES')
+          pipeline.zrange(`race:${entry.raceId}:finishers`, 0, -1, 'WITHSCORES')
           pipeline.zrevrange(`race:${entry.raceId}:ranking`, 0, -1, 'WITHSCORES')
         }
 
@@ -127,6 +127,8 @@ export class AppService{
           // TODO: separate specs into rooms
           const { positions, ranking } = entry
 
+          if(!positions.length) return
+
           this.gatewayWsServer.to(entry.raceId)
           .emit('positions', { positions, ranking })
 
@@ -150,6 +152,12 @@ export class AppService{
       runnerIds: new Set(body.runnerIds),
       finishedUserIds: new Set(),
       line,
+    })
+    this.gatewayWsServer.emit('added-race', {
+      id: body.id,
+      startDate: body.startDate,
+      endDate: body.endDate,
+      geometry: line.geometry
     })
     return Redis.registerRace({ ...body, positions: points })
   }
@@ -254,7 +262,7 @@ export class AppService{
     const cache = this.racesMap.get(raceId)
     if(!cache) return
 
-    const { race, runnerIds, line, finishedUserIds } = cache
+    const { race, runnerIds, line, finishedUserIds, totalDistanceInMeters } = cache
 
     
     const startDate = new Date(race.startDate)
@@ -273,11 +281,11 @@ export class AppService{
     const p = point([lon, lat]);
     const snapped = nearestPointOnLine(line, p, { units: 'meters' });
     const progress = snapped.properties.location;
-    const hasFinished = snapped.properties.dist < 10 // or progress >= totalDistance
+    const hasFinished = progress >= (totalDistanceInMeters - 1)
 
-    // if(hasFinished) {
-    //   finishedUserIds.add(userId)
-    // }
+    if(hasFinished) {
+      finishedUserIds.add(userId)
+    }
 
     Redis.storePositionAndProgress(raceId, userId, { timestamp, ...data.position }, progress, hasFinished)
 
@@ -308,7 +316,7 @@ export class AppService{
   async getRaces() {
     const ids = await Redis.smembers("races");
     if(!ids.length) return []
-    return (await Redis.mget(ids.map(id => `race:${id}`))).filter(str => !!str).map((str: string) => JSON.parse(str))
+    return Array.from(this.racesMap).map(([id, race]) => ({ ...race.race, geometry: race.line.geometry }))
   }
 
   async getEndedRaces() {
@@ -335,6 +343,7 @@ export class AppService{
       p.zrangeBuffer(`race:${raceId}:user:${runnerId}:positions`, 0, -1, 'WITHSCORES')
     }
     const runnerPositionsBufferResults = await p.exec()
+    console.log('runnerPositionsBufferResults', runnerPositionsBufferResults)
 
     if(!runnerPositionsBufferResults) throw new Error()
 
@@ -345,7 +354,7 @@ export class AppService{
       const positionBufferAndTimestampBuffers = runnerPositionsBufferResults[i][1] as Buffer[]
       const userId = runnerIds[i]
       const avgKmHSpeed = (race.totalDistanceInMeters / 1000) / ((new Date(+positionBufferAndTimestampBuffers.at(-1)!).getTime() - raceStartDate.getTime()) / 3600000)
-      console.log(avgKmHSpeed)
+      console.log(positionBufferAndTimestampBuffers)
       for(let j = 0; j < positionBufferAndTimestampBuffers.length; j += 2) {
         const { lon, lat, alt } = decodePositionBuffer(positionBufferAndTimestampBuffers[j])
         const timsetamp = +positionBufferAndTimestampBuffers[j + 1]

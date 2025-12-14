@@ -29,17 +29,16 @@ class RedisInstance extends Redis {
 		hasFinished: boolean
 	) {
 		const pipeline = this.pipeline()
-		console.log(position)
     pipeline.zadd(`race:${raceId}:user:${userId}:positions`,
 			position.timestamp,
 			encodePositionBuffer(position),
     )
-		// if(hasFinished) {
-		// 	pipeline.zadd(`race:${raceId}:finishers`, 
-		// 		position.timestamp,
-		// 		userId
-		// 	);
-		// }
+		if(hasFinished) {
+			pipeline.zadd(`race:${raceId}:finishers`, 
+				position.timestamp,
+				userId
+			);
+		}
 		pipeline.zadd(`race:${raceId}:ranking`, progress, userId)
 
 		return pipeline.exec()

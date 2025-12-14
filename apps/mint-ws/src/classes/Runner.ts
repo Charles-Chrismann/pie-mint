@@ -71,7 +71,8 @@ export class Runner {
     }
 
     while(runnerCumultateDistance < totalDistance) {
-      runnerCumultateDistance += this.avgSpeedMs * (1 + phase.intensity)
+      // runnerCumultateDistance += this.avgSpeedMs * (1 + phase.intensity)
+      runnerCumultateDistance += Math.random() * 10
       updatePhase()
 
       const [lon, lat] = along(path, runnerCumultateDistance, { units: "meters" }).geometry.coordinates

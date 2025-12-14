@@ -1,5 +1,5 @@
 import config from "./config"
-import type { ApiResponseLogin, HttpMethod } from "./declarations"
+import type { ApiRace, ApiResponseLogin, HttpMethod } from "./declarations"
 import { UnauthorizedError } from "./errors/unauthorized.error"
 import { UnexistingError } from "./errors/unexisting.error"
 
@@ -104,6 +104,11 @@ class Api {
     })
     const data = await res.json()
     return data
+  }
+
+  async getRaces(): Promise<ApiRace[]> {
+    const races: ApiRace[] = []
+    return races
   }
 }
 

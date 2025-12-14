@@ -7,20 +7,27 @@ import MyOrganizationPage from './pages/me/Organization'
 import OrganizationsPage from './pages/organizations/Organizations'
 import OrganizationSinglePage from './pages/organizations/OrganizationSingle'
 import EventSinglePage from './pages/organizations/events/EventSingle'
-import { AuthProvider } from './contexts/AuthContext'
+// import { AuthProvider } from './contexts/AuthContext'
 import MyEventPage from './pages/me/Event'
 import MyRacePage from './pages/me/Race'
 import EmulateRunPage from './pages/emulate-run/EmulateRun'
+import { RacesProvider } from './contexts/RacesContext'
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      // <AuthProvider>
+        <RacesProvider>
+            <App />
+        </RacesProvider>
+      // </AuthProvider>
     ),
     children: [
+      {
+        path: '/',
+        element: <HomePage />,
+      },
       {
         path: 'auth',
         children: [
@@ -29,10 +36,6 @@ export const router = createBrowserRouter([
             element: <LoginPage />
           }
         ]
-      },
-      {
-        path: 'home',
-        element: <HomePage />,
       },
       {
         path: 'me',
@@ -110,7 +113,7 @@ export const router = createBrowserRouter([
         ]
       },
       {
-        path: 'emulate-run',
+        path: 'races/:id?',
         element: <EmulateRunPage />
       }
     ]

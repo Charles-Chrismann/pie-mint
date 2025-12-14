@@ -1,35 +1,35 @@
-import { useAuth } from "@/contexts/AuthContext";
+// import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "./ui/dropdown-menu";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage
-} from "./ui/avatar";
-import { Button } from "./ui/button";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuGroup,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger
+// } from "./ui/dropdown-menu";
+// import {
+//   Avatar,
+//   AvatarFallback,
+//   AvatarImage
+// } from "./ui/avatar";
+// import { Button } from "./ui/button";
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  // const { user, logout } = useAuth();
 
   return (
     <header className="h-18 px-8 shadow-md flex items-center justify-between">
       <nav>
         <ul>
           <li className="flex gap-4">
-            <Link to="/organizations">Organisations</Link>
+            <Link to="/">Home</Link>
             <Link to="/emulate-run">Emulate Run</Link>
             {/* <Link to="/me/organizations">Mes organisations</Link> */}
           </li>
         </ul>
       </nav>
-      {
+      {/* {
         !user ?
           <div className="flex gap-2">
             <Button asChild>
@@ -61,7 +61,7 @@ export default function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-      }
+      } */}
     </header>
   )
 }

@@ -1,4 +1,3 @@
-import Api from "@/Api"
 import {
   Select,
   SelectContent,
@@ -11,7 +10,8 @@ import type {
   MapStyleKey,
   Race,
   LineString,
-  Registration
+  Registration,
+  Runner
 } from "@/declarations"
 import {
   useEffect,
@@ -21,32 +21,39 @@ import { socket } from '../../socket'
 import LeafletMap from "@/LeafletMap"
 import { MAP_STYLES } from "@/constants"
 import Ws from "@/Ws"
+import { useNavigate, useParams } from "react-router-dom"
 
 export default function EmulateRunPage() {
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const [_isConnected, setIsConnected] = useState(socket.connected);
   const [races, setRaces] = useState<Race[]>([])
   const [selectedRace, setSelectedRace] = useState<Race | null>(null)
-  const [raceRunners, setRaceRunners] = useState<Registration[]>([])
+  const [raceRunners, _setRaceRunners] = useState<Registration[]>([])
   const [selectedRunner, _setSelectedRunner] = useState<Registration>()
-  const [track, setTrack] = useState<LineString[]>()
+  const [track, setTrack] = useState<LineString>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
+  const [ranking, setRanking] = useState<[string, number][]>([])
   const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
+  const [runners, setRunners] = useState<Runner[]>([])
 
   useEffect(() => {
     async function fetchRaces() {
       const races = await Ws.getRunningRaces()
       setRaces(races)
+      if(id) {
+        const selected = races.find(r => r.id === id)
+        if(selected) {
+          setSelectedRace(selected)
+          setTrack(selected.geometry)
+        }
+      }
     }
-
+    
+    if(id) {
+      socket.emit('join-race', id)
+    }
     fetchRaces()
-  }, [])
-
-  useEffect(() => {
-    async function fetchRunners() {
-      setRaceRunners(await Api.getPublic<Registration[]>('/races/1/runners'))
-    }
-
-    fetchRunners()
   }, [])
 
   useEffect(() => {
@@ -59,7 +66,7 @@ export default function EmulateRunPage() {
       setIsConnected(false);
     }
 
-    function onPosition(data: { positions: [string, number, number, number][], rankings: [string, number] }) {
+    function onPosition(data: { positions: [string, number, number, number][], ranking: [string, number][] }) {
       // setLastUpdatedRunners(data.map(r => ({
       //   runner_id: r.runner_id,
       //   name: r.name,
@@ -70,19 +77,25 @@ export default function EmulateRunPage() {
       //   rank: r.rank
       // })))
       
-      const { positions, rankings } = data
-      rankings
+      const { positions, ranking } = data
+      setRanking(ranking)
       setLastUpdatedRunners(positions.map(d => ({ userId: d[0], lon: d[1], lat: d[2], alt: d[3] })))
+    }
+
+    function onAddedRace(data: Race) {
+      setRaces(prev => [...prev, data])
     }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('positions', onPosition)
+    socket.on('added-race', onAddedRace)
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('positions', onPosition)
+      socket.off('positions', onPosition);
+      socket.off('added-race', onAddedRace);
     };
   }, []);
 
@@ -99,17 +112,16 @@ export default function EmulateRunPage() {
       socket.emit('leave-race', selectedRace.id)
     }
     socket.emit('join-race', raceId)
-    setSelectedRace(races.find(r => r.id === raceId)!)
-  }
-
-  useEffect(() => {
-    async function loadTrack() {
-      setTrack(await Api.getPublic<LineString[]>('/races/1/track'))
+    const race = races.find(r => r.id === raceId)!
+    for(const runner of runners) {
+      runner.marker.remove()
     }
-
-    loadTrack()
-
-  }, [])
+    setSelectedRace(race)
+    navigate(`/races/${race.id}`, { replace: true });
+    setTrack(race.geometry)
+    setRanking([])
+    setRunners([])
+  }
 
   return (
     <div className="h-full flex">
@@ -154,12 +166,28 @@ export default function EmulateRunPage() {
               }
             </SelectContent>
           </Select>
+          {
+            !!ranking.length &&
+            <ul className="ranking flex flex-col bg-white">
+              {
+                ranking.map(([userId, progress], i) => (
+                  <li
+                    style={{
+                      color: runners.find(r => r.userId === userId)?.color || "blue"
+                    }}
+                    >{i + 1}. {userId}: {progress === -1 ? "🏁" : progress}</li>
+                ))
+              }
+            </ul>
+          }
         </div>
         <LeafletMap
           track={track}
           lastUpdatedRunners={lastUpdatedRunners}
           mapStyle={mapStyle.tileLayer}
           raceRunners={raceRunners}
+          runners={runners}
+          setRunners={setRunners}
           // setSelectedRunner={setSelectedRunner}
           />
       </div>
