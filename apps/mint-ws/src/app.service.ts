@@ -61,6 +61,7 @@ export class AppService{
     async startEventSending() {
       this.logger.verbose(`Start emitting`)
       this.emitTimeout = setInterval(async () => {
+        this.logger.verbose(`Starting recurrent event sending`)
   
         const emus = this.emulatedRace
         if(emus.length) {
@@ -79,7 +80,11 @@ export class AppService{
 
         const lastSecondEvents = Array.from(this.lastSecondEvents).map(([raceId, positions]) => ({ raceId, positions, ranking: [] as [string, number][] }))
 
-        if(!lastSecondEvents.length) return
+        if(!lastSecondEvents.length) {
+          this.logger.verbose(`Skipping procedure: 0 events concerned`)
+          return
+        }
+        this.logger.verbose(`${lastSecondEvents.length} events concerned`)
 
         const pipeline = Redis.pipeline()
         for(const entry of lastSecondEvents) {
@@ -126,7 +131,10 @@ export class AppService{
         for(const entry of lastSecondEvents) {
           const { positions, ranking } = entry
 
-          if(!positions.length) return
+          if(!positions.length) {
+            this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
+            return
+          }
 
           this.logger.verbose(`Emitting ${positions.length} positions to ${this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size} clients`)
           this.gatewayWsServer.to(entry.raceId)
