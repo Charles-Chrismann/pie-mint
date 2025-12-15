@@ -26,7 +26,7 @@ class Ws {
 	}
 
 	async deleteRace(raceId: string): Promise<void> {
-		const res = await fetch(`${this.WS_BASE_HOST}/races/${raceId}/prune`)
+		await fetch(`${this.WS_BASE_HOST}/races/${raceId}/prune`)
 	}
 }
 
