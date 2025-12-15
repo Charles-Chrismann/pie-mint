@@ -124,11 +124,11 @@ export class AppService{
         }
 
         for(const entry of lastSecondEvents) {
-          // TODO: separate specs into rooms
           const { positions, ranking } = entry
 
           if(!positions.length) return
 
+          this.logger.verbose(`Emitting ${positions.length} positions to ${this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size} clients`)
           this.gatewayWsServer.to(entry.raceId)
           .emit('positions', { positions, ranking })
 
