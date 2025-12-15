@@ -56,6 +56,8 @@ class RedisInstance extends Redis {
 		pipeline.del(`race:${raceId}`)
 		pipeline.del(`race:${raceId}:users`);
 		pipeline.del(`race:${raceId}:ranking`)
+		pipeline.del(`race:${raceId}:points`)
+		pipeline.del(`race:${raceId}:finishers`)
 		await pipeline.exec()
 	}
 }

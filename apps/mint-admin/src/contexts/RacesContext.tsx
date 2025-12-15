@@ -15,6 +15,7 @@ interface RacesContextType {
   wsRaces: Race[]
   mergeds: MergedRace[]
   refreshRaces: () => Promise<void>
+  deleteRace: (raceId: string) => Promise<void>
 }
 
 const RacesContext = createContext<RacesContextType | undefined>(undefined)
@@ -36,6 +37,11 @@ export const RacesProvider = ({ children }: { children: ReactNode }) => {
     setWsRaces(wsRaces)
   }
 
+  async function deleteRace(raceId: string) {
+    await Ws.deleteRace(raceId)
+    await refreshRaces()
+  }
+
   const mergeds = useMemo<MergedRace[]>(() => {
     const apiMap = new Map(apiRaces.map(r => [r.id, r]))
 
@@ -53,7 +59,8 @@ export const RacesProvider = ({ children }: { children: ReactNode }) => {
       apiRaces,
       wsRaces,
       mergeds,
-      refreshRaces
+      refreshRaces,
+      deleteRace,
     }}>
       {children}
     </RacesContext.Provider>

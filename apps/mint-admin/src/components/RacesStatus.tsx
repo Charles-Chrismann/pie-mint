@@ -8,7 +8,7 @@ import config from "@/config"
 
 export default function RacesStatus() {
 
-	const { mergeds } = useRaces()
+	const { mergeds, deleteRace } = useRaces()
 
 	const races = useMemo(() => [...mergeds].reverse(), [mergeds])
 
@@ -56,7 +56,6 @@ export default function RacesStatus() {
 			</div>
 		)
 	}
-	
 
 	return (
 		<ul className="
@@ -95,6 +94,7 @@ export default function RacesStatus() {
 									<Button
 										className=""
 										variant="ghost"
+										onClick={() => deleteRace(r.id)}
 									>Supprimer</Button>
 								<Link to={`/races/${r.id}`}>
 								<Button
