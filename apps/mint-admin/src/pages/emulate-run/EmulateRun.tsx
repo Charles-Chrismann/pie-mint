@@ -54,6 +54,10 @@ export default function EmulateRunPage() {
       socket.emit('join-race', id)
     }
     fetchRaces()
+
+    return () => {
+      socket.emit('leave-race', id)
+    }
   }, [])
 
   useEffect(() => {

@@ -24,7 +24,7 @@ export default function Header() {
         <ul>
           <li className="flex gap-4">
             <Link to="/">Home</Link>
-            <Link to="/emulate-run">Emulate Run</Link>
+            <Link to="/races">Courses</Link>
             {/* <Link to="/me/organizations">Mes organisations</Link> */}
           </li>
         </ul>

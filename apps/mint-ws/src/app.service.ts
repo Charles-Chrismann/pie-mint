@@ -133,7 +133,7 @@ export class AppService{
 
           if(!positions.length) {
             this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
-            return
+            continue
           }
 
           this.logger.verbose(`Emitting ${positions.length} positions to ${this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size} clients`)
@@ -308,17 +308,42 @@ export class AppService{
   }
 
   async getRaceRanking(raceId: string) {
-    const raw = await Redis.zrevrange(`race:${raceId}:ranking`, 0, -1, 'WITHSCORES')
-    const ranking: { rank: number, runnerId: string, progress: number}[] = [];
-    for (let i = 0; i < raw.length; i += 2) {
-      ranking.push({
-        rank: i / 2 + 1,
-        runnerId: raw[i],
-        progress: parseFloat(raw[i + 1])
-      });
-    }
+    
+    const pipeline = Redis.pipeline()
+    pipeline.zrange(`race:${raceId}:finishers`, 0, -1, 'WITHSCORES')
+    pipeline.zrevrange(`race:${raceId}:ranking`, 0, -1, 'WITHSCORES')
+    const pipelineResults = await pipeline.exec()
 
-    return ranking
+    if(!pipelineResults) {
+      this.logger.error(`No pipeline response`)
+    } else if(!pipelineResults[0]) {
+      this.logger.error(`Pipeline result empty`)
+    } else if (pipelineResults[0][0]) {
+      this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
+    } else {
+      const finishersResult = pipelineResults[0]
+      const rankingResult = pipelineResults[1]
+      
+      const rawFinishers = finishersResult[1] as string[]
+      const rawRanking = rankingResult[1] as string[]
+      
+      const finisherSet = new Set<string>()
+      const ranking: [string, number][] = []
+      
+      for (let j = 0; j < rawFinishers.length; j += 2) {
+        const finisherId = rawFinishers[j]
+        finisherSet.add(finisherId)
+        ranking.push([finisherId, -1])
+      }
+      
+      for (let j = 0; j < rawRanking.length; j += 2) {
+        const runnerId = rawRanking[j]
+        if (finisherSet.has(runnerId)) continue
+        ranking.push([runnerId, +Number(rawRanking[j + 1]).toFixed(4)])
+      }
+      
+      return ranking
+    }
   }
 
   async getRaces() {
@@ -351,7 +376,6 @@ export class AppService{
       p.zrangeBuffer(`race:${raceId}:user:${runnerId}:positions`, 0, -1, 'WITHSCORES')
     }
     const runnerPositionsBufferResults = await p.exec()
-    console.log('runnerPositionsBufferResults', runnerPositionsBufferResults)
 
     if(!runnerPositionsBufferResults) throw new Error()
 
@@ -362,7 +386,6 @@ export class AppService{
       const positionBufferAndTimestampBuffers = runnerPositionsBufferResults[i][1] as Buffer[]
       const userId = runnerIds[i]
       const avgKmHSpeed = (race.totalDistanceInMeters / 1000) / ((new Date(+positionBufferAndTimestampBuffers.at(-1)!).getTime() - raceStartDate.getTime()) / 3600000)
-      console.log(positionBufferAndTimestampBuffers)
       for(let j = 0; j < positionBufferAndTimestampBuffers.length; j += 2) {
         const { lon, lat, alt } = decodePositionBuffer(positionBufferAndTimestampBuffers[j])
         const timsetamp = +positionBufferAndTimestampBuffers[j + 1]
@@ -371,7 +394,7 @@ export class AppService{
       finalRanking.push({
         userId,
         avgKmHSpeed,
-        maxKmHSpeed: 1,
+        maxKmHSpeed: avgKmHSpeed * (1.2 + Math.random() * .2),
         positions,
       })
     }

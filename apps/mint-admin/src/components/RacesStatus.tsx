@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import { Link } from "react-router-dom"
 import { useRaces } from "@/contexts/RacesContext"
 import { useMemo } from "react"
+import config from "@/config"
 
 export default function RacesStatus() {
 
@@ -61,8 +62,7 @@ export default function RacesStatus() {
 		<ul className="
 		grid
 		grid-cols-1
-		md:grid-cols-2
-		lg:grid-cols-3
+		xl:grid-cols-2
 		gap-4
 	">
 			{
@@ -76,8 +76,20 @@ export default function RacesStatus() {
 								</CardTitle>
 								<CardDescription>{r.id}</CardDescription>
 							</CardHeader>
-							<CardContent>
-								
+							<CardContent className="flex flex-col gap-2">
+								<h2 className="underline">Endpoints:</h2>
+								<ul>
+									<li>Stats: <a
+											className="underline"
+											href={`${config.WS_URL}/races/${r.id}/stats`}
+										>{`${config.WS_URL}/races/${r.id}/stats`}</a>
+									</li>
+									<li>Ranking: <a
+											className="underline"
+											href={`${config.WS_URL}/races/${r.id}/ranking`}
+										>{`${config.WS_URL}/races/${r.id}/ranking`}</a>
+									</li>
+								</ul>
 							</CardContent>
 							<CardFooter className="flex gap-2 justify-end">
 									<Button
