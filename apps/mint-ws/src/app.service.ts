@@ -398,10 +398,13 @@ export class AppService{
         positions,
       })
     }
+
+    const avgSpeeds = finalRanking.map(fr => fr.avgKmHSpeed)
+    const maxSpeeds = finalRanking.map(fr => fr.maxKmHSpeed)
     
     return {
-      avgKmHSpeed: 0,
-      maxKmHSpeed: 0,
+      avgKmHSpeed: avgSpeeds.reduce((a, b) => a + b, 0) / avgSpeeds.length,
+      maxKmHSpeed: Math.max(...maxSpeeds),
       finalRanking: finalRanking.sort((a, b) => b.avgKmHSpeed - a.avgKmHSpeed)
     }
   }
