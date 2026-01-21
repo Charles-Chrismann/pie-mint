@@ -9,6 +9,12 @@ export class AppController {
 
   constructor(private readonly appService: AppService) {}
 
+  @Get('logger/toggle-verbose')
+  toggleVerbose() {
+    this.appService.logger.toggleVerbose()
+    return { verbose: this.appService.logger.verboseEnabled }
+  }
+
   @Post('races')
   @UseGuards(SignatureGuard)
   async registerRace(
@@ -64,15 +70,5 @@ export class AppController {
     @Param('raceId') raceId: string
   ) {
     return this.appService.pruneRace(raceId)
-  }
-
-  @Get('races/:raceId/user/:userId')
-  @Header('Content-Type', 'application/gpx+xml')
-  @Header('Content-Disposition', 'attachment; filename="race.gpx"')
-  getUserIdGpx(
-    @Param('raceId') raceId: string,
-    @Param('userId') userId: string,
-  ) {
-    return this.appService.exportRaceUserGPX(userId, raceId)
   }
 }

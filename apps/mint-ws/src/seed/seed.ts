@@ -23,17 +23,12 @@ async function main() {
 
 	await Redis.registerRace({ id, startDate, endDate, runnerIds, positions: points})
 
-	console.log(points)
-
-	const promises: Promise<any>[][] = []
-
 	for(const userId of runnerIds) {
 		// const latPositionShift = 0.00001
 		// const lngPositionShift = 0.00001
 		const speedFactor = Math.max(Math.random() * 1.815277778, .3)
 		const pointCount = points.length / speedFactor
 		const customizedPoints: CustomizedPoint[] = []
-		// console.log(speedFactor, pointCount)
 		for(let i = 0; i < points.length; i++) {
 			const p = points[i]
 			const lat = Number((p.lat).toFixed(6))

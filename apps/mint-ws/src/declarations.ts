@@ -12,6 +12,7 @@ export const envSchema = z.object({
   JWT_SECRET: z.string().min(1),
   SIGNATURE_SECRET: z.string().min(1),
   REDIS_URL: z.url(),
+  LOGGER_VERBOSE: z.boolean().default(true)
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -39,7 +39,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     server.use((socket, next) => {
       const token = socket.handshake.auth.token || socket.handshake.headers.token;
-      console.log(`Received token: ${token}`)
+      this.appService.logger.verbose(`Received token: ${token}`)
       if(token) {
         try {
           const payload: JWTPayload = this.jwtService.verify(token);
@@ -48,7 +48,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
           this.appService.logger.verbose(`Runner #${payload.userId} connected!`)
           next();
         } catch (err) {
-          console.log('Token not verified', err)
+          this.appService.logger.error('Token not verified', err)
           next(new Error('Unauthorized'));
         }
       } else {
@@ -64,7 +64,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     socket: Socket,
     raceId: string
   ) {
-    console.log(`Someone joined rom: ${raceId}`)
+    this.appService.logger.verbose(`Someone joined rom: ${raceId}`)
     socket.join(raceId)
   }
 
@@ -73,7 +73,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     socket: Socket,
     raceId: string
   ) {
-    console.log(`Someone leaves rom: ${raceId}`)
+    this.appService.logger.verbose(`Someone leaves rom: ${raceId}`)
     socket.leave(raceId)
   }
 
@@ -82,7 +82,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     client: Socket,
     data: PositionPayload
   ) {
-    console.log(data)
     return this.appService.handlePositionEvent(client.data.user.userId, data)
   }
 }

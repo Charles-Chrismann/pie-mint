@@ -187,7 +187,7 @@ export function decodeRacePositionsBuffer(buf: Buffer): Position3D[] {
 }
 
 
-import { lineString, along, length, lineSegment, distance } from '@turf/turf';
+import { lineString, along, length, lineSegment, distance, destination, bearing, point } from '@turf/turf';
 
 /**
  * Trouve le segment de la LineString où un point à une distance donnée tombe.
@@ -224,4 +224,30 @@ export function getSegmentAtDistance(line: LineString, targetDistance: number) {
     end: last.geometry.coordinates[1],
     point: along(line, targetDistance, { units: 'kilometers' })
   };
+}
+
+export function pointAtDistanceOnSegment(
+  startPt: [number, number],
+  endPt: [number, number],
+  distanceMeters: number,
+) {
+  const start = point(startPt)
+  const end = point(endPt)
+
+  // longueur réelle du segment
+  const segmentLength = distance(start, end, { units: "meters" })
+
+  // clamp
+  const d = Math.min(distanceMeters, segmentLength)
+
+  const angle = bearing(start, end)
+
+  const p = destination(start, d, angle, {
+    units: "meters"
+  })
+
+  return {
+    lon: p.geometry.coordinates[0],
+    lat: p.geometry.coordinates[1]
+  }
 }

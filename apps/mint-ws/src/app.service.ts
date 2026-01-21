@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import Redis from './Redis';
 import { getPointsFromGpx } from './seed/utils';
 import * as fs from 'fs/promises'
@@ -11,10 +11,10 @@ import { decodePositionBuffer, decodeRacePositionsBuffer } from './classes/utils
 import { ConfigService } from '@nestjs/config';
 import { simplifyGpx } from './utils';
 import { AppGateway } from './app.gateway';
+import { Logger } from './logger/logger.service';
 
 @Injectable()
 export class AppService{
-  public readonly logger = new Logger(AppService.name);
 
   public gatewayWsServer: AppGateway['server']
 
@@ -25,6 +25,7 @@ export class AppService{
 
   constructor(
     private config: ConfigService,
+    public logger: Logger
   ) {}
 
   async restoreCache() {
@@ -61,7 +62,7 @@ export class AppService{
     async startEventSending() {
       this.logger.verbose(`Start emitting`)
       this.emitTimeout = setInterval(async () => {
-        this.logger.verbose(`Starting recurrent event sending`)
+        // this.logger.verbose(`Starting recurrent event sending`)
   
         const emus = this.emulatedRace
         if(emus.length) {
@@ -81,10 +82,10 @@ export class AppService{
         const lastSecondEvents = Array.from(this.lastSecondEvents).map(([raceId, positions]) => ({ raceId, positions, ranking: [] as [string, number][] }))
 
         if(!lastSecondEvents.length) {
-          this.logger.verbose(`Skipping procedure: 0 events concerned`)
+          // this.logger.verbose(`Skipping procedure: 0 events concerned`)
           return
         }
-        this.logger.verbose(`${lastSecondEvents.length} events concerned`)
+        // this.logger.verbose(`${lastSecondEvents.length} events concerned`)
 
         const pipeline = Redis.pipeline()
         for(const entry of lastSecondEvents) {
@@ -132,11 +133,14 @@ export class AppService{
           const { positions, ranking } = entry
 
           if(!positions.length) {
-            this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
+            // this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
             continue
           }
 
-          this.logger.verbose(`Emitting ${positions.length} positions to ${this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size} clients`)
+          const clientPoolSize = this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size
+          if(clientPoolSize) {
+            this.logger.verbose(`Emitting ${positions.length} positions to ${clientPoolSize} clients`)
+          }
           this.gatewayWsServer.to(entry.raceId)
           .emit('positions', { positions, ranking })
 
@@ -168,21 +172,6 @@ export class AppService{
       geometry: line.geometry
     })
     return Redis.registerRace({ ...body, positions: points })
-  }
-
-  exportRaceGPXs() {
-    
-  }
-
-  async exportRaceUserGPX(userId: string, raceId: string) {
-    // console.log(await Redis.keys('*'))
-    // const start = performance.now()
-    // const positions = (await Redis.zrangeBuffer(`user:${userId}:race:${raceId}:positions`, 0, -1)).map(p => decodePosition(p))
-    // console.log(performance.now() - start)
-    // console.log(positions)
-
-    // const stream = Readable.from([createGPXString(positions)]);
-    // return new StreamableFile(stream);
   }
 
   async getRunningRaces() {
@@ -263,6 +252,8 @@ export class AppService{
   }
 
   async handlePositionEvent(userId: string | undefined, data: PositionPayload) {
+    this.logger.verbose(`Position received from user: #${userId} (${JSON.stringify(data)})`)
+    
     if(!userId) return
 
     const raceId = data.raceId

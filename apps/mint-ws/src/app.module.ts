@@ -11,6 +11,7 @@ import { formatZodErrors } from './zod-helpers';
 import { SignatureGuard } from './guards/signature.gaurds';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -26,10 +27,11 @@ import { join } from 'path';
           process.exit(1);
         }
 
-        console.log(parsed.data)
+        if(parsed.data.NODE_ENV === "development") console.log(parsed.data)
 
         return parsed.data;
       },
+      isGlobal: true
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -37,6 +39,7 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    LoggerModule
   ],
   controllers: [AppController],
   providers: [

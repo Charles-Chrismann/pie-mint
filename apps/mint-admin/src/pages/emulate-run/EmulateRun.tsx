@@ -34,7 +34,7 @@ export default function EmulateRunPage() {
   const [track, setTrack] = useState<LineString>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [ranking, setRanking] = useState<[string, number][]>([])
-  const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "default", tileLayer: MAP_STYLES.default})
+  const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "light", tileLayer: MAP_STYLES.light})
   const [runners, setRunners] = useState<Runner[]>([])
 
   useEffect(() => {

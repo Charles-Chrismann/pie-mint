@@ -2,6 +2,8 @@ import { XMLParser } from "fast-xml-parser";
 import { Runner } from "./Runner";
 import { getPointsFromGpx, gpxPointsToEquidistantPoints } from "./utils";
 import { Position3D } from "./declarations";
+import { Feature, GeoJsonProperties, LineString } from "geojson";
+import { distance, length, lineString } from "@turf/turf";
 
 export class EmulatedRace {
 	id: string
@@ -11,6 +13,13 @@ export class EmulatedRace {
 	gpx: string
 	points: Position3D[]
 	runners: Runner[] = []
+	segments: {
+		start: [number, number]
+		end: [number, number]
+		distance: number
+	}[] = []
+	path: Feature<LineString, GeoJsonProperties>
+	raceLengthInMeters: number
 
 	constructor(
 		id: string,
@@ -25,6 +34,9 @@ export class EmulatedRace {
 		this.gpx = gpx
 
 		this.setPoints()
+		this.path = lineString(this.points.map(({lon, lat}) => [lon, lat]))
+		this.raceLengthInMeters = length(this.path)
+		this.createSegments()
 		this.createRunners(runnerIds)
 	}
 
@@ -35,13 +47,28 @@ export class EmulatedRace {
 		this.points = gpxPointsToEquidistantPoints(points)
 	}
 
+	createSegments() {
+		for(let i = 0; i < this.path.geometry.coordinates.length - 1; i++) {
+			const start = this.path.geometry.coordinates[i] as [number, number]
+			const end = this.path.geometry.coordinates[i + 1] as [number, number]
+			const distanceInMeter = distance(start, end, { units: "meters" })
+			this.segments.push({
+				distance: distanceInMeter,
+				end,
+				start
+			})
+		}
+	}
+
 	createRunners(runnerIds: string[]) {
 		for(const id of runnerIds) {
 
 			const runner = new Runner(
 				id,
 				this.id,
-				this.points
+				this.points,
+				this.segments,
+				this.path
 			)
 
 			this.runners.push(runner)

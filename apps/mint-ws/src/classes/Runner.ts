@@ -1,12 +1,10 @@
-import { along, length, lineString } from "@turf/turf";
+import { length } from "@turf/turf";
 import { AccelerationPhase, Position3D } from "./declarations";
 import {
-  getBornPoints,
-  getPointsTotalDistance,
-  getSegmentAtDistance,
-  interpolatePoint,
+  pointAtDistanceOnSegment,
   randomGaussian
 } from "./utils";
+import { Feature, GeoJsonProperties, LineString } from "geojson";
 
 export class Runner {
   runnerId: string
@@ -14,17 +12,27 @@ export class Runner {
   points: Buffer
   avgSpeedKmh: number
   avgSpeedMs: number
+  segments: {
+    start: [number, number]
+    end: [number, number]
+    distance: number
+  }[] = []
+  path: Feature<LineString, GeoJsonProperties>
 
   constructor(
     runnerId: string,
     raceId: string,
     points: Position3D[],
+    segments: typeof this.segments,
+    path: typeof this.path,
   ) {
     this.runnerId = runnerId
     this.raceId = raceId
     
     this.avgSpeedKmh = randomGaussian();
     this.avgSpeedMs = this.avgSpeedKmh / 3.6;
+    this.segments = segments
+    this.path = path
 
     this.generatePoints(points)
   }
@@ -40,12 +48,10 @@ export class Runner {
   }
 
   generatePoints(points: Position3D[]) {
-    const totalDistance = getPointsTotalDistance(points)
-    const secondsToFinishRace = Math.ceil(totalDistance / this.avgSpeedMs)
-    let raceCumultateDistance = 0
+    const totalDistance = length(this.path, { units: "meters" })
     let runnerCumultateDistance = 0
-    const runnerPositions = [points[0]]
-    const path = lineString(points.map(({lon, lat}) => [lon, lat]));
+    const {lon, lat, alt} = points[0]
+    const runnerPositions = [{lon, lat, alt}]
     const phase: AccelerationPhase = {
       intensity: Math.random() * 0.2 + .1,
       duration: Math.ceil(Math.random() * 480 + 120),
@@ -70,24 +76,25 @@ export class Runner {
       phase.startedSince = 0
     }
 
+    let currentSegmentIndex = 0
+    let cumulateSegmentDistance = 0
+
     while(runnerCumultateDistance < totalDistance) {
-      // runnerCumultateDistance += this.avgSpeedMs * (1 + phase.intensity)
       runnerCumultateDistance += Math.random() * 10
       updatePhase()
 
-      const [lon, lat] = along(path, runnerCumultateDistance, { units: "meters" }).geometry.coordinates
-      // console.log(runnerCumultateDistance)
-      // console.log(lon, lat)
-      // console.log()
+      let segment = this.segments[currentSegmentIndex]
+      while(cumulateSegmentDistance + segment.distance < runnerCumultateDistance) {
+        cumulateSegmentDistance += segment.distance
+        currentSegmentIndex++
+        const nextSegment = this.segments[currentSegmentIndex]
+        if(!nextSegment) break
+        segment = nextSegment
+      }
 
-      // const pointData = getSegmentAtDistance(path.geometry, runnerCumultateDistance)
-      // console.log(pointData)
-      // const alt = (points[pointData.index].alt + points[pointData.index + 1].alt) / 2
-      // const [lon, lat] = pointData.point.geometry.coordinates
-      // runnerPositions.push({ lon, lat, alt })
+      const { lon, lat } = pointAtDistanceOnSegment(segment.start, segment.end, runnerCumultateDistance - cumulateSegmentDistance)
       runnerPositions.push({ lon, lat, alt: 0 })
     }
-
 
     const buf = Buffer.alloc(runnerPositions.length * 3 * 4);
     let offset = 0;
@@ -105,12 +112,4 @@ export class Runner {
     this.points = buf
     // console.log(`${this.runnerId}: ${this.points.length} generated (${this.avgSpeedKmh} avg speed)(will finish race in ${this.points.length / 3600}h)`)
   }
-
-  // emitPosition(elapsedTime: number) {
-  //   const position = this.getPosition(elapsedTime)
-  //   this.io.emit('position', {
-  //     raceId: this.raceId,
-  //     position: position
-  //   })
-  // }
 }
