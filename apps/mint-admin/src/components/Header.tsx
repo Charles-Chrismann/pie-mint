@@ -1,35 +1,49 @@
-// import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuGroup,
-//   DropdownMenuItem,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger
-// } from "./ui/dropdown-menu";
-// import {
-//   Avatar,
-//   AvatarFallback,
-//   AvatarImage
-// } from "./ui/avatar";
-// import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "./ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "./ui/avatar";
+import { Button } from "./ui/button";
 
 export default function Header() {
-  // const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  function getNavLinksFromUserRole() {
+    return <>
+      <li><Link to="/">Home</Link></li>
+      <li><Link to="/races">Courses</Link></li>
+    </>
+    switch(user?.role) {
+      case "coureur":
+        return <>
+          <Link to="/">Home</Link>
+        </>
+      case "organisateur":
+        return<>
+        </>
+      default:
+        return <></>
+    }
+  }
 
   return (
     <header className="h-18 px-8 shadow-md flex items-center justify-between">
       <nav>
-        <ul>
-          <li className="flex gap-4">
-            <Link to="/">Home</Link>
-            <Link to="/races">Courses</Link>
-            {/* <Link to="/me/organizations">Mes organisations</Link> */}
-          </li>
-        </ul>
+        {
+          <ul className="flex gap-4">{getNavLinksFromUserRole()}</ul>
+        }
       </nav>
-      {/* {
+      {
         !user ?
           <div className="flex gap-2">
             <Button asChild>
@@ -44,7 +58,7 @@ export default function Header() {
                   <Avatar className="rounded-lg">
                     <AvatarImage
                       src={undefined}
-                      alt={`${user.userProfile.firstname} ${user.userProfile.lastname}'s avatar`}
+                      alt={`${user.firstname} ${user.lastname}'s avatar`}
                     />
                     <AvatarFallback>aa</AvatarFallback>
                   </Avatar>
@@ -61,7 +75,7 @@ export default function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-      } */}
+      }
     </header>
   )
 }

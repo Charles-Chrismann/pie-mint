@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import config from "@/config"
-import type { ApiResponseCreateOrganization, Organization } from "@/declarations"
+import type { Organization } from "@/declarations"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
@@ -30,19 +29,13 @@ export default function OrganizationsPage() {
     e.preventDefault()
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const createdOrg = await Api.authenticatedForm<ApiResponseCreateOrganization>('/organizations', "POST", formData)
+    const createdOrg = await Api.createOrganization(formData.get('name') as string)
     setMyOrgs([...myOrgs, createdOrg])
   }
 
   useEffect(() => {
     async function fetchMyOrgs() {
-      const res = await fetch(config.API_BASE_URL + '/api/me/organizations', {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('access_token') as string
-        }
-      })
-      const data: Organization[] = await res.json()
-      setMyOrgs(data)
+      setMyOrgs(await Api.getOrganizations())
     }
 
     fetchMyOrgs()
@@ -50,27 +43,6 @@ export default function OrganizationsPage() {
 
   return (
     <div>
-      <div>
-        <h1>Mes Organisations</h1>
-        <div>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-8">
-            {
-              myOrgs.map(o =>
-                <li key={o.id}>
-                  <Link to={`./${o.id}`}>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{o.name}</CardTitle>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                </li>
-              )
-            }
-          </ul>
-        </div>
-      </div>
-
       <div>
         <Card className="w-100">
           <CardHeader>
@@ -123,6 +95,26 @@ export default function OrganizationsPage() {
             </Button>
           </CardFooter>
         </Card>
+      </div>
+      <div>
+        <h1>Mes Organisations</h1>
+        <div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-8">
+            {
+              myOrgs.map(o =>
+                <li key={o.id}>
+                  <Link to={`./${o.id}`}>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{o.name}</CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                </li>
+              )
+            }
+          </ul>
+        </div>
       </div>
     </div>
   )

@@ -43,7 +43,7 @@ export const RacesProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const mergeds = useMemo<MergedRace[]>(() => {
-    const apiMap = new Map(apiRaces.map(r => [r.id, r]))
+    const apiMap = new Map(apiRaces.map(r => [r._id, r]))
 
     return wsRaces.map(wsRace => ({
       id: wsRace.id,

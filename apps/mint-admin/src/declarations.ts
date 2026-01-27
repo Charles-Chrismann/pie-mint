@@ -61,12 +61,12 @@ export interface Runner {
 }
 
 export interface Organization {
-  id: number
+  id: string
   name: string
-  media_avatar_id: number
-  media_banner_id: number
-  created_by_id: number
-  owner_id: number
+  // media_avatar_id: number
+  // media_banner_id: number
+  // created_by_id: number
+  // owner_id: number
 }
 
 export interface Event {
@@ -78,10 +78,60 @@ export interface Event {
   organization_id: number
 }
 
-export interface ApiRace {
-  id: string
+export interface CreateRaceDTO {
+  name: string
   startDate: string
   endDate: string
+  organization: string
+  runners: string[]
+  gpxFile: string
+  paymentIntentId?: string
+}
+export interface ApiRace {
+  _id: string
+  name: string
+  startDate: string
+  endDate: string
+  organization: ApiOrganization
+  runners: ApiRaceRunner[]
+  gpxFile: string
+  owner: ApiRaceRunner
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
+
+export interface WsRace {
+
+}
+
+export interface ApiOrganization {
+  _id: string
+  name: string
+  created_by_id: string
+  owner_id: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
+
+export interface ApiRaceRunner {
+  _id: string
+  email: string
+  firstname: string
+  lastname: string
+  role: UserRole
+  profileImage: string | null
+  isPremium: boolean
+  __v: number
+}
+
+export interface ApiProfile {
+  _id: string
+  email: string
+  firstname: string
+  lastname: string
+  isPremium: boolean
 }
 
 export interface Race {
@@ -119,24 +169,34 @@ export interface RaceRegistrationRunners {
 }
 
 export interface TechnicalUser {
-  id: number
   email: string
 }
 
 export interface UserProfile {
-  id: number
   firstname: string
   lastname: string
-  user_id: number
-  avatar_url: string
-  banner_url: string
+  role: "user"
 }
+
+export type UserRole = "coureur" | "organisateur"
 
 export interface ApiResponseLogin {
   technicalUser: TechnicalUser
   userProfile: UserProfile
+  firstname: string
+  lastname: string
+  role: UserRole
+  _id: string
   access_token: string
-  refresh_token: string
+}
+
+export interface ApiResponseRegister {
+  email: string
+  firstname: string
+  lastname: string
+  role: UserRole
+  userId: string
+  accessToken: string
 }
 
 export interface ApiResponseCreateOrganization {

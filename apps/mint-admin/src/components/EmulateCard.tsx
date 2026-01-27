@@ -80,7 +80,7 @@ export default function EmulateCard() {
 						{
 							raceLink &&
 							<FieldDescription className="text-center">
-								The rac starts in 10 seconds <Link to={raceLink}>Watch the race</Link>
+								The race starts in 10 seconds <Link to={raceLink}>Watch the race</Link>
 							</FieldDescription>
 						}
 					</Field>

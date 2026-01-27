@@ -12,16 +12,18 @@ import MyEventPage from './pages/me/Event'
 import MyRacePage from './pages/me/Race'
 import EmulateRunPage from './pages/emulate-run/EmulateRun'
 import { RacesProvider } from './contexts/RacesContext'
+import { AuthProvider } from './contexts/AuthContext'
+import RegisterPage from './pages/auth/Register'
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      // <AuthProvider>
+      <AuthProvider>
         <RacesProvider>
             <App />
         </RacesProvider>
-      // </AuthProvider>
+      </AuthProvider>
     ),
     children: [
       {
@@ -34,6 +36,10 @@ export const router = createBrowserRouter([
           {
             path: 'login',
             element: <LoginPage />
+          },
+          {
+            path: 'register',
+            element: <RegisterPage />
           }
         ]
       },

@@ -1,6 +1,4 @@
 import Api from "@/Api";
-import RaceCard from "@/components/cards/RaceCard";
-import ResponsiveCardGrid from "@/components/cards/ResponsiveCardGrid";
 import type {
   Race,
   Event,
@@ -48,9 +46,9 @@ export default function EventSinglePage() {
         <p>{event.description}</p>
         <div>
           <h4>Courses:</h4>
-          <ResponsiveCardGrid children={races.map(se =>
+          {/* <ResponsiveCardGrid children={races.map(se =>
                   <RaceCard key={se.id} raceId={se.id} link={`./races/${se.id}`} />
-                )} />
+                )} /> */}
           {/* <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-8">
             {
               races.length ?

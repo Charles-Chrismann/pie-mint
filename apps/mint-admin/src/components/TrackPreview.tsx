@@ -1,20 +1,27 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { LineString } from "@/declarations";
+import { MAP_STYLES } from "@/constants";
 
-export default function TrackPreview({ track }: { track: LineString }) {
+export default function TrackPreview({
+  track,
+  mapStyle = "light"
+}: {
+  track: LineString,
+  mapStyle?: keyof typeof MAP_STYLES
+}) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [_map, setMap] = useState<L.Map>()
+  const mapRefInstance = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return
-    // Initialiser la carte
-    const map = L.map(mapRef.current).setView([45.761401, 4.825875], 15); // Lyon
+    if (!mapRef.current || mapRefInstance.current) return;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
+    // Initialiser la carte
+    const map = L.map(mapRef.current); // Lyon
+    mapRefInstance.current = map;
+
+    MAP_STYLES[mapStyle]().addTo(map);
 
     // const polyline = L.polyline(track.map((p) => [p.lat, p.lng]), { color: 'blue' }).addTo(map!);
     const geoJSON = L.geoJSON(track, {
@@ -25,11 +32,10 @@ export default function TrackPreview({ track }: { track: LineString }) {
     }).addTo(map);
     map.fitBounds(geoJSON.getBounds());
 
-    setMap(map)
-
     // Nettoyage si le composant est démonté
     return () => {
       map.remove();
+      mapRefInstance.current = null;
     };
   }, []);
 

@@ -1,5 +1,5 @@
 import Api from '@/Api';
-import type { TechnicalUser, UserProfile } from '@/declarations';
+import type { UserRole } from '@/declarations';
 import { UnauthorizedError } from '@/errors/unauthorized.error';
 import { UnexistingError } from '@/errors/unexisting.error';
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
@@ -7,12 +7,23 @@ import { useNavigate } from 'react-router-dom';
 
 type AuthContextType = {
   user: {
-    technicalUser: TechnicalUser;
-    userProfile: UserProfile;
+    _id: string,
+    firstname: string,
+    lastname: string,
+    email: string,
+    role?: UserRole,
+    isPremium?: boolean,
   } | null
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  register: (registerData: {
+    email: string,
+    password: string,
+    firstname: string,
+    lastname: string,
+    role: UserRole,
+  }) => Promise<void>
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     async function fetchUser() {
       let userData: AuthContextType['user'] = null
       try {
-        userData = await Api.authenticatedFetch<AuthContextType['user']>('/me')
+        userData = await Api.getMe()
       } catch (error: unknown) {
         if(error instanceof UnauthorizedError) {
           await refreshToken()
@@ -37,21 +48,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData)
     }
 
-    const access_token = localStorage.getItem('user');
+    const access_token = localStorage.getItem('access_token');
     if(!access_token) return
     fetchUser()
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { technicalUser, userProfile, access_token } = await Api.login(email, password)
-    localStorage.setItem('user', JSON.stringify({
-      technicalUser,
-      userProfile
-    }));
+    const { _id, firstname, lastname, role, technicalUser, access_token } = await Api.login(email, password)
     localStorage.setItem('access_token', access_token);
     setUser({
-      technicalUser,
-      userProfile
+      _id,
+      email: technicalUser.email,
+      firstname,
+      lastname,
+      role
     })
   };
 
@@ -67,11 +77,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('access_token');
   };
 
+  const register = async ({ email, password, firstname, lastname, role }: {
+    email: string,
+    password: string,
+    firstname: string,
+    lastname: string,
+    role: UserRole
+  }) => {
+    const { accessToken, userId } = await Api.register(
+      email,
+      password,
+      firstname,
+      lastname,
+      role
+    )
+    localStorage.setItem('access_token', accessToken);
+    setUser({
+      _id: userId,
+      email,
+      firstname,
+      lastname,
+      role
+    })
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, register }}>
       {children}
     </AuthContext.Provider>
   );

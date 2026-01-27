@@ -1,4 +1,7 @@
+import type { LineString } from "@/declarations"
+import { lineString } from "@turf/turf"
 import { clsx, type ClassValue } from "clsx"
+import { XMLParser } from "fast-xml-parser"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -30,4 +33,26 @@ export function formUpdator(
       setUpdateForm(updateFormCopy)
     }
   ]
+}
+
+export interface Position3D {
+  lat: number
+  lon: number
+  alt: number
+}
+
+export function getPointsFromGpx(gpxData: Record<string, any>): Position3D[] {
+	return (gpxData.gpx.trk.trkseg.trkpt as []).map(p => ({
+		alt: Number(p['ele']),
+		lat: Number(p['@_lat']),
+		lon: Number(p['@_lon']),
+	}))
+}
+
+export function gpxToLineString(gpx: string) {
+  const xmlParser = new XMLParser({ ignoreAttributes: false })
+  const gpxData = xmlParser.parse(gpx)
+  const points = getPointsFromGpx(gpxData)
+  const line = lineString(points.map(({ lat, lon }) => [lon, lat]))
+  return line.geometry as LineString
 }

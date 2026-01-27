@@ -34,7 +34,7 @@ export default function EmulateRunPage() {
   const [track, setTrack] = useState<LineString>()
   const [lastUpdatedRunners, setLastUpdatedRunners] = useState<LastUpdatedRunner[]>()
   const [ranking, setRanking] = useState<[string, number][]>([])
-  const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "light", tileLayer: MAP_STYLES.light})
+  const [mapStyle, setMapStyle] = useState<{name: MapStyleKey, tileLayer: L.TileLayer}>({name: "light", tileLayer: MAP_STYLES.light()})
   const [runners, setRunners] = useState<Runner[]>([])
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function EmulateRunPage() {
   // }
 
   function changeMapStyle(e: MapStyleKey) {
-    setMapStyle({name: e, tileLayer: MAP_STYLES[e] })
+    setMapStyle({name: e, tileLayer: MAP_STYLES[e]() })
   }
 
   function handleRaceChange(raceId: string) {
@@ -201,12 +201,12 @@ export default function EmulateRunPage() {
         <div className="w-128 flex flex-col gap-2">
           <div className="relative w-full h-64">
             <img
-              src={selectedRunner.user_profile.banner_url}
+              src={undefined}
               alt={`${selectedRunner.user_profile.firstname} ${selectedRunner.user_profile.lastname}'s banner`}
               className="absolute w-full h-1/2 object-cover left-0 top-0"
             />
             <img
-              src={selectedRunner.user_profile.avatar_url}
+              src={undefined}
               alt={`${selectedRunner.user_profile.firstname} ${selectedRunner.user_profile.lastname}'s avatar`}
               className="absolute w-48 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 outline outline-8 outline-white"
             />
