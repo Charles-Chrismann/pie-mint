@@ -7,12 +7,20 @@ import config from "@/config"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import RaceCard from "./cards/RaceCard"
 import { renderRaceStatus } from "@/lib/utilsTsx"
+import { Spinner } from "./ui/spinner"
 
 export default function RacesStatus() {
 
-	const { mergeds, deleteRace } = useRaces()
+	const { mergeds, deleteRace, loadingRaces } = useRaces()
 
 	const races = useMemo(() => [...mergeds].reverse(), [mergeds])
+
+	if(loadingRaces) return (
+		<div className="flex items-center gap-2">
+			<Spinner />
+			<span>Loading races...</span>
+		</div>
+	)
 
 	return (
 		<Tabs defaultValue="all">

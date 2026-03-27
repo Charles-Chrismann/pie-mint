@@ -16,6 +16,7 @@ interface RacesContextType {
   mergeds: MergedRace[]
   refreshRaces: () => Promise<void>
   deleteRace: (raceId: string) => Promise<void>
+  loadingRaces: boolean
 }
 
 const RacesContext = createContext<RacesContextType | undefined>(undefined)
@@ -23,18 +24,21 @@ const RacesContext = createContext<RacesContextType | undefined>(undefined)
 export const RacesProvider = ({ children }: { children: ReactNode }) => {
   const [apiRaces, setApiRaces] = useState<ApiRace[]>([])
   const [wsRaces, setWsRaces] = useState<Race[]>([])
+  const [loadingRaces, setLoadingRaces] = useState(false)
 
   useEffect(() => {
     refreshRaces()
   }, [])
 
   async function refreshRaces() {
+    setLoadingRaces(true)
     const [apiRaces, wsRaces] = await Promise.all([
       Api.getRaces(),
       Ws.getRaces(),
     ])
     setApiRaces(apiRaces)
     setWsRaces(wsRaces)
+    setLoadingRaces(false)
   }
 
   async function deleteRace(raceId: string) {
@@ -61,6 +65,7 @@ export const RacesProvider = ({ children }: { children: ReactNode }) => {
       mergeds,
       refreshRaces,
       deleteRace,
+      loadingRaces,
     }}>
       {children}
     </RacesContext.Provider>

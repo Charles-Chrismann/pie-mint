@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+* {
+  font-family: "Geist", "Geist Fallback", sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
