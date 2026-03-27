@@ -169,6 +169,7 @@ class Api {
 
   async createRace(createRaceDTO: CreateRaceDTO) {
     const race = await this.authenticatedFetch<ApiRace>(`/race`, "POST", createRaceDTO)
+    console.log('cteated api race', race)
     const wsRace = await this.authenticatedFetchToWs(`/races`, "POST", {
       id: race._id,
       startDate: createRaceDTO.startDate,

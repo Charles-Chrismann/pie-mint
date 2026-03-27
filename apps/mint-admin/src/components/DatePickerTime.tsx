@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
+import { uuid } from "@/lib/utils"
 
 export function DatePickerTime({
   date,
@@ -21,8 +22,8 @@ export function DatePickerTime({
   setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
 }) {
   const [open, setOpen] = React.useState(false)
-  const dateId = React.useRef(crypto.randomUUID())
-  const timeId = React.useRef(crypto.randomUUID())
+  const dateId = React.useRef(uuid())
+  const timeId = React.useRef(uuid())
 
   const timeValue = React.useMemo(() => {
     if (!date) return "10:30:00"

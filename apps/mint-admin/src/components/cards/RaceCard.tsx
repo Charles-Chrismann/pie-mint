@@ -13,7 +13,6 @@ import type {
   MergedRace,
 } from "@/declarations";
 import TrackPreview from "../TrackPreview";
-import { gpxToLineString } from "@/lib/utils";
 import { renderRaceStatus } from "@/lib/utilsTsx";
 import { feature, length } from "@turf/turf";
 
@@ -23,8 +22,8 @@ export default function RaceCard({ race }: { race: MergedRace }) {
   const [_loading, _setLoading] = useState(true)
   // const [race, setRace] = useState<Race>()
   const track = useRef(
-    race._api
-      ? feature(gpxToLineString(race._api.gpxFile))
+    race._ws
+      ? feature(race._ws.geometry)
       : undefined
   );
   
