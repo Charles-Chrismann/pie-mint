@@ -72,3 +72,4 @@ export class AppController {
     return this.appService.pruneRace(raceId)
   }
 }
+
