@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 import { Logger } from "./logger/logger.service";
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { RedisIoAdapter } from './redis-adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -16,6 +17,7 @@ async function bootstrap() {
   }));
   app.use(bodyParser.json({ limit: '100mb' }));
   app.useLogger(app.get(Logger))
+  app.useWebSocketAdapter(new RedisIoAdapter(app));
 
   const config = new DocumentBuilder()
     .setTitle('Cats example')
