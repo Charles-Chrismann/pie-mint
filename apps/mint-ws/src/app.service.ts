@@ -13,6 +13,7 @@ import { simplifyGpx } from './utils';
 import { AppGateway } from './app.gateway';
 import { Logger } from './logger/logger.service';
 import { Replay } from './classes/replay';
+import replays from './data/replays';
 
 @Injectable()
 export class AppService{
@@ -20,7 +21,7 @@ export class AppService{
   public gatewayWsServer: AppGateway['server']
 
   emulatedRace: EmulatedRace[] = []
-  replays = new Map<ReplayJson['id'], ReplayJson>
+  replays = new Map(replays.map(r => [r.id, r]))
   lastSecondEvents: Map<RaceId, WsSendPositions> = new Map()
   emitTimeout: NodeJS.Timeout | null = null
   racesMap = new Map<string, RacesMapValues>()
@@ -500,8 +501,8 @@ export class AppService{
       name,
       startDate, 
       ranking: rankingOverTime,
-      positions: userIds.map((id, i) => ({
-        id,
+      positions: userIds.map((userId, i) => ({
+        userId,
         positions: points[i].map(({ lat, lon }) => [lon, lat])
       })),
       gpx,
@@ -519,7 +520,7 @@ export class AppService{
   }
 
   getReplays() {
-    return Array.from(this.replays)
+    return Array.from(this.replays).map(([_, r]) => r)
   }
 
   getReplay(id: string) {
