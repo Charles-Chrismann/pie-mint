@@ -2,16 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import Redis from './Redis';
 import { getPointsFromGpx } from './seed/utils';
 import * as fs from 'fs/promises'
-import { PositionPayload, Race, RaceId, RacesMapValues, RaceStats, WsSendPositions } from './declarations';
+import { PositionPayload, Race, RaceId, RacesMapValues, RaceStats, ReplayJson, WsSendPositions } from './declarations';
 import { EmulatedRace } from './classes/EmulatedRace';
 import { length, lineString, nearestPointOnLine, point } from '@turf/turf';
-import { RegisterRaceDTO } from './dto/race.dto';
+import { CreateReplayDto, RegisterRaceDTO } from './dto/race.dto';
 import { XMLParser } from 'fast-xml-parser';
 import { decodePositionBuffer, decodeRacePositionsBuffer } from './classes/utils';
 import { ConfigService } from '@nestjs/config';
 import { simplifyGpx } from './utils';
 import { AppGateway } from './app.gateway';
 import { Logger } from './logger/logger.service';
+import { Replay } from './classes/replay';
 
 @Injectable()
 export class AppService{
@@ -19,6 +20,7 @@ export class AppService{
   public gatewayWsServer: AppGateway['server']
 
   emulatedRace: EmulatedRace[] = []
+  replays = new Map<ReplayJson['id'], ReplayJson>
   lastSecondEvents: Map<RaceId, WsSendPositions> = new Map()
   emitTimeout: NodeJS.Timeout | null = null
   racesMap = new Map<string, RacesMapValues>()
@@ -59,97 +61,97 @@ export class AppService{
     }
   }
   
-    async startEventSending() {
-      this.logger.verbose(`Start emitting`)
-      this.emitTimeout = setInterval(async () => {
-        // this.logger.verbose(`Starting recurrent event sending`)
+  async startEventSending() {
+    this.logger.verbose(`Start emitting`)
+    this.emitTimeout = setInterval(async () => {
+      // this.logger.verbose(`Starting recurrent event sending`)
   
-        const emus = this.emulatedRace
-        if(emus.length) {
-          for(const race of emus) {
-            if(!race.isRunning()) continue
-            const raceId = race.id
-            race.progress++
-            const positions = race.getPositions(race.progress)
-            for(const position of positions) {
-              this.handlePositionEvent(position.userId, { raceId, position: { lat: position.lat, lon: position.lon, alt: position.alt } })
-            }
+      const emus = this.emulatedRace
+      if(emus.length) {
+        for(const race of emus) {
+          if(!race.isRunning()) continue
+          const raceId = race.id
+          race.progress++
+          const positions = race.getPositions(race.progress)
+          for(const position of positions) {
+            this.handlePositionEvent(position.userId, { raceId, position: { lat: position.lat, lon: position.lon, alt: position.alt } })
           }
         }
+      }
   
-        // if(!this.lastSecondEvents.length) return
+      // if(!this.lastSecondEvents.length) return
 
-        const lastSecondEvents = Array.from(this.lastSecondEvents).map(([raceId, positions]) => ({ raceId, positions, ranking: [] as [string, number][] }))
+      const lastSecondEvents = Array.from(this.lastSecondEvents).map(([raceId, positions]) => ({ raceId, positions, ranking: [] as [string, number][] }))
 
-        if(!lastSecondEvents.length) {
-          // this.logger.verbose(`Skipping procedure: 0 events concerned`)
-          return
-        }
-        // this.logger.verbose(`${lastSecondEvents.length} events concerned`)
+      if(!lastSecondEvents.length) {
+        // this.logger.verbose(`Skipping procedure: 0 events concerned`)
+        return
+      }
+      // this.logger.verbose(`${lastSecondEvents.length} events concerned`)
 
-        const pipeline = Redis.pipeline()
-        for(const entry of lastSecondEvents) {
-          pipeline.zrange(`race:${entry.raceId}:finishers`, 0, -1, 'WITHSCORES')
-          pipeline.zrevrange(`race:${entry.raceId}:ranking`, 0, -1, 'WITHSCORES')
-        }
+      const pipeline = Redis.pipeline()
+      for(const entry of lastSecondEvents) {
+        pipeline.zrange(`race:${entry.raceId}:finishers`, 0, -1, 'WITHSCORES')
+        pipeline.zrevrange(`race:${entry.raceId}:ranking`, 0, -1, 'WITHSCORES')
+      }
 
-        const pipelineResults = await pipeline.exec()
+      const pipelineResults = await pipeline.exec()
 
-        if(!pipelineResults) {
-          this.logger.error(`No pipeline response`)
-        } else if(!pipelineResults[0]) {
-          this.logger.error(`Pipeline result empty`)
-        } else if (pipelineResults[0][0]) {
-          this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
-        } else {
-          for (let i = 0; i < lastSecondEvents.length; i++) {
-            const finishersResult = pipelineResults[i * 2]
-            const rankingResult = pipelineResults[i * 2 + 1]
-          
-            const rawFinishers = finishersResult[1] as string[]
-            const rawRanking = rankingResult[1] as string[]
-          
-            const finisherSet = new Set<string>()
-            const ranking: [string, number][] = []
-          
-            for (let j = 0; j < rawFinishers.length; j += 2) {
-              const finisherId = rawFinishers[j]
-              finisherSet.add(finisherId)
-              ranking.push([finisherId, -1])
-            }
-          
-            for (let j = 0; j < rawRanking.length; j += 2) {
-              const runnerId = rawRanking[j]
-              if (finisherSet.has(runnerId)) continue
-              ranking.push([runnerId, +Number(rawRanking[j + 1]).toFixed(4)])
-            }
-          
-            lastSecondEvents[i].ranking = ranking
+      if(!pipelineResults) {
+        this.logger.error(`No pipeline response`)
+      } else if(!pipelineResults[0]) {
+        this.logger.error(`Pipeline result empty`)
+      } else if (pipelineResults[0][0]) {
+        this.logger.error(`Ranking recuperation error: ${pipelineResults[0][0].message}`)
+      } else {
+        for (let i = 0; i < lastSecondEvents.length; i++) {
+          const finishersResult = pipelineResults[i * 2]
+          const rankingResult = pipelineResults[i * 2 + 1]
+        
+          const rawFinishers = finishersResult[1] as string[]
+          const rawRanking = rankingResult[1] as string[]
+        
+          const finisherSet = new Set<string>()
+          const ranking: [string, number][] = []
+        
+          for (let j = 0; j < rawFinishers.length; j += 2) {
+            const finisherId = rawFinishers[j]
+            finisherSet.add(finisherId)
+            ranking.push([finisherId, -1])
           }
-          
+        
+          for (let j = 0; j < rawRanking.length; j += 2) {
+            const runnerId = rawRanking[j]
+            if (finisherSet.has(runnerId)) continue
+            ranking.push([runnerId, +Number(rawRanking[j + 1]).toFixed(4)])
+          }
+        
+          lastSecondEvents[i].ranking = ranking
+        }
+        
+      }
+
+      for(const entry of lastSecondEvents) {
+        const { positions, ranking } = entry
+
+        if(!positions.length) {
+          // this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
+          continue
         }
 
-        for(const entry of lastSecondEvents) {
-          const { positions, ranking } = entry
-
-          if(!positions.length) {
-            // this.logger.verbose(`Skipping ${entry.raceId}, 0 positions to update`)
-            continue
-          }
-
-          const clientPoolSize = this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size
-          if(clientPoolSize) {
-            this.logger.verbose(`Emitting ${positions.length} positions to ${clientPoolSize} clients`)
-          }
-          this.gatewayWsServer.to(entry.raceId)
-          .emit('positions', { positions, ranking })
-
-          positions.splice(0, positions.length)
-          ranking.splice(0, ranking.length)
+        const clientPoolSize = this.gatewayWsServer.sockets.adapter.rooms.get(entry.raceId)?.size
+        if(clientPoolSize) {
+          this.logger.verbose(`Emitting ${positions.length} positions to ${clientPoolSize} clients`)
         }
+        this.gatewayWsServer.to(entry.raceId)
+        .emit('positions', { positions, ranking })
+
+        positions.splice(0, positions.length)
+        ranking.splice(0, ranking.length)
+      }
   
-      }, 1000)
-    }
+    }, 1000)
+  }
 
   async registerRace(body: RegisterRaceDTO) {
 
@@ -398,5 +400,131 @@ export class AppService{
       maxKmHSpeed: Math.max(...maxSpeeds),
       finalRanking: finalRanking.sort((a, b) => b.avgKmHSpeed - a.avgKmHSpeed)
     }
+  }
+
+  async createReplay(body: CreateReplayDto) {
+    const {
+      id,
+      startDate,
+      files,
+      name,
+    } = body
+
+    const xmlParser = new XMLParser({ ignoreAttributes: false })
+    const gpxs = files.map(f => xmlParser.parse(f.buffer.toString('utf8')))
+    const points = gpxs.map(gpx => getPointsFromGpx(gpx))
+
+    const line = lineString(points[0].map(({ lat, lon }) => [lon, lat]))
+
+    const userIds = Array.from({ length: points.length }).map(_ => crypto.randomUUID())
+    console.log(points)
+    const progress: {
+      userId: string
+      progress: number[]
+    }[] = []
+    const rankingOverTime: string[][] = []
+    for(let i = 0; i < points.length; i++) {
+      const userId = userIds[i]
+      console.log(userId)
+      const pts = points[i]
+      const cumulatedDistance: number[] = []
+      let j = 0
+      for(const {lat, lon} of pts) {
+        j++
+        console.log(`${j} / ${pts.length + 1}`)
+        const p = point([lon, lat]);
+        const snapped = nearestPointOnLine(line, p, { units: 'meters' });
+        const progress = snapped.properties.location;
+        cumulatedDistance.push(progress)
+      }
+      progress.push({
+        userId,
+        progress: cumulatedDistance
+      })
+    }
+
+    let i = 0
+    let done: string[] = []
+    while(true) {
+      // const doneOnThisSec = progress.filter(p => p.progress.length === i + 1)
+      // if(doneOnThisSec.length) {
+      //   done.push(...doneOnThisSec.map(({ userId }) => userId))
+      // }
+
+      // let ranking: string[] = [...done]
+      // const stillRunning = progress.filter(({ userId }) => !ranking.includes(userId))
+      // if(!stillRunning.length) break
+
+      // const sorted = stillRunning.sort((a, b) => b.progress[i] - a.progress[i])
+
+      // ranking.push(...sorted.map(({ userId }) => userId))
+      // rankingOverTime.push(ranking)
+
+      // i++
+
+      const running = progress
+        .map(p => ({
+          ...p,
+          distance: p.progress[Math.min(i, p.progress.length - 1)],
+          finished: i >= p.progress.length - 1
+        }));
+
+      if (running.every(r => r.finished)) {
+        break;
+      }
+
+      running.sort((a, b) => b.distance - a.distance);
+
+      rankingOverTime.push(running.map(r => r.userId));
+
+      i++;
+    }
+
+    console.log(rankingOverTime)
+
+    let gpx = 
+`<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1">
+  <trk>
+    <trkseg>
+      ${points[0].map(({ lat, lon }) =>
+`<trkpt lat="${lat}" lon="${lon}"></trkpt>`
+      ).join(``)}
+    </trkseg>
+  </trk>
+</gpx>
+`
+
+    const str = JSON.stringify({
+      id,
+      name,
+      startDate, 
+      ranking: rankingOverTime,
+      positions: userIds.map((id, i) => ({
+        id,
+        positions: points[i].map(({ lat, lon }) => [lon, lat])
+      })),
+      gpx,
+    }, null, 2)
+
+    if(process.env.NODE_ENV === "development") {
+      await fs.writeFile(`./generated/${id}.json`, str)
+      await fs.writeFile(`./generated/${id}.gpx`, gpx)
+    }
+  }
+
+  async uploadReplay(file: CreateReplayDto['files'][number]) {
+    const replay: ReplayJson = JSON.parse(file.buffer.toString('utf8'))
+    this.replays.set(replay.id, replay)
+  }
+
+  getReplays() {
+    return Array.from(this.replays)
+  }
+
+  getReplay(id: string) {
+    const replay = this.replays.get(id)
+    if(!replay) throw new NotFoundException()
+    return replay
   }
 }

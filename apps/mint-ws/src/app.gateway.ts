@@ -4,6 +4,7 @@ import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessa
 import { Server, Socket } from 'socket.io';
 import { JWTPayload, PositionPayload, Race } from './declarations';
 import { AppService } from './app.service';
+import { Replay } from './classes/replay';
 
 @WebSocketGateway({
   cors: {

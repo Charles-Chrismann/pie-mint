@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Header, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Query, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SignatureGuard } from './guards/signature.gaurds';
-import { RegisterRaceDTO } from './dto/race.dto';
+import { CreateReplayDto, RegisterRaceDTO } from './dto/race.dto';
 import Redis from './Redis';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller()
 export class AppController {
@@ -70,6 +71,39 @@ export class AppController {
     @Param('raceId') raceId: string
   ) {
     return this.appService.pruneRace(raceId)
+  }
+
+  @Post('races/create-replay')
+  @UseInterceptors(FilesInterceptor('files'))
+  createReplay(
+    @Body() body: CreateReplayDto,
+    @UploadedFiles() files: CreateReplayDto['files']
+  ) {
+    console.log(body)
+    return this.appService.createReplay({
+      ...body,
+      files
+    })
+  }
+
+  @Post('replay/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadReplay(
+    @UploadedFile() file: CreateReplayDto['files'][number]
+  ) {
+    return this.appService.uploadReplay(file)
+  }
+
+  @Get('replays')
+  getReplays() {
+    return this.appService.getReplays()
+  }
+
+  @Get('replays/:id')
+  getReplay(
+    @Param('id') id: string
+  ) {
+    return this.appService.getReplay(id)
   }
 }
 

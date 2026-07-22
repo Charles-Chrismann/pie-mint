@@ -69,3 +69,15 @@ export interface RacesMapValues {
   totalDistanceInMeters: number
   line: Feature<LineString, GeoJsonProperties>
 }
+
+export interface ReplayJson {
+  id: string
+  name: string
+  startDate: string
+  ranking: string[][]
+  positions: {
+    userId: string
+    positions: [number, number][]
+  }[]
+  gpx: string
+}
